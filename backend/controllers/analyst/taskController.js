@@ -10,6 +10,7 @@ const NOT_OPTI = process.env.NOT_OPTI;
 const DELETED = process.env.DELETED;
 const NOT_DELETED = process.env.NOT_DELETED;
 
+
 // add a task
 const addAnalystTask = async (req, res) => {
     const user = req.user
