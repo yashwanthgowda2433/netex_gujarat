@@ -3,8 +3,8 @@ const express = require('express')
 //Authentication 
 const requireAuth = require('../middleware/requireAuth')
 
-// controller functions
-const { addAnalystTask } = require('../controllers/analyst/taskController')
+// ANALYST TASKS controller functions
+const { addAnalystTask ,getAnalystTasks} = require('../controllers/analyst/controller/taskController')
 
 const router = express.Router()
 
@@ -13,6 +13,8 @@ router.use(requireAuth)
 
 // ANALYST TASKS START
 router.post('/analyst/add', addAnalystTask);
+router.post('/analyst/get', getAnalystTasks);
+
 // ANALYST TASKS END
 
 

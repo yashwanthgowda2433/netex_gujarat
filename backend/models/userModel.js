@@ -1,7 +1,13 @@
+// import user table variables
+const { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
+  admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
+  roles, sla_fwz_depts, zones, is_logged_in_yes, is_logged_in_no, male, female, deleted_yes, deleted_no} = require('../global_variables/user_variables');
+
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 const crypto = require('crypto')
+
 
 const Schema = mongoose.Schema
 
@@ -191,7 +197,7 @@ userSchema.statics.addUser = async function(user_data) {
   data.user_image = user_data.image ? user_data.image : "";
   data.user_confirmationkey = user_data.confirmationkey ? user_data.confirmationkey : "";
   data.user_confirmationexpiry = user_data.confirmationexpiry ? user_data.confirmationexpiry : "";
-  data.user_confirmationstatus = 1;
+  data.user_confirmationstatus = active;
   data.user_forgotpasswordkey = user_data.forgotpasswordkey ? user_data.forgotpasswordkey : "";
   data.user_forgotpasswordexpiry = user_data.forgotpasswordexpiry ? user_data.forgotpasswordexpiry : "";
   data.user_apiaccesskey = api_accesskey;
@@ -214,7 +220,7 @@ userSchema.statics.login = async function(email, password) {
     throw Error('All fields must be filled')
   }
 
-  const user = await this.findOne({$and: [{ user_email:email },{user_status:1},{user_confirmationstatus:1},{user_deleted:0}]})
+  const user = await this.findOne({$and: [{ user_email:email },{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no}]})
   if (!user) {
     throw Error('Incorrect email or user not exist!')
   }

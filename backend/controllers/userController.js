@@ -1,15 +1,10 @@
+// import user table variables
+const { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
+  admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
+  roles, sla_fwz_depts, zones, is_logged_in_yes, is_logged_in_no, male, female, deleted_yes, deleted_no} = require('../global_variables/user_variables');
+
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
-
-const ANALYST = process.env.ANALYST;
-const FIELD_ENGINEER = process.env.FIELD_ENGINEER;
-const ACTIVE = process.env.ACTIVE;
-const INACTIVE = process.env.INACTIVE;
-const IS_OPTI = process.env.IS_OPTI;
-const NOT_OPTI = process.env.NOT_OPTI;
-const DELETED = process.env.DELETED;
-const NOT_DELETED = process.env.NOT_DELETED;
-
 
 const createToken = (_id) => {
   return jwt.sign({_id}, process.env.SECRET, { expiresIn: '3d' })
@@ -71,10 +66,10 @@ const getAnalystOptiEngineers = async (req, res)=>{
   const user = req.user;
   
   if(user){
-    if(user.user_role == ANALYST)
+    if(user.user_role == analyst)
     {
       try {
-          const user_data = await User.find({$and:[{user_status:ACTIVE},{user_confirmationstatus:ACTIVE},{user_deleted:NOT_DELETED},{ user_role:FIELD_ENGINEER},{user_addedby:user._id}]})
+          const user_data = await User.find({$and:[{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no},{ user_role:field_engineer},{user_addedby:user._id}]})
           res.status(200).json({status:"Success", data:user_data})
 
       }

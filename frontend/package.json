@@ -10,6 +10,8 @@
     "apexcharts": "^3.40.0",
     "availity-reactstrap-validation": "^2.7.1",
     "bootstrap": "^5.2.3",
+    "datatables.net": "^1.13.6",
+    "datatables.net-dt": "^1.13.6",
     "dotenv": "^10.0.0",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.29",
@@ -26,6 +28,7 @@
     "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.3",
+    "react-table": "^7.8.0",
     "reactstrap": "^9.1.9",
     "simplebar-react": "^3.2.4",
     "web-vitals": "^2.1.4"

@@ -90,8 +90,8 @@ const Add = () => {
         var input_json = inputs;
         // emp_id select and date
         var employee_id = document.querySelector('input[name=employee_id]').value;
-        var crm_date = document.querySelector('input[name=crm_date]').value;
-        input_json.crm_date = crm_date;
+        var crystal_date = document.querySelector('input[name=crystal_date]').value;
+        input_json.crystal_date = crystal_date;
         input_json.employee_id = employee_id;
 
         console.log(input_json);
@@ -207,7 +207,7 @@ const Add = () => {
                                                                         <InputGroup>
                                                                             <Flatpickr
                                                                                 className="form-control d-block"
-                                                                                name="crm_date"
+                                                                                name="crystal_date"
                                                                                 placeholder="dd M,yyyy"
                                                                                 options={{
                                                                                     altInput: true,
@@ -253,7 +253,7 @@ const Add = () => {
                                                                     <label htmlFor="username" className="col-md-4 col-form-label" style={{fontWeight:"600"}}>Customer Location</label>
                                                                     <div className="col-md-8">
                                                                         <InputGroup>
-                                                                            <input type="text" className="form-control" name="customer_location" value={inputs.customer_location} onChange={handleChange}/>
+                                                                            <input type="text" className="form-control" name="location" value={inputs.location} onChange={handleChange}/>
                                                                         </InputGroup>
                                                                     </div>
                                                                 </Row>
