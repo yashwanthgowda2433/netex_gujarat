@@ -173,7 +173,7 @@ const addTask = async (user, task_data) => {
     data.task_post_assignedon = task_data.post_assignedon ? task_data.post_assignedon : "";
     data.task_saved_attended_on = task_data.saved_attended_on ? task_data.saved_attended_on : "";
     data.task_is_save_submit = task_data.is_save_submit ? task_data.is_save_submit : "";
-    data.task_status = task_data.status ? task_data.status : progress;
+    data.task_status = task_data.status ? task_data.status : pending;
     data.task_deleted = task_data.deleted ? task_data.deleted : deleted_no;
 
     const task_submit = await Task.create(data)

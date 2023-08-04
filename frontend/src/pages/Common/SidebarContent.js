@@ -170,7 +170,7 @@ const SidebarContent = () => {
                   <Link to="/tasks/add" className={'/tasks/add'.includes(url_path) ? "mm-active" : "" }>Task Add</Link>
                 </li>
                 <li>
-                    <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) ? "mm-active" : "" }>Tasks</Link>
+                    <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) || '/tasks/report'.includes(url_path) ? "mm-active" : "" }>Tasks</Link>
                 </li>
               </ul>
             </li>  

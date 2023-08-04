@@ -14,6 +14,7 @@ import Register from './pages/Auth/Register';
 import Analyst_dashboard from './pages/Analyst/Dashboard';
 import Analyst_task_add from './pages/Analyst/Tasks/Add';
 import Analyst_task_view from './pages/Analyst/Tasks/View';
+import Analyst_task_report from "./pages/Analyst/Tasks/Report";
 // ANALYST IMPORTS ENDS
 
 
@@ -57,6 +58,7 @@ function App() {
                               <Route path="/dashboard" element={ user ? <Analyst_dashboard/> : <Login/> } />
                               <Route path="/tasks/add" element={ user ? <Analyst_task_add/> : <Login/> } />
                               <Route path="/tasks/view" element={ user ? <Analyst_task_view/> : <Login/> } />
+                              <Route path="/tasks/report" element={ user ? <Analyst_task_report/> : <Login/> } />
 
                           </Routes>
                       </div>

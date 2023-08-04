@@ -1,3 +1,20 @@
+// import task table variables
+import { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_no, pending, progress, completed,
+    cancelled,closed,fwz,transfer,withdraw,addedbyl2_executive,fwz_to_zone,approve_for_fieldvisit,analysis_required,
+    analysis_required_fwdbyl3,zone_analysed,zone_closed,l3_closed,optimisationprogress,analysed,optimised,closedbyl2_executive,
+    resolved_and_closed,not_resolved_and_closed,closedbyl2_tl,fwd_to_l2,closedbyl2_outcall,addedbyl2_outcall,preopti,postopti,
+    optimisationpending,preoptipending,preoptiprogress,preopticompleted,task_status,corporate,postpaid,prepaid,escalation,vip,
+    employees,ebu,service_plus,repeated,social_media,outbound,my_idea,others,tat_vip,tat_employees,tat_ebu,tat_service_plus,
+    tat_social_media,tat_my_idea,tat_outbound,tat_repeated,tat_others,tat_customer_categories,all_network,two_g,three_g,four_g,
+    two_g_three_g,three_g_four_g,four_g_two_g,withdrawn_yes,withdrawn_no,fieldvisit_yes,fieldvisit_no,analyse_yes,analyse_no,		
+    fwdtofe_yes,fwdtofe_no,	coverage_related,voice_related,data_related,subscription_types,zones,customer_categories,cust_categories,
+    categories,p1_categories,esc_categories,districts,priorities,network_types,prepaid_segment,complaint_types,complaint_postpaid_types,
+    complaint_prepaid_types,task_status_filters,task_status_filters_dept,task_addedby_options,tat_excluded_hours,tat_start_time,
+    tat_end_time,tat_expired_sql,tat_calc_sql,tat_stop_sql,district_options,visit_pending_option,analyze_pending_option,dept_pending_option,
+    visit_progress_option,optimization_progress_option,visit_completed_option,analyze_completed_option,revertTeam_option,closedwithoutFV_option,
+    directL2Close_option,resolvedClosed_option,notResolvedClosed_option,
+    } from '../../../global_variables/task_variables';
+    
 import React, { useEffect, useState } from "react";
 import Header from "../../Common/Header";
 import Footer from "../../Common/Footer";
@@ -13,6 +30,8 @@ import { useTable, useSortBy, usePagination } from 'react-table';
 //Context
 import { useAuthContext } from "../../../hooks/useAuthContext";
 
+import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js';
+
 const View = () => {
     const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,13 +46,17 @@ const View = () => {
    
 
     useEffect(() => {
+       
         if(user)
         {
             getTasks(pageStart);
         }
     },[user]);
 
+    // GET TASKS FUNCTION START
     const getTasks = async (start) =>{
+         
+
         var page_size = document.querySelector("select[name=page_size]");
         var page_limit = pageLimit;
 
@@ -82,21 +105,224 @@ const View = () => {
         }
         
     }
+    // GET TASKS FUNCTION END
+
+    // date Converison
+    const convertdate = (olddate) => {
+        var created_date = new Date(olddate);
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = created_date.getFullYear();
+        var month = months[created_date.getMonth()];
+        var date = created_date.getDate();
+        var hour = created_date.getHours();
+        var min = created_date.getMinutes();
+        var sec = created_date.getSeconds();
+        var time = date + '-' + month + '-' + year + ' ' + hour + ':' + min + ':' + sec ;    // final date with time, you can use this according your requirement
+
+        return time;
+    }
+
+    // STATUS FUNCTION START
+    const statusFunction = (a) => {
+        console.log("===================")
+
+        console.log(task_status)
+        var message = "";
+
+        // Post-Optimisation Pending
+        if(a.task_status == preoptipending && a.task_is_postopti == fieldvisit_yes)
+        {
+            if(a.task_withdrawn == withdrawn_yes)
+            {       
+                message = <span className='btn btn-info' style={styles.status}>Withdrawn</span>;
+            }else{
+                message = <span className='btn btn-danger' style={styles.status}>Post-Optimisation Pending</span>;
+            }
+        }
+        // Pre-Optimisation Inprogress
+        else if(a.task_status == progress && a.task_is_rf_fieldvisit == fieldvisit_yes && a.task_is_postopti == fieldvisit_no)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Pre-Optimisation Inprogress</span>;
+        }
+        // Pre-Optimisation Pending
+        else if((a.task_status == preoptipending || a.task_status == pending) && a.task_is_rf_fieldvisit==fieldvisit_yes && a.task_is_postopti==fieldvisit_no)
+        {
+            if(a.task_withdrawn == withdrawn_yes)
+            {       
+                message = <span className='btn btn-info' style={styles.status}>Withdrawn</span>;
+            }else{
+                message = <span className='btn btn-danger' style={styles.status}>Pre-Optimisation Pending</span>;
+            }
+        }
+        //Post-Optimisation Inprogress
+        else if(a.task_status == progress && a.task_is_postopti==fieldvisit_yes)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Post-Optimisation Inprogress</span>;
+        }
+        //Pre-Optimisation Completed
+        else if(a.task_status == preopti)
+        {
+            message = <span className='btn btn-success' style={styles.status}>Pre-Optimisation Completed</span>;
+        }
+        //Postoptimization
+        else if(a.task_status == postopti)
+        {
+            message = <span className='btn btn-success' style={styles.status}>Postoptimization</span>;
+        }
+        //Cancelled
+        else if(a.task_status == cancelled)
+        {
+            message = <span className='btn btn-danger' style={styles.status}>Cancelled</span>;
+        }
+        //Completed
+        else if(a.task_status == completed)
+        {
+            message = <span className='btn btn-success' style={styles.status}>Completed</span>;
+        }
+        //Closed without field visit
+        else if(a.task_status == closed)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Closed without field visit</span>;
+        }
+        //Forward to ......
+        else if(a.task_status == fwz)
+        {
+            // message = <span className='btn btn-primary' style={styles.status}>Forward to {sla_fwz_options[a.task_fwd_dept_id]}</span>;
+        }
+        //Forward to field visit
+        else if(a.task_status == approve_for_fieldvisit)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Forward to field visit</span>;
+        }
+        //added by l2executive
+        else if(a.task_status == addedbyl2_executive)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>added by l2executive</span>;
+        }
+        //FWD to RF
+        else if(a.task_status == analysis_required || a.task_status == analysis_required_fwdbyl3)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>FWD to RF</span>;
+        }
+        //reverted from RF
+        else if(a.task_status == analysed)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>reverted from RF</span>;
+        }
+        //Withdrawn
+        else if(a.task_status == withdraw)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>Withdrawn</span>;
+        }
+        //Not resolved and closed
+        else if(a.task_status == not_resolved_and_closed)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>Not resolved and closed</span>;
+        }
+        //Resolved and closed
+        else if(a.task_status == resolved_and_closed)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>Resolved and closed</span>;
+        }
+        //Optimisation  in Progress
+        else if(a.task_status == optimisationprogress)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Optimisation  in Progress</span>;
+        }
+        //Reverted from
+        else if(a.task_status == optimised)
+        {
+            // message = <span className='btn btn-warning' style={styles.status}>Reverted from {sla_fwz_options[a.task_fwd_dept_id]}</span>;
+        }
+        //Foward to zone
+        else if(a.task_status == fwz_to_zone)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Foward to zone</span>;
+        }
+        
+        else if(a.task_status == progress)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Inprogress</span>;
+        }
+        else if(a.task_status == pending)
+        {
+            message = <span className='btn btn-danger' style={styles.status}>Pending</span>;
+        }
+                    
+        return message;
+
+    }
+    // STATUS FUNCTION END
 
     // Define the columns for your table
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Employee ID',
-                accessor: 'task_employee_id',
+                Header: 'Select',
+                accessor: 
+                a => (
+                    <div>
+                        <input type="checkbox" className="delete-checkbox" value={a._id} id={"chk"+a._id}/>
+					    <input type="hidden" className={"close-status"+a._id} value={a.task_status }/>  
+                    </div>
+                ),
             },
             {
-                Header: 'Name',
+                Header: 'Employee Name',
+                accessor: 'user_arr[0].user_name',
+            },
+            {
+                Header: 'SR Number',
+                accessor: 'task_sr_no',
+            },
+            {
+                Header: 'Customer Name',
                 accessor: 'task_customer_name',
             },
             {
-                Header: 'mobile number',
+                Header: 'Company Name',
+                accessor: 'task_company_name',
+            },
+            {
+                Header: 'Customer Mobile',
                 accessor: 'task_mobile_number',
+            },
+            {
+                Header: 'L3 remarks',
+                accessor: a=>(
+                    
+                    <button type="button" class="btn btn-primary btn-xs waves-effect" 
+                        data-bs-container="body" 
+                        data-bs-toggle="popover" 
+                        data-bs-placement="bottom" 
+                        title="Message"
+                        data-bs-content="No Remarks"
+                        data-bs-trigger="focus"  style={styles.showbtn}>Show</button>
+                )
+            },
+            {
+                Header: 'Assign to field date',
+                accessor: 'task_assigned_on',
+            },
+            {
+                Header: 'visit uploaded date',
+                accessor: a=>(convertdate(a.task_createdon)),
+            },
+            {
+                Header: 'Customer Subtype',
+                accessor: 'task_postpaid_sub_type',
+            },
+            {
+                Header: 'Status',
+                accessor: 
+                    a => (statusFunction(a))
+            },
+            {
+                Header: 'Action',
+                accessor: a => (
+                    <Link className='btn btn-danger' to="/tasks/report" state={a} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link>
+                ),
             },
       // Add more columns as needed
         ],
@@ -134,6 +360,15 @@ const View = () => {
         setPageLimit(parseInt(val))
         await getTasks(pageStart)
     }
+    document.querySelectorAll('.popover').forEach((element) => {
+        element.remove();
+    })
+    // POPOVER
+    Array.from(document.querySelectorAll('button[data-bs-toggle="popover"]')).forEach(popoverNode => new Popover(popoverNode))
+    // POPOVER END
+
+    
+
     return (
         <React.Fragment>
             <div id="preloader" style={{ display: "none" }}>
@@ -179,7 +414,7 @@ const View = () => {
                                         <Card>
                                             <CardBody>
                                                 <CardTitle className="mb-4">
-                                                    Lists
+                                                    Tasks Summary 
                                                     <Col lg={1} style={{float:"right",textAlign:"end",marginTop:"-10px"}}>
                                                         <ButtonDropdown
                                                             direction="right"
@@ -234,10 +469,15 @@ const View = () => {
                                                         <tbody {...getTableBodyProps()}>
                                                           {page.map((row) => {
                                                             prepareRow(row);
+                                                            console.log(row)
                                                             return (
                                                             <tr {...row.getRowProps()}>
-                                                                {row.cells.map((cell) => (
-                                                                    <td style={{width: "60px",}} {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                                                {
+                                                                row.cells.map((cell,i) => (
+                                                                    
+                                                                    <td style={{width: "60px",}} {...cell.getCellProps()}>
+                                                                        {cell.render('Cell')}
+                                                                    </td>
                                                                 ))}
                                                             </tr>
                                                             );
@@ -301,6 +541,17 @@ const styles = {
        marginLeft:"20px",
        marginRight:"20px",
        
+    },
+    status:{
+        padding:"0px 10px",
+    },
+    linkbtn:{
+        fontSize: "23px",
+        padding: "3px 4px 0px 4px"
+    },
+    showbtn:{
+        fontSize: "15px",
+        padding: "3px 4px 0px 4px"
     }
 }
 
