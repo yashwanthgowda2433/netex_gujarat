@@ -85,7 +85,7 @@ const rf_save_options = {
   }; //Third level save options
 const c_id_details = []; //Store Cell details i.e. Cell ID, Cell Name, lat and lang
 const c_id_count = 0; //Store Cell details count
-const cellid_array = array(); //Store Cell id to check duplicate
+const cellid_array = []; //Store Cell id to check duplicate
 
 const twog_rx_lev_pts = [];
 const twog_rx_qual_pts = [];

@@ -13,11 +13,19 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 
 import classnames from "classnames"
 
+// tabs import
+import Summary from "../../../components/Analyst/Tasks/Summary";
+import MapView from "../../../components/Analyst/Tasks/MapView";
+import Indoor from "../../../components/Analyst/Tasks/Indoor";
+import Outdoor from "../../../components/Analyst/Tasks/Outdoor";
+import Balcony from "../../../components/Analyst/Tasks/Balcony";
+import Terrace from "../../../components/Analyst/Tasks/Terrace";
+import WalkDriveTest from "../../../components/Analyst/Tasks/WalkDriveTest";
+
 const Report = (props) => {
     const navigate = useNavigate();
     const [activeTab, setactiveTab] = useState("1")
-    const [device_lists, update_device_lists] = useState([]);
-    const [sim1_data, update_sim1_data] = useState([]);
+    const [test_data, set_test_data] = useState({});
     const [infodrp_up11, setInfodrp_up11] = useState(false)
 
     const {user} = useAuthContext()
@@ -33,8 +41,39 @@ const Report = (props) => {
     }
 
     useEffect(() => {
-        
-    },[user])
+       
+        if(user)
+        {
+            getTaskTests();
+        }
+    },[user]);
+
+    const getTaskTests = async () => {
+        if(user)
+        {
+            const response = await fetch('/api/tests/analyst/getReport', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${user.token}` },
+                body: JSON.stringify({ task_id : task_data._id })
+    
+            })
+            
+            if(response.ok){
+                const json = await response.json()
+                console.log(json)
+                if(json.status == "Success")
+                {
+                    set_test_data(json.data);
+                }
+                if(json.status == "Error")
+                {
+                    // setLoading(false);
+                }
+            }else{
+                // setLoading(false);
+            }
+        }
+    }
 
     const convertdate = (olddate) => {
         var created_date = new Date(olddate);
@@ -120,6 +159,65 @@ const Report = (props) => {
                                                         </ButtonDropdown>
                                                     </Col>
                                                 </CardTitle>
+
+                                                <Row>
+                                                    <Col lg={12}>
+                                                        <Nav tabs className="nav-tabs-custom nav-justified" style={{width:"90%"}}>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "1",})} onClick={() => { toggle("1") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Summary</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "2",})} onClick={() => { toggle("2") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">MapView</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "3",})} onClick={() => { toggle("3") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Indoor</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "4",})} onClick={() => { toggle("4") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Outdoor</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "5",})} onClick={() => { toggle("5") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Balcony</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "6",})} onClick={() => { toggle("6") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Terrace</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                            <NavItem style={{width:"13%",textAlign:"center"}}>
+                                                                <NavLink style={{ cursor: "pointer" }} className={classnames({active: activeTab === "7",})} onClick={() => { toggle("7") }}>
+                                                                    <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
+                                                                    <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Walk Drive Test</span>
+                                                                </NavLink>
+                                                            </NavItem>
+                                                        </Nav>
+                                                        <TabContent activeTab={activeTab} className="p-3 text-muted">
+                                                            <TabPane tabId="1"><Row><Summary data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="2"><Row><MapView data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="3"><Row><Indoor data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="4"><Row><Outdoor data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="5"><Row><Balcony data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="6"><Row><Terrace data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="7"><Row><WalkDriveTest data={task_data} /></Row></TabPane>
+
+                                                        </TabContent>
+                                                    </Col>
+                                                </Row>
 
                                         </Col>
                                     </Row>

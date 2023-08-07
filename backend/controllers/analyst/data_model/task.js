@@ -15,9 +15,12 @@ const { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_n
     directL2Close_option,resolvedClosed_option,notResolvedClosed_option,
     } = require('../../../global_variables/task_variables');
 
+const { deleted_no } = require('../../../global_variables/user_variables');
+
+
 const User = require('../../../models/userModel');
 const Task = require('../../../models/taskModel');
-const { deleted_no } = require('../../../global_variables/user_variables');
+const test = require('./test');
 
 const addTask = async (user, task_data) => {
 
@@ -28,13 +31,12 @@ const addTask = async (user, task_data) => {
     if (task_data.employee_id == "") {
         throw Error('Employee must be Select')
     }
-    const exists = await Task.findOne({$and: [{ task_sr_no: task_data.sr_no },{ task_deleted: deleted_no}]})
-    if (exists) {
-        throw Error('SR Number already in use')
-    }
+    
 
     var data = {};
+    console.log("=====================")
     console.log(task_data.crystal_date);
+    console.log(new Date(task_data.crystal_date));
 
     data.task_employee_id = task_data.employee_id ? task_data.employee_id : "";
     data.task_rf_employee_id = task_data.rf_employee_id ? task_data.rf_employee_id : "";
@@ -175,13 +177,46 @@ const addTask = async (user, task_data) => {
     data.task_is_save_submit = task_data.is_save_submit ? task_data.is_save_submit : "";
     data.task_status = task_data.status ? task_data.status : pending;
     data.task_deleted = task_data.deleted ? task_data.deleted : deleted_no;
+    data.task_modifiedon = new Date();
+    var task_submit = "";
+    const exists = await Task.findOne({$and: [{ task_sr_no: task_data.sr_no },{ task_deleted: deleted_no}]})
+    if (exists) {
 
-    const task_submit = await Task.create(data)
-    if(task_submit){
-        return true;
+        var where = { task_sr_no: task_data.sr_no };
+        var new_values = { $set : data }
+
+        const task_submit = await Task.updateOne(where, new_values)
+        
+        if(task_submit){
+            const add_test_report = test.addTest(user, task_data, exists._id);
+            if(add_test_report)
+            {
+                return true;
+
+            }else{
+                return false;
+            }
+            
+        }else{
+            return false;
+        }
     }else{
-        return false;
+        const task_submit = await Task.create(data)
+
+        if(task_submit){
+            const add_test_report = test.addTest(user, task_data, task_submit._id);
+            if(add_test_report)
+            {
+                return true;
+            }else{
+                return false;
+            }
+            
+        }else{
+            return false;
+        }
     }
+    
 
 }
 
