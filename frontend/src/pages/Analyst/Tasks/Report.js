@@ -27,6 +27,10 @@ const Report = (props) => {
     const [activeTab, setactiveTab] = useState("1")
     const [test_data, set_test_data] = useState({});
     const [infodrp_up11, setInfodrp_up11] = useState(false)
+    const [analysed_by_team, set_analysed_by_team] = useState({});
+    const [analysed_by_l2, set_analysed_by_l2] = useState({});
+    const [analysed_by_l3, set_analysed_by_l3] = useState({});
+    const [analysed_by_rf, set_analysed_by_rf] = useState({});
 
     const {user} = useAuthContext()
     const propsData = useLocation();
@@ -48,6 +52,40 @@ const Report = (props) => {
         }
     },[user]);
 
+    const get_user = async (user_id)=>{
+        // return user_id;
+        console.log(user_id)
+        if(user_id != "" && user_id != null ){
+          try{
+
+            const response = await fetch('/api/user/get', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${user.token}` },
+                body: JSON.stringify({ user_id })
+            })
+            if(response.ok)
+            {
+                const json = await response.json()
+                console.log("++++++++++++++++++")
+                console.log(json)
+                if(json.status == "Success")
+                {
+                    return json.data;
+                }else{
+                    return {}
+                }
+            }else{
+                return {};
+            }
+          }catch(error){
+            return {};
+          }
+        }else{
+            return {};
+        }
+    }
+
+
     const getTaskTests = async () => {
         if(user)
         {
@@ -64,6 +102,16 @@ const Report = (props) => {
                 if(json.status == "Success")
                 {
                     set_test_data(json.data);
+                    if(user){
+                        if(test_data)
+                        {
+                            // console.log(test_data.analysed_by_l2)
+                            set_analysed_by_team(await get_user(json.data.testreport_analysed_by_team));
+                            set_analysed_by_l2(await get_user(json.data.analysed_by_l2));
+                            set_analysed_by_l3(await get_user(json.data.analysed_by_l3));
+                            set_analysed_by_rf(await get_user(json.data.analysed_by_rf));
+                        }
+                    }
                 }
                 if(json.status == "Error")
                 {
@@ -207,13 +255,13 @@ const Report = (props) => {
                                                             </NavItem>
                                                         </Nav>
                                                         <TabContent activeTab={activeTab} className="p-3 text-muted">
-                                                            <TabPane tabId="1"><Row><Summary data={task_data} /></Row></TabPane>
-                                                            <TabPane tabId="2"><Row><MapView data={task_data} /></Row></TabPane>
-                                                            <TabPane tabId="3"><Row><Indoor data={task_data} /></Row></TabPane>
-                                                            <TabPane tabId="4"><Row><Outdoor data={task_data} /></Row></TabPane>
-                                                            <TabPane tabId="5"><Row><Balcony data={task_data} /></Row></TabPane>
-                                                            <TabPane tabId="6"><Row><Terrace data={task_data} /></Row></TabPane>
-                                                            <TabPane tabId="7"><Row><WalkDriveTest data={task_data} /></Row></TabPane>
+                                                            <TabPane tabId="1"><Row><Summary data={{test_data, analysed_by_team, analysed_by_l2, analysed_by_l3, analysed_by_rf}} /></Row></TabPane>
+                                                            <TabPane tabId="2"><Row><MapView data={test_data} /></Row></TabPane>
+                                                            <TabPane tabId="3"><Row><Indoor data={test_data} /></Row></TabPane>
+                                                            <TabPane tabId="4"><Row><Outdoor data={test_data} /></Row></TabPane>
+                                                            <TabPane tabId="5"><Row><Balcony data={test_data} /></Row></TabPane>
+                                                            <TabPane tabId="6"><Row><Terrace data={test_data} /></Row></TabPane>
+                                                            <TabPane tabId="7"><Row><WalkDriveTest data={test_data} /></Row></TabPane>
 
                                                         </TabContent>
                                                     </Col>

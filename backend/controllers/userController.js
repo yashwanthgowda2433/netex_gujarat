@@ -59,6 +59,26 @@ const addUser = async (req, res) => {
   }
 }
 
+// getUser
+const getUser = async (req, res) => {
+  const {user_id} = req.body
+
+    try {
+        if(user_id)
+        {
+            const user_data = await User.findOne({$and:[{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no},{_id:user_id}]})
+
+            res.status(200).json({status:"Success", data: user_data});
+
+        }else{
+          res.status(200).json({status:"Error", message: "Invalid User ID"})
+
+        }
+    } catch (error) {
+        res.status(200).json({status:"Error", message: error.message})
+    }
+}
+
 
 // ANALYST FUNCTIONS START
 const getAnalystOptiEngineers = async (req, res)=>{
@@ -88,4 +108,4 @@ const getAnalystOptiEngineers = async (req, res)=>{
 // ANALYST FUNCTIONS END
 
 
-module.exports = { addUser, loginUser, getAnalystOptiEngineers }
+module.exports = { addUser, loginUser, getUser, getAnalystOptiEngineers }

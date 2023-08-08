@@ -4,7 +4,7 @@ const express = require('express')
 const requireAuth = require('../middleware/requireAuth')
 
 // controller functions
-const { loginUser, addUser, getAnalystOptiEngineers } = require('../controllers/userController')
+const { loginUser, addUser, getUser, getAnalystOptiEngineers } = require('../controllers/userController')
 
 const router = express.Router()
 
@@ -16,6 +16,8 @@ router.post('/add', addUser)
 
 // require auth for all routes
 router.use(requireAuth)
+
+router.post('/get', getUser)
 
 // ANALYST API's Start
 //get Opti Engineers

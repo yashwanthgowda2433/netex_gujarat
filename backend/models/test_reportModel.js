@@ -257,7 +257,7 @@ const testReportSchema = new Schema({
         
     },
     testreport_analysed_by: {
-        type: Number,
+        type: String,
         default: ""
         
     },
@@ -272,27 +272,27 @@ const testReportSchema = new Schema({
         
     },
     testreport_analysed_by_team: {
-        type: Number,
+        type: String,
         default: ""
         
     },
     analysed_by_l2: {
-        type: Number,
+        type: String,
         default: ""
         
     },
     analysed_by_l3: {
-        type: Number,
+        type: String,
         default: ""
         
     },
     analysed_by_rf: {
-        type: Number,
+        type: String,
         default: ""
         
     },
     analysed_by_zone: {
-        type: Number,
+        type: String,
         default: ""
         
     },
