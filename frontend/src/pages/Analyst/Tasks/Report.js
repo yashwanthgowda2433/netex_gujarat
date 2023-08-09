@@ -34,9 +34,9 @@ const Report = (props) => {
 
     const {user} = useAuthContext()
     const propsData = useLocation();
-    // console.log(propsData)
+    // //console.log(propsData)
     const task_data = propsData.state;
-    console.log(task_data)
+    //console.log(task_data)
 
     function toggle(tab) {
         if (activeTab !== tab) {
@@ -54,7 +54,7 @@ const Report = (props) => {
 
     const get_user = async (user_id)=>{
         // return user_id;
-        console.log(user_id)
+        //console.log(user_id)
         if(user_id != "" && user_id != null ){
           try{
 
@@ -66,8 +66,8 @@ const Report = (props) => {
             if(response.ok)
             {
                 const json = await response.json()
-                console.log("++++++++++++++++++")
-                console.log(json)
+                //console.log("++++++++++++++++++")
+                //console.log(json)
                 if(json.status == "Success")
                 {
                     return json.data;
@@ -98,14 +98,14 @@ const Report = (props) => {
             
             if(response.ok){
                 const json = await response.json()
-                console.log(json)
+                //console.log(json)
                 if(json.status == "Success")
                 {
                     set_test_data(json.data);
                     if(user){
                         if(test_data)
                         {
-                            // console.log(test_data.analysed_by_l2)
+                            // //console.log(test_data.analysed_by_l2)
                             set_analysed_by_team(await get_user(json.data.testreport_analysed_by_team));
                             set_analysed_by_l2(await get_user(json.data.analysed_by_l2));
                             set_analysed_by_l3(await get_user(json.data.analysed_by_l3));
@@ -257,11 +257,11 @@ const Report = (props) => {
                                                         <TabContent activeTab={activeTab} className="p-3 text-muted">
                                                             <TabPane tabId="1"><Row><Summary data={{test_data, analysed_by_team, analysed_by_l2, analysed_by_l3, analysed_by_rf}} /></Row></TabPane>
                                                             <TabPane tabId="2"><Row><MapView data={test_data} /></Row></TabPane>
-                                                            <TabPane tabId="3"><Row><Indoor data={test_data} /></Row></TabPane>
-                                                            <TabPane tabId="4"><Row><Outdoor data={test_data} /></Row></TabPane>
-                                                            <TabPane tabId="5"><Row><Balcony data={test_data} /></Row></TabPane>
-                                                            <TabPane tabId="6"><Row><Terrace data={test_data} /></Row></TabPane>
-                                                            <TabPane tabId="7"><Row><WalkDriveTest data={test_data} /></Row></TabPane>
+                                                            <TabPane tabId="3"><Row>{test_data?<Indoor data={test_data} />:""}</Row></TabPane>
+                                                            <TabPane tabId="4"><Row>{test_data?<Outdoor data={test_data} />:""}</Row></TabPane>
+                                                            <TabPane tabId="5"><Row>{test_data?<Balcony data={test_data} />:""}</Row></TabPane>
+                                                            <TabPane tabId="6"><Row>{test_data?<Terrace data={test_data} />:""}</Row></TabPane>
+                                                            <TabPane tabId="7"><Row>{test_data?<WalkDriveTest data={test_data} />:""}</Row></TabPane>
 
                                                         </TabContent>
                                                     </Col>

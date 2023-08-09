@@ -29,6 +29,8 @@ import { isEmpty, map, size } from "lodash"
 
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
 
+import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js';
+
 // context 
 import { useAuthContext } from "../../../hooks/useAuthContext";
 
@@ -47,8 +49,8 @@ const Summary = (props) => {
     const analysed_by_l3 = props.data.analysed_by_l3;
     const analysed_by_rf = props.data.analysed_by_rf;
 
-    console.log(task_data)
-    console.log(analysed_by_l2)
+    //console.log(task_data)
+    //console.log(analysed_by_l2)
 
     
 
@@ -159,11 +161,11 @@ const Summary = (props) => {
 
             return hoursDifference+":"+minutesDifference+":"+secondsDifference;
             
-            console.log('difference = ' + 
-            daysDifference + ' day/s ' + 
-            hoursDifference + ' hour/s ' + 
-            minutesDifference + ' minute/s ' + 
-            secondsDifference + ' second/s ');
+            //console.log('difference = ' + 
+            // daysDifference + ' day/s ' + 
+            // hoursDifference + ' hour/s ' + 
+            // minutesDifference + ' minute/s ' + 
+            // secondsDifference + ' second/s ');
         }else{
             return 0+":"+0+":"+0;
         }
@@ -183,6 +185,41 @@ const Summary = (props) => {
         }
     }
 
+    var td_start_datetime ="";
+    var td_end_datetime ="";
+    var testing_duration ="0:0:0";
+    var td_start_datetime1 ="";
+    var td_end_datetime1 ="";
+    var testing_duration1 ="0:0:0";
+    if(task_data)
+    {
+        if(task_data.task_status != closed && task_data.task_is_closed_fv != fieldvisit_yes)
+        {
+            td_start_datetime = new Date(task_data.task_end_datetime);
+            td_end_datetime = new Date(task_data.testing_end_datetime);
+            testing_duration = getAnalysisTAT(td_start_datetime, td_end_datetime);
+
+            td_start_datetime1 = new Date(task_data.task_assigned_on);
+            td_end_datetime1 = new Date(task_data.testing_end_datetime);
+            testing_duration1 = getAnalysisTAT(td_start_datetime1, td_end_datetime1)
+        }
+        var questions = "";
+        if(task_data.task_questionnaires != null && task_data.task_questionnaires != "")
+        {
+            var Questions = JSON.parse(task_data.task_questionnaires);
+            //console.log(Questions)
+
+            Questions.forEach(function(question, sl){
+                //console.log(question)
+                for(const [key, value] of Object.entries(question)){
+                    questions += (sl+1)+". "+key+" : "+value+"  ";
+                }
+            });
+        }
+                                                                 
+    }
+    Array.from(document.querySelectorAll('button[data-bs-toggle="popover"]')).forEach(popoverNode => new Popover(popoverNode))
+    
     
     return (
         <Col lg={12}>
@@ -570,7 +607,7 @@ const Summary = (props) => {
                                             }
                                             {
                                                 test_data?
-                                                    task_data.task_is_rf_fieldvisit != fieldvisit_yes ?
+                                                    task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
                                                         <>
                                                             <tr>
 															    <th style={{textAlign:"center"}} colspan="4"><strong> Field visit Details</strong></th>
@@ -605,6 +642,108 @@ const Summary = (props) => {
                                                                     </>
                                                                     :<></>
                                                             }
+                                                            
+                                                                { 
+                                                                    task_data.task_status != cancelled ?
+                                                                        <tr>
+                                                                            <th>Visit Uploaded date time</th>
+															                <td>{ test_data.rf_test_visit_upload ? test_data.rf_test_visit_upload : test_data.test_visit_upload }</td>
+														
+                                                                        </tr>
+                                                                    :
+                                                                        <></>
+
+                                                                }
+                                                                {
+                                                                    task_data.task_status != closed ?
+                                                                        <>
+                                                                            <tr>
+                                                                                <th>Visit TAT</th>
+															                    {/* <td><?php echo $this->tasks->calculate_tat($assigned_date,$test_visit_upload,$task_addedby,FALSE);?></td> */}
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+															                    <th>Testing Duration</th>
+															                    <td>{testing_duration}</td>
+															                    <th>SMS DateTime</th>
+															                    <td>
+                                                                                    {/* <?php 
+															                        if(!empty($sms_details)){
+															                            $original_array = array_column($sms_details, 'sms_send_date');
+									                                                    $string_version = implode('/', $original_array); 
+																                        echo  $string_version;
+																                    } ?> */}
+																                </td>
+														                    </tr>
+														                    <tr>
+															                    <th>Latitude</th>
+															                    <td>{task_data.task_end_latitude}</td>
+															                    <th>Longitude</th>
+															                    <td>{task_data.task_end_longitude}</td>
+														                    </tr>
+                                                                        </>
+                                                                    :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    task_data.task_status != cancelled ?
+                                                                        <>
+                                                                            <tr>
+                                                                                <th>Canceled Latitude</th>
+                                                                                <td>{task_data.task_cancel_latitude}</td>
+                                                                                <th>Canceled Longitude</th>
+                                                                                <td>{task_data.task_cancel_longitude}</td>
+                                                                            </tr>
+                                                                        </>
+                                                                    :
+                                                                        <></>
+                                                                }
+                                                                <tr>
+															        <th>Cancelled Remarks</th>
+															        <td>{task_data.task_canceled_remarks}</td>
+															        <th>Resolved Status</th>
+															        <td>{ test_data.testreport_resolved_status == 'yes' ?
+																            <div class="alert alert-success">
+																	            <strong>Issue Resolved..!!!</strong>
+																            </div>
+																        : <></>
+                                                                        }
+                                                                        { test_data.testreport_resolved_status == 'no' ?
+																                <div class="alert alert-danger">
+																	                <strong>Issue Not Yet Resolved..!!!</strong>
+																                </div>
+																            : <></>
+                                                                        } 
+                                                                        </td>
+														        </tr>
+
+                                                                <tr>
+															        <th>Questionnaires</th>
+															        <td>{ task_data.task_questionnaires != null && task_data.task_questionnaires != "" ?
+                                                                            <>
+                                                                                <button type="button" class="btn btn-primary btn-xs waves-effect" 
+                                                                                    data-bs-container="body" 
+                                                                                    data-bs-toggle="popover" 
+                                                                                    data-bs-placement="bottom" 
+                                                                                    title="Questionnaries"
+                                                                                    data-bs-content={questions}
+                                                                                    data-bs-trigger="focus"  style={styles.showbtn}>Show</button>
+                                                                            </>
+                                                                        :   <>No Questions</>
+                                                                        } 
+															        </td>
+															        <th>Closed Without Visit Remarks</th>
+															        <td>{task_data.task_remarks}</td>
+															        {task_data.task_status == cancelled ?
+                                                                        <>
+															                <th>Cancelled date time</th>
+                                                                            <td>{task_data.task_cancelled_on}</td>
+                                                                        </>
+                                                                     :
+                                                                        <></>
+                                                                    }
+														
+														        </tr>
                                                         </>
                                                         
                                                     :
@@ -614,12 +753,159 @@ const Summary = (props) => {
 
                                             }
 
+                                            {
+                                                test_data ?
+                                                    test_data.testreport_l3_remarks != "" && test_data.testreport_l3_remarks != null?
+                                                        <>
+                                                            <tr>
+															    <th style={{textAlign:"center"}} colspan="4"><strong>L3 Level Analysis</strong></th>
+														    </tr>
+														    <tr>
+															    <th>L3 level remarks</th>
+															    <td>{test_data.testreport_l3_remarks}</td>
+															    <th>Suspected Site ID </th>
+															    <td>{test_data.testreport_l3_suspected_kl_id}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Zone</th>
+															    <td>{test_data.testreport_zonename}</td>
+															    <th>Issue Technology</th>
+															    <td>{test_data.testreport_l3_sl_issue_technology}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Emp ID</th>
+															    <td>{analysed_by_l3?analysed_by_l3.user_userid:""}</td>
+															    <th>Emp Name</th>
+															    <td>{analysed_by_l3?analysed_by_l3.user_name:""}</td>
+														    </tr>
+                                                            <tr>
+															    {/* <th>Assigned date time</th>
+															    <td><?= $l3_sl_submitted_on ?></td> */}
+															    <th>Analysis date time</th>
+															    <td>{task_data.task_fwdtoanalyst_on}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Analysis TAT</th>
+															    <td>{getAnalysisTAT(test_data.testreport_l3_sl_submitted_on, task_data.task_fwdtoanalyst_on)}</td>
+														    </tr>
+                                                        </>
+                                                    :<></>
+                                                :<></>
+                                            }
+                                            {
+                                                test_data ?
+                                                    test_data.testreport_sl_remarks != "" ?
+                                                        <>
+                                                            <tr>
+															    <th style={{textAlign:"center"}} colspan="4"><strong>RF Level Analysis</strong></th>
+														    </tr>
+                                                            <tr>
+															    <th>RF level remarks</th>
+															    <td>{test_data.testreport_sl_remarks}</td>
+															    <th>Suspected Site ID </th>
+															    <td>{test_data.testreport_suspected_kl_id}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Zone</th>
+															    <td>{test_data.testreport_zonename}</td>
+															    <th>Issue Technology</th>
+															    <td>{test_data.testreport_sl_issue_technology}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Emp ID</th>
+															    <td>{analysed_by_rf?analysed_by_rf.user_userid:""}</td>
+															    <th>Emp Name</th>
+															    <td>{analysed_by_rf?analysed_by_rf.user_name:""}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Assigned date time</th>
+															    <td>{test_data.testreport_sl_submitted_on}</td>
+															    <th>Analysis date time</th>
+															    <td>{test_data.testreport_sl_submitted_on}</td>
+															
+														    </tr>
+														    <tr>
+															    <th>Analysis TAT</th>
+															    <td>{test_data.testreport_sl_tat}</td>
+														    </tr>
+                                                            {/* <?php
+														if(!empty($test_analysed_files))
+														{
+														?>
+															<tr>
+																<th>Second level analysed files</th>
+																<td colspan="3">
+																	<?php 
+																		$i = 0;
+																		foreach($test_analysed_files as $key => $image)
+																		{
+																			if(!empty($image->file_path))
+																			{    
+																				$path = base_url().$image->file_path;
+																	?>
+																	<a class="btn btn-sm btn-warning" href="<?= $path ?>"><i class="material-icons">file_download</i> File <?php echo $i+1; ?></a>
+																	<?php
+																			}
+																			$i++;
+																		}
+																	?>
+																</td>
+															</tr>
+														<?php 
+														} */}
+                                                        </>
+                                                    :<></>
+                                                :<></>
+                                            }
+                                            {
+                                                test_data ?
+                                                    test_data.testreport_tl_remarks != ""?
+                                                        <>
+                                                            <tr>
+															    <th style={{textAlign:"center"}} colspan="4"><strong>Third Level Analysis (Dept Analysis)</strong></th>
+														    </tr>
+                                                            <tr>
+															    <th>Third level remarks</th>
+															    <td>{test_data.testreport_tl_remarks}</td>
+															    <th>Issue Site ID </th>
+															    <td>{test_data.testreport_issue_kl_id}</td>
+														    </tr>
+                                                        
+                                                            <tr>
+															    <th>Emp ID</th>
+															    <td>{analysed_by_team?analysed_by_team.user_userid:""}</td>
+															    <th>Emp Name</th>
+															    <td>{analysed_by_team?analysed_by_team.user_name:""}</td>
+														    </tr>
+                                                            <tr>
+															    <th>Assigned date time</th>
+															    <td>{task_data.task_fwdtoteam_on}</td>
+															    <th>Analysis date time</th>
+															    <td>{test_data.testreport_tl_submitted_on}</td>
+															
+														    </tr>
+														    <tr>
+															    <th>Analysis TAT</th>
+															    <td>{test_data.testreport_tl_tat}</td>
+														    </tr>
+                                                        </>
+                                                    :<></>
+                                                :<></>
+                                            }
+
                                         </tbody>
                                     </table>
                         
                         </div>
         </Col>
     )
+}
+
+const styles = {
+    showbtn:{
+        fontSize: "15px",
+        padding: "3px 4px 0px 4px"
+    }
 }
 
 export default Summary
