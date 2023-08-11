@@ -146,7 +146,7 @@ const Four_g = (props) => {
 
             let color = d >= -85 ? 'green' : d <-85 && d >= -99 ? 'yellow' : d < -99 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -189,12 +189,26 @@ const Four_g = (props) => {
         xaxis: {
             title:{
                 text:"Seconds",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         yaxis: {
             title:{
                 text:"RSRP",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         fill: {
             type: 'gradient',
@@ -222,7 +236,7 @@ const Four_g = (props) => {
 
             let color = d >= -8 ? 'green' : d < -8 && d >= -14 ? 'yellow' : d < -14 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -265,12 +279,26 @@ const Four_g = (props) => {
         xaxis: {
             title:{
                 text:"Seconds",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         yaxis: {
             title:{
                 text:"RSRQ",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         fill: {
             type: 'gradient',
@@ -299,7 +327,7 @@ const Four_g = (props) => {
 
             let color = d >= 20 ? 'green' : d > 5 && d < 20 ? 'yellow' : d > -20 && d <= 5 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -342,12 +370,26 @@ const Four_g = (props) => {
         xaxis: {
             title:{
                 text:"Seconds",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         yaxis: {
             title:{
                 text:"SINR",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         fill: {
             type: 'gradient',
@@ -400,10 +442,11 @@ const Four_g = (props) => {
                                     <th width="96" valign="top" class="graph-table">Level High</th>
                                     <th width="96" valign="top" class="graph-table">Level Low</th>
                                     <th width="96" valign="top" class="graph-table">Level Avg</th>
-                                    <th width="96" valign="top" class="graph-table">LAC</th>
-                                    <th width="96" valign="top" class="graph-table">BSIC</th>
+                                    <th width="96" valign="top" class="graph-table">TAC</th>
+                                    <th width="96" valign="top" class="graph-table">PCI</th>
                                     <th width="96" valign="top" class="graph-table">Band</th>
                                     <th width="96" valign="top" class="graph-table">ARFCN</th>
+                                    <th width="96" valign="top" class="graph-table">CQI</th>
 
                                 </tr>
                             </thead>
@@ -418,10 +461,12 @@ const Four_g = (props) => {
                                                 <td>{Math.max(...cid_rsrp_data[item])}</td>
                                                 <td>{Math.min(...cid_rsrp_data[item])}</td>
                                                 <td>{Math.round(cid_rsrp_data[item].reduce((a,b)=>a+b)/cid_rsrp_data[item].length)}</td>
-                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].lac:""}</td>
-                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].bsic:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].tac:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].pci:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].band:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].arfcn:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].cqi:""}</td>
+
 
                                             </tr>
                                         ))
@@ -502,10 +547,11 @@ const Four_g = (props) => {
                                     <th width="96" valign="top" class="graph-table">Level High</th>
                                     <th width="96" valign="top" class="graph-table">Level Low</th>
                                     <th width="96" valign="top" class="graph-table">Level Avg</th>
-                                    <th width="96" valign="top" class="graph-table">LAC</th>
-                                    <th width="96" valign="top" class="graph-table">BSIC</th>
+                                    <th width="96" valign="top" class="graph-table">TAC</th>
+                                    <th width="96" valign="top" class="graph-table">PCI</th>
                                     <th width="96" valign="top" class="graph-table">Band</th>
                                     <th width="96" valign="top" class="graph-table">ARFCN</th>
+                                    <th width="96" valign="top" class="graph-table">CQI</th>
 
                                 </tr>
                             </thead>
@@ -520,10 +566,11 @@ const Four_g = (props) => {
                                                 <td>{Math.max(...cid_rsrq_data[item])}</td>
                                                 <td>{Math.min(...cid_rsrq_data[item])}</td>
                                                 <td>{Math.round(cid_rsrq_data[item].reduce((a,b)=>a+b)/cid_rsrq_data[item].length)}</td>
-                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].lac:""}</td>
-                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].bsic:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].tac:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].pci:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].band:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].arfcn:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].cqi:""}</td>
 
                                             </tr>
                                         ))
@@ -562,10 +609,11 @@ const Four_g = (props) => {
                                     <th width="96" valign="top" class="graph-table">Level High</th>
                                     <th width="96" valign="top" class="graph-table">Level Low</th>
                                     <th width="96" valign="top" class="graph-table">Level Avg</th>
-                                    <th width="96" valign="top" class="graph-table">LAC</th>
-                                    <th width="96" valign="top" class="graph-table">BSIC</th>
+                                    <th width="96" valign="top" class="graph-table">TAC</th>
+                                    <th width="96" valign="top" class="graph-table">PCI</th>
                                     <th width="96" valign="top" class="graph-table">Band</th>
                                     <th width="96" valign="top" class="graph-table">ARFCN</th>
+                                    <th width="96" valign="top" class="graph-table">CQI</th>
 
                                 </tr>
                             </thead>
@@ -580,11 +628,11 @@ const Four_g = (props) => {
                                                 <td>{Math.max(...cid_sinr_data[item])}</td>
                                                 <td>{Math.min(...cid_sinr_data[item])}</td>
                                                 <td>{Math.round(cid_sinr_data[item].reduce((a,b)=>a+b)/cid_sinr_data[item].length)}</td>
-                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].lac:""}</td>
-                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].bsic:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].tac:""}</td>
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].pci:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].band:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].arfcn:""}</td>
-
+                                                <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].cqi:""}</td>
                                             </tr>
                                         ))
                                     : 

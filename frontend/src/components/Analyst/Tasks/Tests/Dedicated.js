@@ -49,7 +49,7 @@ const Dedicated = (props) => {
         )
     }else{
         return (
-            <><p>Dedicated</p></>
+            <><p>No Data Found!</p></>
         )
     }
 

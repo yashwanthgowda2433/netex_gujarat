@@ -110,7 +110,7 @@ const Three_g = (props) => {
 
             let color = d >= -90 ? 'green' : d<-90 && d >= -100 ? 'yellow' : d < -95 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -153,12 +153,26 @@ const Three_g = (props) => {
         xaxis: {
             title:{
                 text:"Seconds",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         yaxis: {
             title:{
                 text:"RSCP",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         fill: {
             type: 'gradient',
@@ -186,7 +200,7 @@ const Three_g = (props) => {
 
             let color = d >= -14 ? 'green' : d < -14 && d >= -16 ? 'yellow' : d < -16 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -229,12 +243,26 @@ const Three_g = (props) => {
         xaxis: {
             title:{
                 text:"Seconds",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         yaxis: {
             title:{
                 text:"Ec/NO",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         fill: {
             type: 'gradient',
@@ -288,7 +316,8 @@ const Three_g = (props) => {
                                     <th width="96" valign="top" class="graph-table">Level Low</th>
                                     <th width="96" valign="top" class="graph-table">Level Avg</th>
                                     <th width="96" valign="top" class="graph-table">LAC</th>
-                                    <th width="96" valign="top" class="graph-table">BSIC</th>
+                                    <th width="96" valign="top" class="graph-table">RNC</th>
+                                    <th width="96" valign="top" class="graph-table">PSC</th>
                                     <th width="96" valign="top" class="graph-table">Band</th>
                                     <th width="96" valign="top" class="graph-table">ARFCN</th>
 
@@ -306,7 +335,8 @@ const Three_g = (props) => {
                                                 <td>{Math.min(...cid_rscp_data[item])}</td>
                                                 <td>{Math.round(cid_rscp_data[item].reduce((a,b)=>a+b)/cid_rscp_data[item].length)}</td>
                                                 <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].lac:""}</td>
-                                                <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].bsic:""}</td>
+                                                <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].rnc:""}</td>
+                                                <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].psc:""}</td>
                                                 <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].band:""}</td>
                                                 <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].arfcn:""}</td>
 
@@ -390,7 +420,8 @@ const Three_g = (props) => {
                                     <th width="96" valign="top" class="graph-table">Level Low</th>
                                     <th width="96" valign="top" class="graph-table">Level Avg</th>
                                     <th width="96" valign="top" class="graph-table">LAC</th>
-                                    <th width="96" valign="top" class="graph-table">BSIC</th>
+                                    <th width="96" valign="top" class="graph-table">RNC</th>
+                                    <th width="96" valign="top" class="graph-table">PSC</th>
                                     <th width="96" valign="top" class="graph-table">Band</th>
                                     <th width="96" valign="top" class="graph-table">ARFCN</th>
 
@@ -408,7 +439,8 @@ const Three_g = (props) => {
                                                 <td>{Math.min(...cid_ec_io_data[item])}</td>
                                                 <td>{Math.round(cid_ec_io_data[item].reduce((a,b)=>a+b)/cid_ec_io_data[item].length)}</td>
                                                 <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].lac:""}</td>
-                                                <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].bsic:""}</td>
+                                                <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].rnc:""}</td>
+                                                <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].psc:""}</td>
                                                 <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].band:""}</td>
                                                 <td>{cid_rscp_objdata[item]?cid_rscp_objdata[item][0].arfcn:""}</td>
 

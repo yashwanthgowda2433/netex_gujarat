@@ -10,6 +10,10 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 // classnames
 import classnames from "classnames"
 
+// test import
+import Dedicated from "./Tests/Dedicated";
+import Idle from "./Tests/Idle";
+import Ookla from "./Tests/Ookla";
 
 const Outdoor = (props) => {
     const [activeTab, setactiveTab] = useState("2")
@@ -20,12 +24,13 @@ const Outdoor = (props) => {
     const propsData = useLocation();
     const task_data = propsData.state;
     const test_data = props.data;
-
-    const outdoor_data = test_data?test_data.testreport_outdoor:"";
+    const outdoor_data = test_data?test_data.testreport_outdoor?JSON.parse(test_data.testreport_outdoor):"":"";
     const dedidcated = outdoor_data?outdoor_data.dedicated:"";
     const idle = outdoor_data?outdoor_data.idle:"";
     const ookla = outdoor_data?outdoor_data.dataResult:"";
 
+    console.log("+========+========+")
+    console.log(task_data)
     console.log(test_data)
 
     function toggle(tab) {
@@ -58,9 +63,9 @@ const Outdoor = (props) => {
                 </NavItem>
             </Nav>
             <TabContent activeTab={activeTab} className="p-3 text-muted">
-                <TabPane tabId="2"><Row>Dedicated</Row></TabPane>
-                <TabPane tabId="3"><Row>Idle</Row></TabPane>
-                <TabPane tabId="4"><Row>OOkla</Row></TabPane>
+                <TabPane tabId="2"><Row><Dedicated data={dedidcated}/></Row></TabPane>
+                <TabPane tabId="3"><Row><Idle data={idle}/></Row></TabPane>
+                <TabPane tabId="4"><Row><Ookla data={ookla} /></Row></TabPane>
             </TabContent>
         </Col>
     )

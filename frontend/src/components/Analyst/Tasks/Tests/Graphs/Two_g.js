@@ -115,7 +115,7 @@ const Two_g = (props) => {
 
             let color = d >= -85 ? 'green' : d<-85 && d >= -95 ? 'yellow' : d < -95 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -161,8 +161,9 @@ const Two_g = (props) => {
             },
             axisBorder: {
                 show:true,
-                color:'#000',
-            }
+                color:'#969494',
+               
+            },
         },
         yaxis: {
             title:{
@@ -170,9 +171,19 @@ const Two_g = (props) => {
             },
             axisBorder: {
                 show:true,
-                color:'#000',
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
             },
-            tickAmount: 7
+            tickAmount: 6
+
+        },
+        annotations: {
+            yaxis:[
+                {
+                    borderColor:'#000'
+                }]
+            
         },
         fill: {
             type: 'gradient',
@@ -201,7 +212,7 @@ const Two_g = (props) => {
 
             let color = d >= -0 && d <= 4 ? 'green' : d >= 5 && d <= 7 ? 'yellow' : d > 7 ? 'red' :"";
             return {
-                offset: idx/datas.length*98,
+                offset: idx/datas.length*105,
                 color,
                 opacity:1
             }
@@ -244,12 +255,24 @@ const Two_g = (props) => {
         xaxis: {
             title:{
                 text:"Seconds",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+               
+            },
         },
         yaxis: {
             title:{
                 text:"RX Qual",
-            }
+            },
+            axisBorder: {
+                show:true,
+                color:'#969494',
+                offsetX:1,
+                offsetY:1,
+            },
+            tickAmount: 6
         },
         fill: {
             type: 'gradient',
@@ -272,6 +295,10 @@ const Two_g = (props) => {
                         .apexcharts-legend{\
                             top:20px!important;\
                             justify-content:center!important;\
+                        }\
+                        .apexcharts-gridline {\
+                            stroke-width: 1px;\
+                            stroke: #cbc4c4;\
                         }\
             "}</style>
                 <CardBody>

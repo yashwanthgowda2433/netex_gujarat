@@ -12,6 +12,8 @@ import classnames from "classnames"
 
 // test import
 import Dedicated from "./Tests/Dedicated";
+import Idle from "./Tests/Idle";
+import Ookla from "./Tests/Ookla";
 
 const Indoor = (props) => {
     const [activeTab, setactiveTab] = useState("2")
@@ -23,6 +25,7 @@ const Indoor = (props) => {
     const task_data = propsData.state;
     const test_data = props.data;
     const indoor_data = test_data?test_data.testreport_indoor?JSON.parse(test_data.testreport_indoor):"":"";
+    const floor_keys = Object.keys(indoor_data);
     const dedidcated = indoor_data?indoor_data.dedicated:"";
     const idle = indoor_data?indoor_data.idle:"";
     const ookla = indoor_data?indoor_data.dataResult:"";
@@ -45,8 +48,16 @@ const Indoor = (props) => {
                         <span className="d-block d-sm-none"><i className="fas fa-home"></i></span>
                         <span className="font-size-14 mt-2 fw-semibold d-none d-sm-block">Floors&nbsp;&nbsp;
                             <select name="floors">
-                                <option>1</option>
-                                <option>2</option>
+                                { floor_keys.length > 0 ?
+                                    floor_keys.map((item, index)=>(
+                                        item != "dedicated" && item != "idle" && item != "dataResult" && item != "speed_test_mode"?
+                                           <option>{item}</option>
+                                        :  <></>
+                                    ))
+                                :
+                                    <></>
+                                }
+                                
                             </select>
                         </span>
                     </NavLink>
@@ -72,8 +83,8 @@ const Indoor = (props) => {
             </Nav>
             <TabContent activeTab={activeTab} className="p-3 text-muted">
                 <TabPane tabId="2"><Row><Dedicated data={dedidcated}/></Row></TabPane>
-                <TabPane tabId="3"><Row>Idle</Row></TabPane>
-                <TabPane tabId="4"><Row>OOkla</Row></TabPane>
+                <TabPane tabId="3"><Row><Idle data={idle}/></Row></TabPane>
+                <TabPane tabId="4"><Row><Ookla data={ookla} /></Row></TabPane>
             </TabContent>
         </Col>
     )
