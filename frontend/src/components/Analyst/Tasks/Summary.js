@@ -22,6 +22,8 @@ import {
     twog_rx_lev_good_terrace, twog_rx_lev_bad_terrace, twog_rx_lev_poor_terrace, twog_rx_qual_good_terrace, twog_rx_qual_bad_terrace, twog_rx_qual_poor_terrace, threeg_rscp_good_terrace, threeg_rscp_bad_terrace, threeg_rscp_poor_terrace, threeg_ec_io_good_terrace, threeg_ec_io_bad_terrace, threeg_ec_io_poor_terrace, fourg_rsrp_good_terrace, fourg_rsrp_bad_terrace, fourg_rsrp_poor_terrace, fourg_rsrq_good_terrace, fourg_rsrq_bad_terrace, fourg_rsrq_poor_terrace, fourg_sinr_good_terrace, fourg_sinr_bad_terrace, fourg_sinr_poor_terrace
 } from "../../../global_variables/test_report_variables";
 
+//css
+import '../../../assets/css/style.css';
 
 import React, { useEffect, useState } from "react"
 import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress } from "reactstrap"
@@ -60,6 +62,21 @@ const Summary = (props) => {
     },[user])
 
     
+    // date Converison
+    const convertdate = (olddate) => {
+        var created_date = new Date(olddate);
+
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = created_date.getFullYear();
+        var month = months[created_date.getMonth()];
+        var date = created_date.getDate();
+        var hour = created_date.getHours();
+        var min = created_date.getMinutes();
+        var sec = created_date.getSeconds();
+        var time = hour + ':' + min + ':' + sec +' '+month + ' ' + date + ' ' + year  ;    // final date with time, you can use this according your requirement
+
+        return time;
+    }
 
     const getTaskStatus = (status) => {
 
@@ -895,8 +912,206 @@ const Summary = (props) => {
 
                                         </tbody>
                                     </table>
+
+
+                                    
                         
                         </div>
+
+                        <div class="card mt-5">
+				            <div class="panel">
+					            <div class="panel-body">
+					                <div class="header">
+						                <h4>Report images </h4>
+						            </div>
+									{/* <?php
+                                    if(!empty($test_report_images1))
+                                    {
+								        $images = explode(",",$test_report_images1);
+                                        for ($xi = 0; $xi <= count($images)-1; $xi++) {
+							            ?>
+                                            <div class="col-sm-3 col-sm-3 col-md-3">
+                                                <div class="thumbnail-box">
+					              
+					                                <img src=<?php echo stripslashes(str_replace(array('[',']') , ''  ,$images[$xi])) ?> alt="" style="width:250px;height:300px"/>
+                                                </div>
+                                            </div>
+                                        <?php
+								        }    
+                                
+                                    }
+                                    ?> */}
+					            </div>
+				            </div>
+			            </div>
+
+                        <div class="card mt-5">
+				            <div class="panel">
+					            <div class="panel-body">
+						            <div class="col-lg-6 col-sm-6 col-md-6 timelinebox">
+							            <div class="timeline">
+								            <div class="received containertimeline right">
+									            <div class="timeline-content">
+									                <h5>{convertdate(task_data.task_createdon)}
+									   <span class="label label-danger">Received</span></h5>
+									</div>
+								</div>
+								<div class="containertimeline right">
+									<div class="timeline-content">
+									  <h5>{convertdate(task_data.task_createdon)}
+									  <span class="label label-info">Assigned</span></h5>
+									</div>
+								</div>
+								{ 
+                                task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
+								
+									    task_data.task_withdrawn == withdrawn_yes ?
+									        <div class="containertimeline right">
+										        <div class="timeline-content">
+											        <h5>{convertdate(task_data.task_withdrawn_on)}
+											        <span class="label label-info">Withdrawn</span></h5>
+										        </div>
+									        </div>
+									    :<></>
+                                  : <>{
+                                
+									task_data.task_assigned_on && task_data.task_assigned_on != ''?
+                                        
+									    <div class="containertimeline right">
+										        <div class="timeline-content">
+											        <h5>{convertdate(task_data.task_assigned_on)}
+											        <span class="label label-info">Reassigned</span></h5>
+										        </div>
+									    </div>
+									:<></>	
+                                    }
+									{/* if(is_array($attempts) && !empty($attempts)){
+										foreach($attempts as $attempt){ 
+										$datetime1 = new DateTime($attempt['call_starttime']);
+										$datetime2 = new DateTime($attempt['call_endtime']);
+										$interval = $datetime1->diff($datetime2);
+										?>														
+										<div class="containertimeline right">															
+											<div class="timeline-content">
+												<h5><?php echo date("h:i:s a F d Y", strtotime($attempt['call_datetime']));?>																
+												<span class="label label-info"><?= $attempt['call_name'] ?>(<?= $interval->format('%H:%I:%S') ?>)</span></h5>
+											</div>
+										</div>
+										<?php														
+										$i++;													
+										}
+									}?> */}
+									<div class="containertimeline right">
+										<div class="timeline-content">
+											<h5>{convertdate(task_data.task_end_datetime)}
+											<span class="label label-info">Started</span></h5>
+										</div>
+									</div>
+									{ 
+                                        task_data.task_status == cancelled ?
+									        <div class="received containertimeline right">
+										        <div class="timeline-content">
+											        <h5>{convertdate(task_data.task_cancelled_on)}
+											       <span class="label label-warning">Canceled</span></h5>
+										        </div>
+									        </div>
+									    :
+                                            task_data.task_status == closed ?
+									            <div class="closed containertimeline right">
+										            <div class="timeline-content">
+											            <h5>{convertdate(test_data.testreport_createdon)}
+											            <span class="label label-success">Closed without Visit</span></h5>
+										            </div>
+									            </div>
+									        :
+									            <div class="closed containertimeline right">
+										            <div class="timeline-content">
+											            <h5>{convertdate(test_data.testreport_createdon)}
+											            <span class="label label-success">Visit Completed</span></h5>
+										            </div>
+									            </div>
+                                     }
+								    </>
+                                }
+								
+                                {
+                                    test_data.testreport_analyzed_status == analyzed_yes ?
+								        <div class="closed containertimeline right">
+									        <div class="timeline-content">
+										        <h5>{convertdate(test_data.testreport_sl_submitted_on)}
+										        <span class="label label-success">RF Analysis Completed</span></h5>
+									        </div>
+								        </div>
+								    :<></>
+                                }
+								{  task_data.testreport_id && task_data.testreport_is_fwz == sla_forward_to_zone_yes ?
+                                    <>
+								        <div class="containertimeline right">
+									        <div class="timeline-content">
+										        <h5>{convertdate(test_data.testreport_sl_submitted_on)}
+										        <span class="label label-info">Forward to Team</span></h5>
+									        </div>
+								        </div>
+                                    
+								    {  test_data.testreport_tl_submitted_on && test_data.testreport_tl_submitted_on != '' ? 
+								        <div class="closed containertimeline right">
+									        <div class="timeline-content">
+										        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+										        <span class="label label-success">Revert from Team</span></h5>
+									        </div>
+								        </div>
+                                    :<></>
+                                    }</>
+                                    :<></>
+                                }
+								{
+                                    task_data.task_status == closedbyl2_executive ?
+								        <div class="closed containertimeline right">
+									        <div class="timeline-content">
+										        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+										        <span class="label label-success">Directly Closed By L2 Executive</span></h5>
+									        </div>
+								        </div>
+                                    :
+                                        task_data.task_status == resolved_and_closed ?
+								            <div class="closed containertimeline right">
+									            <div class="timeline-content">
+										            <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+										            <span class="label label-success">Resolved and Closed</span></h5>
+									            </div>
+								            </div>
+								        :
+                                            task_data.task_status == not_resolved_and_closed ?
+								                <div class="closed containertimeline right">
+									                <div class="timeline-content">
+										                <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+										                <span class="label label-success">Not Resolved and Closed</span></h5>
+									                </div>
+								                </div>
+                                            :<></>
+                                }
+							</div>
+						</div>
+						{task_data.task_is_fieldvisit == fieldvisit_yes ?
+                            <>
+						        <div class="col-lg-3 col-sm-3 col-md-3">
+							        <div id="mapimg">
+								        <img src="https://vilkarnataka.telecomone.in/assets/images/map.png" id="mapmodal" class="mapbutton"/>
+							        </div>
+						        </div>
+						        <div class="col-lg-3 col-sm-3 col-md-3">
+							        <div>
+								        {/* <img src="data:image/png;base64,<?= $sign_base_64 ?>" class="img-thumbnail" style="margin-top: 13px;    margin-left: -5px; width: 150px; max-height:150px;" />
+								        <p><strong>Cell ID : </strong><?= $sign_cell_id ?></p> */}
+							        </div>
+						        </div>
+                            </>
+                        :
+                            <></>
+                        }
+					</div>
+				</div>
+			</div>
         </Col>
     )
 }
