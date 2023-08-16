@@ -29,9 +29,9 @@ const Balcony = (props) => {
     const idle = balcony_data?balcony_data.idle:"";
     const ookla = balcony_data?balcony_data.dataResult:"";
 
-    console.log("+========+========+")
-    console.log(task_data)
-    console.log(test_data)
+    //console.log("+========+========+")
+    //console.log(task_data)
+    //console.log(test_data)
 
     function toggle(tab) {
         if (activeTab !== tab) {

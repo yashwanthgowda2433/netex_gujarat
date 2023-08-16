@@ -82,7 +82,7 @@ const Three_g = (props) => {
                 rx_count.push(i+1);
                 ec_io_data.push(parseInt(data[i].ec_io))
             }
-            console.log("++++++[[[[[[[]]]]]]=");
+            //console.log("++++++[[[[[[[]]]]]]=");
 
             
             set_cid_rscp_objdata(c_id_obj_rscpobj);
@@ -101,12 +101,12 @@ const Three_g = (props) => {
     // RX LEVEL GRAPH START
 
     const generateColorrscp = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= -90 ? 'green' : d<-90 && d >= -100 ? 'yellow' : d < -95 ? 'red' :"";
             return {
@@ -191,12 +191,12 @@ const Three_g = (props) => {
     // RX QUAL GRAPH START
     
     const generateColorec_io = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= -14 ? 'green' : d < -14 && d >= -16 ? 'yellow' : d < -16 ? 'red' :"";
             return {

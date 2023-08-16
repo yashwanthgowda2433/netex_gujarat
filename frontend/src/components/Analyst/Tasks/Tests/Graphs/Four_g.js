@@ -112,7 +112,7 @@ const Four_g = (props) => {
                 // }
 
             }
-            console.log("++++++[[[[[[[]]]]]]=");
+            //console.log("++++++[[[[[[[]]]]]]=");
 
             
             set_cid_rsrp_objdata(c_id_obj_rsrpobj);
@@ -137,12 +137,12 @@ const Four_g = (props) => {
     // RX LEVEL GRAPH START
 
     const generateColorrsrp = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= -85 ? 'green' : d <-85 && d >= -99 ? 'yellow' : d < -99 ? 'red' :"";
             return {
@@ -227,12 +227,12 @@ const Four_g = (props) => {
     // RX QUAL GRAPH START
     
     const generateColorrsrq = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= -8 ? 'green' : d < -8 && d >= -14 ? 'yellow' : d < -14 ? 'red' :"";
             return {
@@ -318,12 +318,12 @@ const Four_g = (props) => {
     // SINR GRAPH START
     
     const generateColorsinr = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= 20 ? 'green' : d > 5 && d < 20 ? 'yellow' : d > -20 && d <= 5 ? 'red' :"";
             return {

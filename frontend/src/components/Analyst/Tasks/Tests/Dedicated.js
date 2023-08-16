@@ -27,7 +27,7 @@ const Dedicated = (props) => {
     const data = props.data;
 
     if(data){
-        console.log("--=-----=--")
+        //console.log("--=-----=--")
         const json_data = JSON.parse(data);
         const two_g = json_data.two_g;
         const neighbours = json_data.neighbours_list;

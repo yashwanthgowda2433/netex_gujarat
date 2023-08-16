@@ -32,16 +32,32 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 
 import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js';
 
+import Flatpickr from "react-flatpickr";
+
+
 const View = () => {
     const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [infodrp_up11, setInfodrp_up11] = useState(false)
+    const [loading, setLoading] = useState(true);
+    const [infodrp_up11, setInfodrp_up11] = useState(false)
+
+    const arr_filter1  = {'prepending':'PreOptimisation Pending','postpending':'PostOptimisation Pending','progress':'Optimisation Inprogress','fwd':'Foward','analysed':'Reverted from RF','closed':'Closed without FV','preopti':'Preoptimization','postopti':'Postoptimization'};							   
+	const arr2_filter = ['prepending','postpending','progress','fwd','analysed','closed','preopti','postopti'];
+
+    const arr_date_type  = {'visit':'visit uploaded date','assign':'Assign to field date'};							   
+    const arr2_date_type = ['visit','assign'];
 
     const {user} = useAuthContext()
     const propsData = useLocation();
     const [pageStart,setPageStart] = useState(0);
     const [pageLimit,setPageLimit] = useState(10);
     const [totalSize, settotalSize] = useState(0);
+    const [status_filter, set_status_filter] = useState("");
+    const [date_type, set_date_type] = useState("");
+    const [from_date, set_from_date] = useState("");
+    const [to_date, set_to_date] = useState("");
+    const [search_task, set_search_task] = useState("");
+
+
     // const data = propsData.state;
    
 
@@ -445,6 +461,72 @@ const View = () => {
                                                         <div>Loading...</div>
                                                   ) : (
                                                   <div>
+                                                    <Card>
+                                                        <CardBody>
+                                                            <Row>
+                                                                <Col lg={2}>
+                                                                    <select onChange={(event)=>{set_status_filter(event.target.value)}} className="form-select">
+                                                                        <option value="">All</option>
+                                                                        {arr2_filter.map((item, index)=> (
+                                                                            item == status_filter ? 
+                                                                                <option selected value={item}>{arr_filter1[item]}</option>
+                                                                            :
+                                                                                <option value={item}>{arr_filter1[item]}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </Col>
+
+                                                                <Col lg={2}>
+                                                                    <select onChange={(event)=>{set_date_type(event.target.value)}} className="form-select">
+                                                                        <option value="">Select date type</option>
+                                                                        {arr2_date_type.map((item, index)=> (
+                                                                            item == date_type ? 
+                                                                                <option selected value={item}>{arr_date_type[item]}</option>
+                                                                            :
+                                                                                <option value={item}>{arr_date_type[item]}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </Col>
+
+                                                                <Col lg={2}>
+                                                                    <Flatpickr
+                                                                        name="from_date"
+                                                                        className="form-control d-block"
+                                                                        placeholder="Task from date"
+                                                                        onChange={(event)=>{set_from_date(event.value)}}
+                                                                        options={{
+                                                                            altInput: true,
+                                                                            altFormat: "F j, Y",
+                                                                            dateFormat: "Y-m-d",
+                                                                        }}
+                                                                    />
+                                                                </Col>
+
+                                                                <Col lg={2}>
+                                                                    <Flatpickr
+                                                                        name="to_date"
+                                                                        className="form-control d-block"
+                                                                        placeholder="Task to date"
+                                                                        onChange={(event)=>{set_to_date(event.value)}}
+                                                                        options={{
+                                                                            altInput: true,
+                                                                            altFormat: "F j, Y",
+                                                                            dateFormat: "Y-m-d",
+                                                                        }}
+                                                                    />
+                                                                </Col>
+
+                                                                <Col lg={2}>
+                                                                    <input type="text" name="search_task" class="form-control" 
+                                                                        onChange={(event)=>{set_search_task(event.value)}}placeholder="SR No., Emp ID, Name..."/>
+                                                                </Col>
+
+                                                                <Col lg={2}>
+                                                                    <button type='button' className='btn btn-primary'>Search</button>
+                                                                </Col>
+                                                            </Row>
+                                                        </CardBody>
+                                                    </Card>
                                                     <select className="mb-3" name="page_size" onChange={(e)=>loadChange(e.target.value)}>
                                                         <option>10</option>
                                                         <option>25</option>

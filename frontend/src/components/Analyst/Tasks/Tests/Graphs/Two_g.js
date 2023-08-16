@@ -26,9 +26,9 @@ const Two_g = (props) => {
     const neighbours_list = props.neighbours;
     const neighbours = neighbours_list?neighbours_list.data:"";
 
-    console.log("_+_+_+__+_+++___");
+    //console.log("_+_+_+__+_+++___");
 
-    console.log(neighbours);
+    //console.log(neighbours);
 
     const {user} = useAuthContext()
 
@@ -86,10 +86,10 @@ const Two_g = (props) => {
                 rx_count.push(i+1);
                 rx_qual_data.push(parseInt(data[i].rx_qual))
             }
-            console.log("++++++[[[[[[[]]]]]]=");
+            //console.log("++++++[[[[[[[]]]]]]=");
 
-            console.log(c_id_obj_rxlvl);
-            console.log(c_id_obj_rxqal);
+            //console.log(c_id_obj_rxlvl);
+            //console.log(c_id_obj_rxqal);
             set_cid_rxlevel_objdata(c_id_obj_rxlvlobj);
             set_cid_rxqual_objdata(c_id_obj_rxlvlobj);
 
@@ -106,12 +106,12 @@ const Two_g = (props) => {
     // RX LEVEL GRAPH START
 
     const generateColorRXlevel = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= -85 ? 'green' : d<-85 && d >= -95 ? 'yellow' : d < -95 ? 'red' :"";
             return {
@@ -203,12 +203,12 @@ const Two_g = (props) => {
     // RX QUAL GRAPH START
     
     const generateColorRXqual = (datas) => {
-        console.log("zzzzzzzzzzz")
+        //console.log("zzzzzzzzzzz")
 
-        console.log(datas)
+        //console.log(datas)
         return datas.map((d,idx) => {
-            console.log(d)
-            console.log(idx)
+            //console.log(d)
+            //console.log(idx)
 
             let color = d >= -0 && d <= 4 ? 'green' : d >= 5 && d <= 7 ? 'yellow' : d > 7 ? 'red' :"";
             return {

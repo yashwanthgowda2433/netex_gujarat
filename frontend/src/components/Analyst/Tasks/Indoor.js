@@ -30,9 +30,9 @@ const Indoor = (props) => {
     const idle = indoor_data?indoor_data.idle:"";
     const ookla = indoor_data?indoor_data.dataResult:"";
 
-    console.log("+========+========+")
-    console.log(task_data)
-    console.log(test_data)
+    //console.log("+========+========+")
+    //console.log(task_data)
+    //console.log(test_data)
 
     function toggle(tab) {
         if (activeTab !== tab) {

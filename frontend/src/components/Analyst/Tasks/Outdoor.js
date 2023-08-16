@@ -29,9 +29,9 @@ const Outdoor = (props) => {
     const idle = outdoor_data?outdoor_data.idle:"";
     const ookla = outdoor_data?outdoor_data.dataResult:"";
 
-    console.log("+========+========+")
-    console.log(task_data)
-    console.log(test_data)
+    //console.log("+========+========+")
+    //console.log(task_data)
+    //console.log(test_data)
 
     function toggle(tab) {
         if (activeTab !== tab) {

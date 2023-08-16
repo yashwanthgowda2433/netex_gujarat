@@ -196,3 +196,18 @@ h5, .h5 {
         position: relative;
         border-radius: 6px;
     }
+
+  .contextMenu {
+      background-color: rgb(255, 255, 255);
+      border: 2pxsolid rgb(255, 255, 255);
+      border-radius: 3px;
+      box-shadow: rgb(0 0 0 / 30%) 0px 2px 6px;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 10px;
+      text-align: center;
+      color: #0d1f49;
+      display: none;
+      width: max-content;
+      margin: 1px;
+  }

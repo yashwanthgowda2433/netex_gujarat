@@ -51,8 +51,8 @@ const Summary = (props) => {
     const analysed_by_l3 = props.data.analysed_by_l3;
     const analysed_by_rf = props.data.analysed_by_rf;
 
-    //console.log(task_data)
-    //console.log(analysed_by_l2)
+    ////console.log(task_data)
+    ////console.log(analysed_by_l2)
 
     
 
@@ -178,7 +178,7 @@ const Summary = (props) => {
 
             return hoursDifference+":"+minutesDifference+":"+secondsDifference;
             
-            //console.log('difference = ' + 
+            ////console.log('difference = ' + 
             // daysDifference + ' day/s ' + 
             // hoursDifference + ' hour/s ' + 
             // minutesDifference + ' minute/s ' + 
@@ -224,10 +224,10 @@ const Summary = (props) => {
         if(task_data.task_questionnaires != null && task_data.task_questionnaires != "")
         {
             var Questions = JSON.parse(task_data.task_questionnaires);
-            //console.log(Questions)
+            ////console.log(Questions)
 
             Questions.forEach(function(question, sl){
-                //console.log(question)
+                ////console.log(question)
                 for(const [key, value] of Object.entries(question)){
                     questions += (sl+1)+". "+key+" : "+value+"  ";
                 }
@@ -247,7 +247,7 @@ const Summary = (props) => {
 				                        <thead>
 					                        <tr>
 						                        <td><strong>Progress </strong></td>
-						                        <td colspan="3">
+						                        <td colSpan="3">
 								
 									             {task_data.status == pending || task_data.status == addedbyl2_executive || task_data.status == approve_for_fieldvisit || task_data.status == withdraw || task_data.status == transfer ?
 							                        
@@ -339,7 +339,7 @@ const Summary = (props) => {
 				                        </thead>
 				                        <tbody>
                                             <tr>
-                                                <td colspan="4" style={{textAlign:"center"}}><strong>Customer Details</strong></td>
+                                                <td colSpan="4" style={{textAlign:"center"}}><strong>Customer Details</strong></td>
                                             </tr>
                                             <tr>
                                                 <td><strong>SR Number</strong></td>
@@ -398,7 +398,7 @@ const Summary = (props) => {
                                             </>
                                             }
                                             <tr>
-												<th style={{textAlign:"center"}} colspan="4"><strong>Issue Details</strong></th>
+												<th style={{textAlign:"center"}} colSpan="4"><strong>Issue Details</strong></th>
 											</tr>
                                             <tr>
                                                 <td><strong>Latitude</strong></td>
@@ -543,7 +543,7 @@ const Summary = (props) => {
                                                 test_data.testreport_fl_remarks != "null" && test_data.testreport_fl_remarks != "" ?
                                                 <>
                                                     <tr>
-                                                        <th style={{textAlign:"center"}} colspan="4"><strong>First Level Analysis</strong></th>
+                                                        <th style={{textAlign:"center"}} colSpan="4"><strong>First Level Analysis</strong></th>
                                                     </tr>
                                                     <tr>
 														<th>Emp ID</th>
@@ -590,7 +590,7 @@ const Summary = (props) => {
                                                 test_data.testreport_l2_remarks != null && test_data.testreport_l2_remarks != "" ?
                                                     <>
                                                         <tr>
-															<th style={{textAlign:"center"}} colspan="4"><strong>L2 Level Analysis</strong></th>
+															<th style={{textAlign:"center"}} colSpan="4"><strong>L2 Level Analysis</strong></th>
 														</tr>
 														<tr>
 															<th>L2 level remarks</th>
@@ -627,7 +627,7 @@ const Summary = (props) => {
                                                     task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
                                                         <>
                                                             <tr>
-															    <th style={{textAlign:"center"}} colspan="4"><strong> Field visit Details</strong></th>
+															    <th style={{textAlign:"center"}} colSpan="4"><strong> Field visit Details</strong></th>
 														    </tr>
                                                             <tr>
 															    <th>Appointment date/time</th>
@@ -775,7 +775,7 @@ const Summary = (props) => {
                                                     test_data.testreport_l3_remarks != "" && test_data.testreport_l3_remarks != null?
                                                         <>
                                                             <tr>
-															    <th style={{textAlign:"center"}} colspan="4"><strong>L3 Level Analysis</strong></th>
+															    <th style={{textAlign:"center"}} colSpan="4"><strong>L3 Level Analysis</strong></th>
 														    </tr>
 														    <tr>
 															    <th>L3 level remarks</th>
@@ -814,7 +814,7 @@ const Summary = (props) => {
                                                     test_data.testreport_sl_remarks != "" ?
                                                         <>
                                                             <tr>
-															    <th style={{textAlign:"center"}} colspan="4"><strong>RF Level Analysis</strong></th>
+															    <th style={{textAlign:"center"}} colSpan="4"><strong>RF Level Analysis</strong></th>
 														    </tr>
                                                             <tr>
 															    <th>RF level remarks</th>
@@ -851,7 +851,7 @@ const Summary = (props) => {
 														?>
 															<tr>
 																<th>Second level analysed files</th>
-																<td colspan="3">
+																<td colSpan="3">
 																	<?php 
 																		$i = 0;
 																		foreach($test_analysed_files as $key => $image)
@@ -879,7 +879,7 @@ const Summary = (props) => {
                                                     test_data.testreport_tl_remarks != ""?
                                                         <>
                                                             <tr>
-															    <th style={{textAlign:"center"}} colspan="4"><strong>Third Level Analysis (Dept Analysis)</strong></th>
+															    <th style={{textAlign:"center"}} colSpan="4"><strong>Third Level Analysis (Dept Analysis)</strong></th>
 														    </tr>
                                                             <tr>
 															    <th>Third level remarks</th>

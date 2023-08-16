@@ -29,9 +29,9 @@ const Terrace = (props) => {
     const idle = terrace_data?terrace_data.idle:"";
     const ookla = terrace_data?terrace_data.dataResult:"";
 
-    console.log("+========+========+")
-    console.log(task_data)
-    console.log(test_data)
+    //console.log("+========+========+")
+    //console.log(task_data)
+    //console.log(test_data)
 
     function toggle(tab) {
         if (activeTab !== tab) {
