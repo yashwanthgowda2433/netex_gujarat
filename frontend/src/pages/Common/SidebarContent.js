@@ -167,10 +167,13 @@ const SidebarContent = () => {
               </Link>
               <ul className={ /tasks/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
                 <li>
-                  <Link to="/tasks/add" className={'/tasks/add'.includes(url_path) ? "mm-active" : "" }>Task Add</Link>
+                    <Link to="/tasks/add" className={'/tasks/add'.includes(url_path) ? "mm-active" : "" }>Task Add</Link>
                 </li>
                 <li>
                     <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) || '/tasks/report'.includes(url_path) ? "mm-active" : "" }>Tasks</Link>
+                </li>
+                <li>
+                    <Link to="/tasks/l3tlview" className={'/tasks/l3tlview'.includes(url_path) || '/tasks/l3tlreport'.includes(url_path) ? "mm-active" : "" }>RF Open Tasks</Link>
                 </li>
               </ul>
             </li>  

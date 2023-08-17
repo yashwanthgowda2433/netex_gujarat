@@ -35,7 +35,7 @@ import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js';
 import Flatpickr from "react-flatpickr";
 
 
-const View = () => {
+const L3View = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [infodrp_up11, setInfodrp_up11] = useState(false)
@@ -105,7 +105,7 @@ const View = () => {
             
             setPageStart(start_num);
 
-            const response = await fetch('/api/tasks/analyst/get', {
+            const response = await fetch('/api/tasks/analyst/getL3tl', {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${user.token}` },
                 body: JSON.stringify({pageStart:start_num,pageLimit:page_limit, status:status_filter, date_type:date_type, from_date:from, to_date:to, search:search_task})
@@ -156,125 +156,100 @@ const View = () => {
         console.log(task_status)
         var message = "";
 
-        // Post-Optimisation Pending
-        if(a.task_status == preoptipending && a.task_is_postopti == fieldvisit_yes)
+        // Pending
+        if(a.task_status == pending)
         {
             if(a.task_withdrawn == withdrawn_yes)
             {       
                 message = <span className='btn btn-info' style={styles.status}>Withdrawn</span>;
             }else{
-                message = <span className='btn btn-danger' style={styles.status}>Post-Optimisation Pending</span>;
+                message = <span className='btn btn-danger' style={styles.status}>Pending</span>;
             }
         }
-        // Pre-Optimisation Inprogress
-        else if(a.task_status == progress && a.task_is_rf_fieldvisit == fieldvisit_yes && a.task_is_postopti == fieldvisit_no)
+        // FWD to RF
+        if(a.task_status == analysis_required_fwdbyl3)
         {
-            message = <span className='btn btn-warning' style={styles.status}>Pre-Optimisation Inprogress</span>;
+            message = <span className='btn btn-danger' style={styles.status}>FWD to RF</span>;
         }
-        // Pre-Optimisation Pending
-        else if((a.task_status == preoptipending || a.task_status == pending) && a.task_is_rf_fieldvisit==fieldvisit_yes && a.task_is_postopti==fieldvisit_no)
+        // Progress
+        if(a.task_status == progress)
         {
-            if(a.task_withdrawn == withdrawn_yes)
-            {       
-                message = <span className='btn btn-info' style={styles.status}>Withdrawn</span>;
-            }else{
-                message = <span className='btn btn-danger' style={styles.status}>Pre-Optimisation Pending</span>;
-            }
+            message = <span className='btn btn-warning' style={styles.status}>Progress</span>;
         }
-        //Post-Optimisation Inprogress
-        else if(a.task_status == progress && a.task_is_postopti==fieldvisit_yes)
-        {
-            message = <span className='btn btn-warning' style={styles.status}>Post-Optimisation Inprogress</span>;
-        }
-        //Pre-Optimisation Completed
-        else if(a.task_status == preopti)
-        {
-            message = <span className='btn btn-success' style={styles.status}>Pre-Optimisation Completed</span>;
-        }
-        //Postoptimization
-        else if(a.task_status == postopti)
-        {
-            message = <span className='btn btn-success' style={styles.status}>Postoptimization</span>;
-        }
-        //Cancelled
-        else if(a.task_status == cancelled)
+        // Cancelled
+        if(a.task_status == cancelled)
         {
             message = <span className='btn btn-danger' style={styles.status}>Cancelled</span>;
         }
-        //Completed
-        else if(a.task_status == completed)
+        
+        // Completed
+        if(a.task_status == completed)
         {
             message = <span className='btn btn-success' style={styles.status}>Completed</span>;
         }
-        //Closed without field visit
-        else if(a.task_status == closed)
+        
+        // Closed
+        if(a.task_status == closed)
         {
-            message = <span className='btn btn-warning' style={styles.status}>Closed without field visit</span>;
+            message = <span className='btn btn-info' style={styles.status}>Closed</span>;
         }
-        //Forward to ......
-        else if(a.task_status == fwz)
+        
+        // Fwd To Team
+        if(a.task_status == fwz)
         {
-            // message = <span className='btn btn-primary' style={styles.status}>Forward to {sla_fwz_options[a.task_fwd_dept_id]}</span>;
+            message = <span className='btn btn-primary' style={styles.status}>Fwd To Team</span>;
         }
-        //Forward to field visit
-        else if(a.task_status == approve_for_fieldvisit)
+        // Forward to field visit
+        if(a.task_status == approve_for_fieldvisit)
         {
             message = <span className='btn btn-warning' style={styles.status}>Forward to field visit</span>;
         }
-        //added by l2executive
-        else if(a.task_status == addedbyl2_executive)
+        // added by l2executive
+        if(a.task_status == addedbyl2_executive)
         {
             message = <span className='btn btn-primary' style={styles.status}>added by l2executive</span>;
         }
-        //FWD to RF
-        else if(a.task_status == analysis_required || a.task_status == analysis_required_fwdbyl3)
+        // Forward to RF
+        if(a.task_status == analysis_required)
         {
-            message = <span className='btn btn-primary' style={styles.status}>FWD to RF</span>;
+            message = <span className='btn btn-primary' style={styles.status}>Forward to RF</span>;
         }
-        //reverted from RF
-        else if(a.task_status == analysed)
+        // reverted from RF
+        if(a.task_status == analysed)
         {
             message = <span className='btn btn-primary' style={styles.status}>reverted from RF</span>;
         }
-        //Withdrawn
-        else if(a.task_status == withdraw)
+        // withdrawn
+        if(a.task_status == withdraw)
         {
-            message = <span className='btn btn-primary' style={styles.status}>Withdrawn</span>;
+            message = <span className='btn btn-primary' style={styles.status}>withdrawn</span>;
         }
-        //Not resolved and closed
-        else if(a.task_status == not_resolved_and_closed)
+        // Not resolved and closed
+        if(a.task_status == not_resolved_and_closed)
         {
             message = <span className='btn btn-primary' style={styles.status}>Not resolved and closed</span>;
         }
-        //Resolved and closed
-        else if(a.task_status == resolved_and_closed)
+        // Resolved and closed
+        if(a.task_status == resolved_and_closed)
         {
             message = <span className='btn btn-primary' style={styles.status}>Resolved and closed</span>;
         }
-        //Optimisation  in Progress
-        else if(a.task_status == optimisationprogress)
+        // Optimisation  in Progress
+        if(a.task_status == optimisationprogress)
         {
             message = <span className='btn btn-warning' style={styles.status}>Optimisation  in Progress</span>;
         }
-        //Reverted from
-        else if(a.task_status == optimised)
+        // Reverted from Team
+        if(a.task_status == optimised)
         {
-            // message = <span className='btn btn-warning' style={styles.status}>Reverted from {sla_fwz_options[a.task_fwd_dept_id]}</span>;
+            message = <span className='btn btn-warning' style={styles.status}>Reverted from Team</span>;
         }
-        //Foward to zone
-        else if(a.task_status == fwz_to_zone)
+        // Foward to zone
+        if(a.task_status == fwz_to_zone)
         {
             message = <span className='btn btn-warning' style={styles.status}>Foward to zone</span>;
         }
         
-        else if(a.task_status == progress)
-        {
-            message = <span className='btn btn-warning' style={styles.status}>Inprogress</span>;
-        }
-        else if(a.task_status == pending)
-        {
-            message = <span className='btn btn-danger' style={styles.status}>Pending</span>;
-        }
                     
         return message;
 
@@ -347,7 +322,7 @@ const View = () => {
             {
                 Header: 'Action',
                 accessor: a => (
-                    <Link className='btn btn-danger' to="/tasks/report" state={a} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link>
+                    <Link className='btn btn-danger' to="/tasks/l3tlreport" state={a} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link>
                 ),
             },
       // Add more columns as needed
@@ -473,29 +448,7 @@ const View = () => {
                                                     <Card>
                                                         <CardBody>
                                                             <Row>
-                                                                <Col lg={2}>
-                                                                    <select onChange={(event)=>{set_status_filter(event.target.value)}} className="form-select">
-                                                                        <option value="">All</option>
-                                                                        {arr2_filter.map((item, index)=> (
-                                                                            item == status_filter ? 
-                                                                                <option selected value={item}>{arr_filter1[item]}</option>
-                                                                            :
-                                                                                <option value={item}>{arr_filter1[item]}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                </Col>
-
-                                                                <Col lg={2}>
-                                                                    <select onChange={(event)=>{set_date_type(event.target.value)}} className="form-select">
-                                                                        <option value="">Select date type</option>
-                                                                        {arr2_date_type.map((item, index)=> (
-                                                                            item == date_type ? 
-                                                                                <option selected value={item}>{arr_date_type[item]}</option>
-                                                                            :
-                                                                                <option value={item}>{arr_date_type[item]}</option>
-                                                                        ))}
-                                                                    </select>
-                                                                </Col>
+                                                        
 
                                                                 <Col lg={2}>
                                                                     <Flatpickr
@@ -634,6 +587,8 @@ const styles = {
        
     },
     status:{
+        fontSize:"11px",
+        fontWeight:600,
         padding:"0px 10px",
     },
     linkbtn:{
@@ -646,4 +601,4 @@ const styles = {
     }
 }
 
-export default View;
+export default L3View;

@@ -912,9 +912,6 @@ const Summary = (props) => {
 
                                         </tbody>
                                     </table>
-
-
-                                    
                         
                         </div>
 
@@ -1019,14 +1016,14 @@ const Summary = (props) => {
                                             task_data.task_status == closed ?
 									            <div class="closed containertimeline right">
 										            <div class="timeline-content">
-											            <h5>{convertdate(test_data.testreport_createdon)}
+											            <h5>{convertdate(test_data?test_data.testreport_createdon:"")}
 											            <span class="label label-success">Closed without Visit</span></h5>
 										            </div>
 									            </div>
 									        :
 									            <div class="closed containertimeline right">
 										            <div class="timeline-content">
-											            <h5>{convertdate(test_data.testreport_createdon)}
+											            <h5>{convertdate(test_data?test_data.testreport_createdon:"")}
 											            <span class="label label-success">Visit Completed</span></h5>
 										            </div>
 									            </div>
@@ -1034,7 +1031,7 @@ const Summary = (props) => {
 								    </>
                                 }
 								
-                                {
+                                { test_data?
                                     test_data.testreport_analyzed_status == analyzed_yes ?
 								        <div class="closed containertimeline right">
 									        <div class="timeline-content">
@@ -1043,6 +1040,7 @@ const Summary = (props) => {
 									        </div>
 								        </div>
 								    :<></>
+                                 :<></>
                                 }
 								{  task_data.testreport_id && task_data.testreport_is_fwz == sla_forward_to_zone_yes ?
                                     <>

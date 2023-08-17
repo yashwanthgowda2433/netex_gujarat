@@ -15,6 +15,8 @@ import Analyst_dashboard from './pages/Analyst/Dashboard';
 import Analyst_task_add from './pages/Analyst/Tasks/Add';
 import Analyst_task_view from './pages/Analyst/Tasks/View';
 import Analyst_task_report from "./pages/Analyst/Tasks/Report";
+import Analyst_task_viewl3 from "./pages/Analyst/Tasks/L3View";
+import Analyst_task_l3report from "./pages/Analyst/Tasks/L3Report";
 // ANALYST IMPORTS ENDS
 
 
@@ -59,6 +61,8 @@ function App() {
                               <Route path="/tasks/add" element={ user ? <Analyst_task_add/> : <Login/> } />
                               <Route path="/tasks/view" element={ user ? <Analyst_task_view/> : <Login/> } />
                               <Route path="/tasks/report" element={ user ? <Analyst_task_report/> : <Login/> } />
+                              <Route path="/tasks/l3tlview" element={ user ? <Analyst_task_viewl3/> : <Login/> } />
+                              <Route path="/tasks/l3tlreport" element={ user ? <Analyst_task_l3report/> : <Login/> } />
 
                           </Routes>
                       </div>

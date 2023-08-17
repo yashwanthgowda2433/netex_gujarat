@@ -66,7 +66,7 @@ const getAnalystTasks = async (req, res) => {
     {
         if(user.user_role == analyst)
         {
-            const task_data = await Task.getTasks(filter_data);
+            const task_data = await Task.getTasks(user, filter_data);
             res.status(200).json({status:"Success", data:task_data});
 
         }else{
@@ -77,5 +77,25 @@ const getAnalystTasks = async (req, res) => {
     }
 }
 
-module.exports = { addAnalystTask, getAnalystTasks }
+// getAnalystL3tlTasks
+const getAnalystL3tlTasks = async (req, res) => {
+    const user = req.user;
+    const filter_data = req.body;
+    
+    if(user)
+    {
+        if(user.user_role == analyst)
+        {
+            const task_data = await Task.getL3Tasks(user, filter_data);
+            res.status(200).json({status:"Success", data:task_data});
+
+        }else{
+            res.status(200).json({status:"Error", message: "You Don't have permission access to this feature."})
+        }
+    }else{
+        res.status(200).json({status:"Error", message: "Authorization failed!"})
+    }
+}
+
+module.exports = { addAnalystTask, getAnalystTasks, getAnalystL3tlTasks }
 

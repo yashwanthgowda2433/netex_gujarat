@@ -4,7 +4,7 @@ const express = require('express')
 const requireAuth = require('../middleware/requireAuth')
 
 // ANALYST TASKS controller functions
-const { addAnalystTask ,getAnalystTasks} = require('../controllers/analyst/controller/taskController')
+const { addAnalystTask ,getAnalystTasks, getAnalystL3tlTasks} = require('../controllers/analyst/controller/taskController')
 
 const router = express.Router()
 
@@ -14,6 +14,8 @@ router.use(requireAuth)
 // ANALYST TASKS START
 router.post('/analyst/add', addAnalystTask);
 router.post('/analyst/get', getAnalystTasks);
+router.post('/analyst/getL3tl', getAnalystL3tlTasks);
+
 
 // ANALYST TASKS END
 

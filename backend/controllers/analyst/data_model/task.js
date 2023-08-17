@@ -220,7 +220,8 @@ const addTask = async (user, task_data) => {
 
 }
 
-const getTasks = async (filter_data) => {
+const getTasks = async (user, filter_data) => {
+    console.log(user);
     const total_size = (await Task.aggregate([
         {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
         {
@@ -233,7 +234,100 @@ const getTasks = async (filter_data) => {
         },
     ])).length;
 
+    var And_Where_Tasks = [];
+
+    // user added by
+    And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
+
+    // status
+    var status = "";
+    var params_status = filter_data.status;
+    if(params_status != "")
+    {
+        if(params_status == "prepending")
+        {
+            status = "prepending";
+        }
+        if(params_status == "postpending")
+        {
+            status = "postpending";
+        }
+        else if(params_status == "withdrawn")
+        {
+            status = withdrawn_yes;
+        }
+        else if(params_status == "progress")
+        {
+            status = progress;
+        }
+        else if(params_status == "completed")
+        {
+            status = completed;
+        }
+        else if(params_status == "cancelled")
+        {
+            status = cancelled;
+        }
+        else if(params_status == "closed")
+        {
+            status = closed;
+        }
+        else if(params_status == "analysed")
+        {
+            status = analysed;
+        }
+        else if(params_status == "fwd")
+        {
+            status = fwz;
+        }
+        else if(params_status == "preopti")
+        {
+            status = preopti;
+        }
+        else if(params_status == "postopti")
+        {
+            status = postopti;
+        }
+        And_Where_Tasks.push({ $eq: ["$task_status", status] });
+    }
+
+    // from date and to date
+    var from_date = filter_data.from_date;
+    if(from_date != "")
+    {
+        And_Where_Tasks.push({ $gte: ["$task_createdon", new Date(from_date)] });
+    }
+    var to_date = filter_data.to_date;
+    if(to_date != "")
+    {
+        And_Where_Tasks.push({ $lte: ["$task_createdon", new Date(to_date)] });
+    }
+
+    var Or_Where_Tasks = [];
+    var search_param = filter_data.search;
+    if(search_param != "")
+    {
+        Or_Where_Tasks.push({ "task_sr_no" : { $regex : search_param }});
+        Or_Where_Tasks.push({ "task_customer_name" : { $regex : search_param }});
+        Or_Where_Tasks.push({ "task_mobile_number" : { $regex : search_param }});
+    }
+
+    var query = {};
+    query.$expr = { 
+            $and : And_Where_Tasks,
+        };
+
+    
+    if(Or_Where_Tasks.length>0)
+    {
+        query.$or = Or_Where_Tasks;
+    }
+
+    
+    
     const task_data = await Task.aggregate([
+        { $match : query,
+        },
         {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
         {
             $lookup: {
@@ -254,4 +348,134 @@ const getTasks = async (filter_data) => {
     
 }
 
-module.exports = { addTask, getTasks }
+
+const getL3Tasks = async (user, filter_data) => {
+    console.log(user);
+    const total_size = (await Task.aggregate([
+        {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
+        {
+            $lookup: {
+               from: "users", // collection name in db
+               localField: "emp_id",
+               foreignField: "_id",
+               as: "user_arr"
+            }
+        },
+    ])).length;
+
+    var And_Where_Tasks = [];
+
+    // user added by
+    And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
+
+    // status
+    var status = "";
+    var params_status = filter_data.status;
+    if(params_status != "")
+    {
+        if(params_status == "prepending")
+        {
+            status = "prepending";
+        }
+        if(params_status == "postpending")
+        {
+            status = "postpending";
+        }
+        else if(params_status == "withdrawn")
+        {
+            status = withdrawn_yes;
+        }
+        else if(params_status == "progress")
+        {
+            status = progress;
+        }
+        else if(params_status == "completed")
+        {
+            status = completed;
+        }
+        else if(params_status == "cancelled")
+        {
+            status = cancelled;
+        }
+        else if(params_status == "closed")
+        {
+            status = closed;
+        }
+        else if(params_status == "analysed")
+        {
+            status = analysed;
+        }
+        else if(params_status == "fwd")
+        {
+            status = fwz;
+        }
+        else if(params_status == "preopti")
+        {
+            status = preopti;
+        }
+        else if(params_status == "postopti")
+        {
+            status = postopti;
+        }
+        And_Where_Tasks.push({ $eq: ["$task_status", status] });
+    }
+    And_Where_Tasks.push({ $eq: ["$task_status", analysis_required_fwdbyl3] });
+
+    // from date and to date
+    var from_date = filter_data.from_date;
+    if(from_date != "")
+    {
+        And_Where_Tasks.push({ $gte: ["$task_createdon", new Date(from_date)] });
+    }
+    var to_date = filter_data.to_date;
+    if(to_date != "")
+    {
+        And_Where_Tasks.push({ $lte: ["$task_createdon", new Date(to_date)] });
+    }
+
+    var Or_Where_Tasks = [];
+    var search_param = filter_data.search;
+    if(search_param != "")
+    {
+        Or_Where_Tasks.push({ "task_sr_no" : { $regex : search_param }});
+        Or_Where_Tasks.push({ "task_customer_name" : { $regex : search_param }});
+        Or_Where_Tasks.push({ "task_mobile_number" : { $regex : search_param }});
+    }
+
+    var query = {};
+    query.$expr = { 
+            $and : And_Where_Tasks,
+        };
+
+    
+    if(Or_Where_Tasks.length>0)
+    {
+        query.$or = Or_Where_Tasks;
+    }
+
+    
+    
+    const task_data = await Task.aggregate([
+        { $match : query,
+        },
+        {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
+        {
+            $lookup: {
+               from: "users", // collection name in db
+               localField: "emp_id",
+               foreignField: "_id",
+               as: "user_arr"
+            }
+        },
+        {$skip:filter_data.pageStart},
+        {$limit:filter_data.pageLimit}
+    ])
+
+    // const total_size = (await Task.find()).length;
+    // const task_data = await Task.find().skip(filter_data.pageStart).limit(filter_data.pageLimit);
+    var gettask = { total_size, task_data };
+    return gettask;
+    
+}
+
+module.exports = { addTask, getTasks, getL3Tasks }
