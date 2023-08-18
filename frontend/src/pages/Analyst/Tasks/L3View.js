@@ -14,6 +14,13 @@ import { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_
     visit_progress_option,optimization_progress_option,visit_completed_option,analyze_completed_option,revertTeam_option,closedwithoutFV_option,
     directL2Close_option,resolvedClosed_option,notResolvedClosed_option,
     } from '../../../global_variables/task_variables';
+
+
+// import user table variables
+import { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
+    admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
+    roles, sla_fwz_depts,  is_logged_in_yes, is_logged_in_no, male, female, deleted_yes, deleted_no} from '../../../global_variables/user_variables';
+  
     
 import React, { useEffect, useState } from "react";
 import Header from "../../Common/Header";
@@ -270,8 +277,8 @@ const L3View = () => {
                 ),
             },
             {
-                Header: 'Employee Name',
-                accessor: 'user_arr[0].user_name',
+                Header: 'Employee Id',
+                accessor: 'user_arr[0].user_userid',
             },
             {
                 Header: 'SR Number',
@@ -282,33 +289,45 @@ const L3View = () => {
                 accessor: 'task_customer_name',
             },
             {
-                Header: 'Company Name',
-                accessor: 'task_company_name',
-            },
-            {
                 Header: 'Customer Mobile',
                 accessor: 'task_mobile_number',
             },
-            {
-                Header: 'L3 remarks',
+            user.user_role != dept_user ? {
+                Header: 'Questionnaire',
                 accessor: a=>(
                     
-                    <button type="button" class="btn btn-primary btn-xs waves-effect" 
-                        data-bs-container="body" 
-                        data-bs-toggle="popover" 
-                        data-bs-placement="bottom" 
-                        title="Message"
-                        data-bs-content="No Remarks"
-                        data-bs-trigger="focus"  style={styles.showbtn}>Show</button>
+                    user.user_role != dept_user ?
+                        <button type="button" class="btn btn-primary btn-xs waves-effect" 
+                            data-bs-container="body" 
+                            data-bs-toggle="popover" 
+                            data-bs-placement="bottom" 
+                            title="Questionnarie"
+                            data-bs-content={a.task_questionnaires != null && a.task_questionnaires != "" ?
+                                JSON.parse(a.task_questionnaires).map((question, index)=>(
+                                    Object.entries(question).map((value,key)=>(
+                                        (index+1)+". "+key+" : "+value+"  "
+                                    ))
+                                )):""
+                            }
+                            data-bs-trigger="focus" style={styles.showbtn}>Show</button>
+                    : 
+                        <button type="button" class="btn btn-primary btn-xs waves-effect" 
+                            data-bs-container="body" 
+                            data-bs-toggle="popover" 
+                            data-bs-placement="bottom" 
+                            title="Questionnarie"
+                            data-bs-content="No Remarks"
+                            data-bs-trigger="focus" style={styles.showbtn}>Show</button>
                 )
-            },
-            {
-                Header: 'Assign to field date',
+            }:{},
+            user.user_role == dept_user ?
+                {
+                    Header: 'Task Forwarded on',
+                    accessor: 'task_assigned_on',
+                }
+            : {
+                Header: 'Task Visit Uploaded Date',
                 accessor: 'task_assigned_on',
-            },
-            {
-                Header: 'visit uploaded date',
-                accessor: a=>(convertdate(a.task_createdon)),
             },
             {
                 Header: 'Customer Subtype',

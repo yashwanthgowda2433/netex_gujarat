@@ -14,13 +14,13 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 import classnames from "classnames"
 
 // tabs import
-import Summary from "../../../components/Analyst/Tasks/Summary";
-import MapView from "../../../components/Analyst/Tasks/MapView";
-import Indoor from "../../../components/Analyst/Tasks/Indoor";
-import Outdoor from "../../../components/Analyst/Tasks/Outdoor";
-import Balcony from "../../../components/Analyst/Tasks/Balcony";
-import Terrace from "../../../components/Analyst/Tasks/Terrace";
-import WalkDriveTest from "../../../components/Analyst/Tasks/WalkDriveTest";
+import Summary from "../../../components/Analyst/L3Tasks/Summary";
+import MapView from "../../../components/Analyst/L3Tasks/MapView";
+import Indoor from "../../../components/Analyst/L3Tasks/Indoor";
+import Outdoor from "../../../components/Analyst/L3Tasks/Outdoor";
+import Balcony from "../../../components/Analyst/L3Tasks/Balcony";
+import Terrace from "../../../components/Analyst/L3Tasks/Terrace";
+import WalkDriveTest from "../../../components/Analyst/L3Tasks/WalkDriveTest";
 
 const L3Report = (props) => {
     const navigate = useNavigate();

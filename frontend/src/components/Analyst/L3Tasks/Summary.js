@@ -19,7 +19,8 @@ import { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_
 import { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
     admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
     roles, sla_fwz_depts,  is_logged_in_yes, is_logged_in_no, male, female, deleted_yes, deleted_no} from '../../../global_variables/user_variables';
-    
+  
+
 import {
     task_analyzed_options, task_analyzed_options_pending, task_analyzed_options_progress, task_analyzed_options_completed, task_analyzed_options_closed, analyzed_no, analyzed_yes, sla_forward_to_zone_yes, sla_forward_to_zone_no, tla_status_update_yes,tla_status_update_no, sla_submit_options, sla_fwz_options, sla_fwz_options_zone, sla_issue_options, tla_submit_options, tla_save_options, rf_save_options, c_id_details, c_id_count, cellid_array, twog_rx_lev_pts, twog_rx_qual_pts, threeg_rscp_pts, threeg_ec_io_pts,fourg_rsrp_pts, fourg_rsrq_pts, fourg_sinr_pts, twog_rx_lev_good, twog_rx_lev_bad, twog_rx_lev_poor, twog_rx_qual_good,twog_rx_qual_bad, twog_rx_qual_poor, threeg_rscp_good, threeg_rscp_bad, threeg_rscp_poor, threeg_ec_io_good, threeg_ec_io_bad,threeg_ec_io_poor, fourg_rsrp_good, fourg_rsrp_bad, fourg_rsrp_poor, fourg_rsrq_good, fourg_rsrq_bad, fourg_rsrq_poor, fourg_sinr_good,fourg_sinr_bad, fourg_sinr_poor, twog_rx_lev_pts_outdoor, twog_rx_qual_pts_outdoor, threeg_rscp_pts_outdoor, threeg_ec_io_pts_outdoor,fourg_rsrp_pts_outdoor, fourg_rsrq_pts_outdoor, fourg_sinr_pts_outdoor, twog_rx_lev_good_outdoor, 
     twog_rx_lev_bad_outdoor,twog_rx_lev_poor_outdoor, twog_rx_qual_good_outdoor, twog_rx_qual_bad_outdoor, twog_rx_qual_poor_outdoor, threeg_rscp_good_outdoor,threeg_rscp_bad_outdoor, threeg_rscp_poor_outdoor, threeg_ec_io_good_outdoor, threeg_ec_io_bad_outdoor, threeg_ec_io_poor_outdoor,fourg_rsrp_good_outdoor, fourg_rsrp_bad_outdoor, fourg_rsrp_poor_outdoor, fourg_rsrq_good_outdoor, fourg_rsrq_bad_outdoor,fourg_rsrq_poor_outdoor, fourg_sinr_good_outdoor, fourg_sinr_bad_outdoor, fourg_sinr_poor_outdoor, twog_rx_lev_pts_balcony,twog_rx_qual_pts_balcony, threeg_rscp_pts_balcony, threeg_ec_io_pts_balcony, fourg_rsrp_pts_balcony, fourg_rsrq_pts_balcony,fourg_sinr_pts_balcony, twog_rx_lev_good_balcony, twog_rx_lev_bad_balcony, twog_rx_lev_poor_balcony, 
@@ -31,7 +32,7 @@ import {
 import '../../../assets/css/style.css';
 
 import React, { useEffect, useState } from "react"
-import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress } from "reactstrap"
+import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress, Collapse, Form, Button } from "reactstrap"
 import { isEmpty, map, size } from "lodash"
 
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
@@ -55,7 +56,30 @@ const Summary = (props) => {
     const analysed_by_l2 = props.data.analysed_by_l2;
     const analysed_by_l3 = props.data.analysed_by_l3;
     const analysed_by_rf = props.data.analysed_by_rf;
+    const [col5, setcol5] = useState(false)
 
+    const [rows1, setrows1] = useState([])
+    const [rows2, setrows2] = useState([])
+
+    function handleAddRowNested() {
+        const item1 = { name1: "" }
+        setrows1([...rows1, item1])
+    }
+
+    function handleRemoveRow(e, id) {
+        if (typeof id != "undefined"){
+            document.getElementById("addr" + id).style.display = "none";
+        }
+    }
+
+    function handleRemoveRowNested(e, id) {
+        document.getElementById("nested" + id).style.display = "none"
+    }
+
+    function handleAddRowNested1() {
+        const item2 = { name1: "" }
+        setrows2([...rows2, item2])
+    }
     ////console.log(task_data)
     ////console.log(analysed_by_l2)
 
@@ -86,79 +110,93 @@ const Summary = (props) => {
     const getTaskStatus = (status) => {
 
         var message = "";
-
-        if (status == pending) {
+        if(status == pending)
+        {
             message = 'Visit Pending';
-
-        } else if (status == progress) {
+        }
+        else if(status == progress)
+        {
             message = 'Progress';
-
-        } else if (status == cancelled) {
+        }
+        else if(status == cancelled)
+        {
             message = 'Cancelled';
-
-        } else if (status == completed) {
+        }
+        else if(status == completed)
+        {
             message = 'Completed';
-
-        } else if (status == pending && task_data.task_is_rf_fieldvisit == fieldvisit_yes) {
-            message = 'Optimisation Pending';
-
-        } else if (status == progress && task_data.task_is_rf_fieldvisit == fieldvisit_yes) {
-            message = 'Optimisation Inprogress';
-
-        } else if (status == cancelled) {
-            message = 'Cancelled';
-
-        } else if (status == completed && task_data.task_is_rf_fieldvisit == fieldvisit_yes) {
-            message = 'Optimisation Completed';
-
-        } else if (status == closed) {
+        }
+        else if(status == closed)
+        {
             message = 'Closed without field visit';
-
-        } else if (status == closedbyl2_executive) {
+        }
+        else if(status == closedbyl2_executive)
+        {
             message = 'Closed';
             ddate = test_data.testreport_createdon;
-
-        } else if (status == fwz) {
+            
+        }
+        else if(status == fwz)
+        {
             //message = 'Fwd To Team';
-            message = "Forward to " + sla_fwz_options[test_data.testreport_sl_stage];
+            message =  "Forward to "+sla_fwz_options[test_data.testreport_sl_stage];
             ddate = task_data.task_fwdtoteam_on;
-
-        } else if (status == approve_for_fieldvisit) {
+            
+        }
+        else if(status == approve_for_fieldvisit)
+        {
             //message = 'Transfer Requested';
             message = 'Forward to field visit';
             ddate = task_data.task_fwdtofe_on;
-
-        } else if (status == addedbyl2_executive) {
+            
+        }
+        else if(status == addedbyl2_executive)
+        {
             message = 'added by l2executive';
-            ddate = created_date;
-
-        } else if (status == analysis_required) {
-            message = 'Forward to analysts';
-
-
-        } else if (status == analysed) {
-            message = 'analysed';
-
-        } else if (status == not_resolved_and_closed) {
+            ddate = task_data.task_createdon;
+        }
+        else if(status == analysis_required)
+        {
+            message = 'Forward to RF';
+        }
+         else if(status == analysed)
+        {
+            message = 'Reverted from RF';
+            
+        }
+         else if(status == not_resolved_and_closed)
+        {
             message = 'not resolved and closed';
-
-        } else if (status == resolved_and_closed) {
+            
+        }
+         else if(status == resolved_and_closed)
+        {
             message = 'resolved and closed';
-
-        } else if (status == withdraw) {
+            
+        }
+        else if(status == withdraw)
+        {
             message = 'withdrawn';
-
-        } else if (status == optimisationprogress) {
+            
+        }
+        else if(status == optimisationprogress)
+        {
             message = 'Optimisation  in Progress';
-
-        } else if (status == optimised) {
+            
+        }
+        else if(status == optimised)
+        {
             message = 'Reverted from Team';
-
-        } else if (status == fwz_to_zone) {
+            
+        }
+        else if(status == fwz_to_zone)
+        {
             message = 'Foward to zone';
             ddate = task_data.task_fwdtozone_on;
-
+            
         }
+
+
         return message
     }
 
@@ -920,74 +958,69 @@ const Summary = (props) => {
                         
                         </div>
 
-                        <div class="card mt-5">
-				            <div class="panel">
-					            <div class="panel-body">
-					                <div class="header">
-						                <h4>Report images </h4>
-						            </div>
-									{/* <?php
-                                    if(!empty($test_report_images1))
-                                    {
-								        $images = explode(",",$test_report_images1);
-                                        for ($xi = 0; $xi <= count($images)-1; $xi++) {
-							            ?>
-                                            <div class="col-sm-3 col-sm-3 col-md-3">
-                                                <div class="thumbnail-box">
-					              
-					                                <img src=<?php echo stripslashes(str_replace(array('[',']') , ''  ,$images[$xi])) ?> alt="" style="width:250px;height:300px"/>
-                                                </div>
-                                            </div>
-                                        <?php
-								        }    
-                                
-                                    }
-                                    ?> */}
-					            </div>
-				            </div>
-			            </div>
-
                         {test_data?
-                            test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no ?
+                            // test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no 
+                            test_data.testreport_analyzed_status == null?
                                 <>
-                                    <a class="btn bg-pink waves-effect m-b-15" role="button" data-toggle="collapse" href="#uploadFile" aria-expanded="false" aria-controls="uploadFile">
-				                        Attach Analysed Files
-			                        </a>
-			                        <div class="collapse" id="uploadFile">
-				                        <form name="files_form" method="post" class="form-horizontal" action="<?= base_url().'tasks/report/upload_dept_files' ?>" enctype="multipart/form-data">
-					                        <input name="test_report_id" type="hidden" value="<?= $test_report_id ?>" />
-					                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-						                        <label for="email_address_2">Files :</label>
-					                        </div>
-					                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-						                        <div class="input-group control-group after-add-more col-lg-8 col-md-8 col-sm-8 col-xs-6">
-                                                    <input type="file" name="dept_files[]" class="form-control"/>
-                                                    <div class="input-group-btn"> 
-                                                        <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                                   
+                                    
+                                    <button onClick={() => { setcol5(!col5) }} className="btn bg-pink waves-effect m-b-15 mt-5" type="button" style={{ cursor: "pointer", color:"#ffffff" }} >Attach Analysed Files</button>
+                                    <Collapse isOpen={col5}>
+                                        <CardBody>
+                                        <Button onClick={() => { handleAddRowNested1() }} color="success" className="btn btn-success mt-3 mt-lg-0" style={{float:"right"}}>Add</Button>
+                                            <Form className="repeater" encType="multipart/form-data">
+                                            
+                                                <div data-repeater-list="group-a">
+                                                    <div data-repeater-item className="row" style={{width:"100%"}}>
+                                                        <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                          <div className="mb-3 col-lg-12">
+                                                            <label htmlFor="files" style={{fontWeight:"bold"}}>Files : </label>
+                                                            <input type="file" className="form-control" id="files" />
+                                                          </div>
+                                                        </Col>
+                                                        <Col lg={2} className="align-self-center">
+                                                            <div className="d-grid">
+                                                                {/* <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" /> */}
+                                                            </div>
+                                                        </Col>
                                                     </div>
-						                        </div>
-					                        </div>
-					
-					 
-					                        <div class="copy hide">
-					                            <div class="control-group input-group" style="margin-top:10px">
-						                            <input type="file" name="dept_files[]" class="form-control"/>
-						                            <div class="input-group-btn"> 
-                                                        <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
-                                                    </div>
+
                                                 </div>
-                                            </div>
-					
-					                        <div class="col-md-12 text-center">
-						                        <button type="submit"  id="upload" name="Import" class="btn btn-lg btn-primary m-t-15 waves-effect"><i class="material-icons">file_upload</i>Upload</button>
-					                        </div>
-				                        </form>
-			                        </div>
+                                                {rows2.map((item2, idx) => (
+                                                    <React.Fragment key={idx}>
+                                                        <div data-repeater-list="group-a" id={"addr" + idx} >
+                                                            <div data-repeater-item className="row mb-3"  style={{width:"100%"}}>
+                                                                
+                                                                <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                                    <div className="pl-2 ml-5 col-lg-12">
+                                                                        
+                                                                        <input type="file" className="form-control" id="files" />
+                                                                    </div>
+                                                                </Col>
+                                                                <Col lg={2} className="align-self-center d-grid">
+                                                                    <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" onClick={e => { handleRemoveRow(e , idx)}} />
+                                                                </Col>
+                                                            </div>
+
+                                                        </div>
+                                                    </React.Fragment>
+                                                ))}
+                                                <div class="col-md-12 mt-3 text-center">
+						                            <button type="submit"  id="upload" name="Import" class="btn btn-lg btn-info m-t-15 waves-effect">Upload</button>
+					                            </div>
+                                            </Form>
+                                        </CardBody>
+                                    </Collapse>
+			                       
 			                        <form name="sl_form" id="sl_form" method="get" class="form-horizontal" action="<?= base_url().'tasks/report/'.$test_report_id.'/testanalyzed' ?>">
-				                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                        <label for="email_address_2">Second level remarks :</label>
-				                        </div>
-				                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+                                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Second&nbsp;level&nbsp;remarks&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
 					                        <div class="form-group">
 						                        <div class="form-line">
                                                     <textarea name="sl_remarks" className='form-control' cols="0" rows="2" id="sl_remark"></textarea>
@@ -997,67 +1030,82 @@ const Summary = (props) => {
 						                            <input name="sl_submission_type" type="hidden"/>
 						                        </div>
 					                        </div>
-				                        </div>
-				                        <p id="sl_err" style="color:red;display:none;text-align:center">Please enter second level remark</p>
-				                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                        <label for="email_address_2">Suspected Site ID :</label>
-				                        </div>
-				                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-					                        <div class="form-group">
-						                        <div class="form-line">
-							                        <input type="text" name="suspected_kl_id" class="form-control" id="site_id"/>
-						                        </div>
-					                        </div>
-				                        </div>
-				                        <p id="siteid_err" style="color:red;display:none;text-align:center">Please enter suspected site id</p>
-				                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                        <label for="email_address_2">Issue Technology :</label>
-				                        </div>
-				                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-					                        <div class="form-group">
-						                        <select name="sl_issue_technology[]" id="stages" class="form-control network_type" placeholder="Network type"  multiple>
-											        <option value="2G">2G</option>
-											        <option value="3G">3G</option>
-											        <option value="4G">4G</option>
-											        <option value="VoLTE">VoLTE</option>
+				                                </div>
+                                                <p id="sl_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter second level remark</p>
+                                            </Col>
+                                        </Row>
+                                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Suspected&nbsp;Site&nbsp;ID&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <div class="form-line">
+							                                <input type="text" name="suspected_kl_id" class="form-control" id="site_id"/>
+                                                            <p id="siteid_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter suspected site id</p>
+						                                </div>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Issue&nbsp;Technology&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <select name="sl_issue_technology[]" id="stages" class="form-control network_type" placeholder="Network type"  multiple>
+											                <option value="2G">2G</option>
+											                <option value="3G">3G</option>
+											                <option value="4G">4G</option>
+											                <option value="VoLTE">VoLTE</option>
 											
-										        </select>
-					                        </div>
-				                        </div>
-				                        <p id="issue_err" style="color:red;display:none;text-align:center">Please enter issue category</p>
+										                </select>
+                                                        <p id="issue_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter issue category</p>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
 				              
-                                        <div class="row clearfix">
-								 
-								            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-									            <div class="card">
-										            <div class="header">
-											            <h2>KPI DashBoard</h2>
+                                        <Card className='mt-5'>
+                                                <CardTitle>
+											            <h3>KPI DashBoard</h3>
 											            <ul class="header-dropdown m-r--5">
-												            <button type="button" id="kpi-analyse" class="btn btn-info waves-effect">
-													            <i class="material-icons fa-cog">find_replace</i>
+												            <button type="button" id="kpi-analyse" class="btn btn-info waves-effect" style={{float:"right"}}>
+													            {/* <i class="material-icons fa-cog">find_replace</i> */}
 													            <span>Analyse</span>
 												            </button>
 											            </ul>
-										            </div>
-										            <div class="body">
+										        </CardTitle>
+                                            <CardBody>
+									            
 											            <div class="table-responsive">
 												            <table class="table table-bordered table-striped table-hover dataTable" id="example">
 												            </table>
 											            </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                    
+                                            </CardBody>
+                                        </Card>
+
 				                        <div class="text-center">
 				                            <p id="nb"></p>
 				                            <input type="hidden" name="rfempid" id="rfempid"/>
 				                            <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/>
-				                            <input  data-type="fwdtofiled" class="btn btn-info"  type="submit"  value="Assign to Field"/>
+				                            <input  data-type="fwdtofiled" class="btn btn-info" style={{marginLeft:"10px"}}  type="submit"  value="Assign to Field"/>
                                             {/* <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/> */}
 				                            {/* <input data-type="sl_submit" class="btn btn-success" type="submit" value="Submit"/> */}
-					                        <input data-type="sl_fwz" class="btn btn-success" type="submit" value="Forward to Team"/>
+					                        <input data-type="sl_fwz" class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Forward to Team"/>
 					                        {/* <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_rf"/> */}
-					                        <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_fwz_zone"/>
+					                        <input class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Internal Transfer" data-type="sl_fwz_zone"/>
 				                            {/* <!--<input  data-type="submits" class="btn btn-info" value="Forward to Field Visit" onclick="slSubmit(this.value)" name="sl_submission_field"/> */}
 				                            {/* <input data-type="sl_fwz_zone" class="btn btn-success" type="submit" value="Forward to Zone"/>--> */}
 				                        </div>
@@ -1130,6 +1178,34 @@ const Summary = (props) => {
                                 :
                                     <></>
                         :<></>}
+
+                        <div class="card mt-5">
+				            <div class="panel">
+					            <div class="panel-body">
+					                <div class="header">
+						                <h4>Report images </h4>
+						            </div>
+									{/* <?php
+                                    if(!empty($test_report_images1))
+                                    {
+								        $images = explode(",",$test_report_images1);
+                                        for ($xi = 0; $xi <= count($images)-1; $xi++) {
+							            ?>
+                                            <div class="col-sm-3 col-sm-3 col-md-3">
+                                                <div class="thumbnail-box">
+					              
+					                                <img src=<?php echo stripslashes(str_replace(array('[',']') , ''  ,$images[$xi])) ?> alt="" style="width:250px;height:300px"/>
+                                                </div>
+                                            </div>
+                                        <?php
+								        }    
+                                
+                                    }
+                                    ?> */}
+					            </div>
+				            </div>
+			            </div>
+
                         <div class="card mt-5">
 				            <div class="panel">
 					            <div class="panel-body">
