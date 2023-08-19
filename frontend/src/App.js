@@ -17,6 +17,10 @@ import Analyst_task_view from './pages/Analyst/Tasks/View';
 import Analyst_task_report from "./pages/Analyst/Tasks/Report";
 import Analyst_task_viewl3 from "./pages/Analyst/Tasks/L3View";
 import Analyst_task_l3report from "./pages/Analyst/Tasks/L3Report";
+import Analyst_viewmap from "./pages/Analyst/ViewMap/ViewMap";
+import Analyst_track_employess from './pages/Analyst/FieldEngineers/TrackEmployees';
+import Analyst_view_employess from './pages/Analyst/FieldEngineers/ViewEmployees';
+
 // ANALYST IMPORTS ENDS
 
 
@@ -63,6 +67,10 @@ function App() {
                               <Route path="/tasks/report" element={ user ? <Analyst_task_report/> : <Login/> } />
                               <Route path="/tasks/l3tlview" element={ user ? <Analyst_task_viewl3/> : <Login/> } />
                               <Route path="/tasks/l3tlreport" element={ user ? <Analyst_task_l3report/> : <Login/> } />
+                              <Route path="/view_map" element={ user ? <Analyst_viewmap/> : <Login/> } />
+                              <Route path="/field-engineers/track" element={ user ? <Analyst_track_employess/> : <Login/> } />
+                              <Route path="/fieldengineers" element={ user ? <Analyst_view_employess/> : <Login/> } />
+
 
                           </Routes>
                       </div>

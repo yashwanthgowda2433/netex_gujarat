@@ -145,19 +145,28 @@ const SidebarContent = () => {
               </Link>
             </li>
 
-            <li className={ /field-engineers/.test(url_path) ? "mm-active" : "" }>
+            <li className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "mm-active" : "" }>
               <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
                 <i className="mdi mdi-inbox-full"></i>
                 <span>Field Engineers</span>
               </Link>
-              <ul className={ /field-engineers/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
+              <ul className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
                 <li>
                   <Link to="/field-engineers/track" className={'/field-engineers/track'.includes(url_path) ? "mm-active" : "" }>Track Employees</Link>
                 </li>
                 <li>
-                  <Link to="/field-engineers">View Employees</Link>
+                  <Link to="/fieldengineers" className={'/fieldengineers'.includes(url_path) ? "mm-active" : "" }>View Employees</Link>
                 </li>
               </ul>
+            </li>
+
+            <li>
+              
+              <Link to="/view_map" className={'/view_map'.includes(url_path) ? "mm-active" : "" }>
+                  <i className="mdi mdi-inbox-full"></i>
+                  View Map
+              </Link>
+
             </li>
 
             <li className={ /tasks/.test(url_path) ? "mm-active" : "" }>
