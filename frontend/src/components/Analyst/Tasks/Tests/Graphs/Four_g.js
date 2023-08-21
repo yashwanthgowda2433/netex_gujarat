@@ -257,7 +257,7 @@ const Four_g = (props) => {
             enabled: true,
             custom: function({series, seriesIndex, dataPointIndex, w}) {
                 return '<div class="arrow_box" style="padding:10px;"><span style="color:#000;font-weight:600;">CELL ID :</span>' +
-                  '<span>' + data[dataPointIndex].c_id+ '</span>' +
+                  '<span>' + data[dataPointIndex]?data[dataPointIndex].c_id?data[dataPointIndex].c_id:"":""+ '</span>' +
                   '</div>'
             }
         },
