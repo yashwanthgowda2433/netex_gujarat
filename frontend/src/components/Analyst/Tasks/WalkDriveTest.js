@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
-import { Card, CardBody, Table, CardTitle, Row, Col, Pagination, PaginationItem, PaginationLink } from "reactstrap"
-import { isEmpty, map, size } from "lodash"
+import React, { useEffect, useState } from "react";
+import { Card, CardBody, Table, CardTitle, Row, Col, Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { isEmpty, map, size } from "lodash";
 
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom";
 

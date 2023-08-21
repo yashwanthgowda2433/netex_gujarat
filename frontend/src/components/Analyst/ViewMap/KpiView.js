@@ -22,28 +22,7 @@ const KpiView = (props) => {
 
     return (
         <Col lg={12}>
-            <Row className="mt-5">
-                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
-				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                                <label for="email_address_2" style={{fontWeight:600}}>Second&nbsp;level&nbsp;remarks&nbsp;:</label>
-				                                </div>
-                                            </Col>
-                                            <Col lg={10}>
-				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-					                        <div class="form-group">
-						                        <div class="form-line">
-                                                    <textarea name="sl_remarks" className='form-control' cols="0" rows="2" id="sl_remark"></textarea>
-
-						                            <input name="sl_stage" type="hidden"/>
-						                            <input name="sl_zone" type="hidden"/>
-						                            <input name="sl_submission_type" type="hidden"/>
-						                        </div>
-					                        </div>
-				                                </div>
-                                                <p id="sl_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter second level remark</p>
-                                            </Col>
-                                        </Row>
-                                        
+            
 				                        <Row className="mt-5">
                                             <Col lg={2} style={{margin:"auto", width:"max-content"}}>
 				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
@@ -61,11 +40,47 @@ const KpiView = (props) => {
 				                                </div>
                                             </Col>
                                         </Row>
+
+										<Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Latitude&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <div class="form-line">
+							                                <input type="text" name="latitude" class="form-control" id="site_id"/>
+                                                            <p id="siteid_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter suspected site id</p>
+						                                </div>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+
+										<Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Longitude&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <div class="form-line">
+							                                <input type="text" name="longitude" class="form-control" id="longitude"/>
+                                                            <p id="siteid_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter suspected site id</p>
+						                                </div>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
 				                        
 				                        <Row className="mt-5">
                                             <Col lg={2} style={{margin:"auto", width:"max-content"}}>
 				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                                <label for="email_address_2" style={{fontWeight:600}}>Issue&nbsp;Technology&nbsp;:</label>
+					                                <label for="email_address_2" style={{fontWeight:600}}>Network&nbsp;Type&nbsp;:</label>
 				                                </div>
                                             </Col>
                                             <Col lg={10}>

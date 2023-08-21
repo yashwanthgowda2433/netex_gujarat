@@ -11,7 +11,24 @@ import { isEmpty, map, size } from "lodash"
 //Context
 import { useAuthContext } from "../../../hooks/useAuthContext";
 
-import classnames from "classnames"
+import classnames from "classnames";
+
+// Map Import
+import Leaflet from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
+import L from 'leaflet';
+import "leaflet/dist/leaflet.css";
+
+Leaflet.Icon.Default.imagePath = "../node_modules/leaflet";
+
+delete Leaflet.Icon.Default.prototype._getIconUrl;
+
+Leaflet.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+})
+
 
 const TrackEmployees = (props) => {
     const navigate = useNavigate();
@@ -21,6 +38,7 @@ const TrackEmployees = (props) => {
     var [error, setError] = useState("");
     var [success,setSuccess] = useState("");
     const [search_task, set_search_task] = useState("");
+    const [latlong, set_latlong] = useState([13.025561441265522, 77.63931133566392]);
 
     useEffect(() => {
        
@@ -130,35 +148,28 @@ const TrackEmployees = (props) => {
                                                               </Row>
                                                             </CardBody>
                                                         </Card>
-                                                        <table className="table table-striped table-bordered align-middle mb-0" id="lists-table" >
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Employee ID</th>
-                                                                    <th>Name</th>
-                                                                    <th>Email</th>
-                                                                    <th>Zone</th>
-                                                                    <th>Mobile</th>
-                                                                    <th>Status</th>
-                                                                    
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {opti_engineers.length > 0?
+                                                        <MapContainer
+                                                            center={latlong}
+                                                            zoom={7}
+                                                            style={{ height: "600px" }}
+                                                            maxZoom={30}
+                                                            maxNativeZoom={7}
+                                                            zoomControl={false}
+                                                            >
+                                                            <TileLayer 
+                                                                url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" 
+                                                                maxZoom={30}
+                                                                maxNativeZoom={7}
+                                                                />
+                                                            <ZoomControl position="bottomright" />
+                                                            {opti_engineers.length > 0?
                                                                     opti_engineers.map((item, index)=>(
-                                                                        <tr>
-                                                                            <td>{item.user_userid}</td>
-                                                                            <td>{item.user_name}</td>
-                                                                            <td>{item.user_email}</td>
-                                                                            <td>{item.user_zone_id}</td>
-                                                                            <td>{item.user_mobile}</td>
-                                                                            <td>{item.user_status == 1?"Active":"In-active"}</td>
-
-                                                                        </tr>
+                                                                        item.user_latitude != null ? <Marker position={[item.user_latitude, item.user_longitude]}></Marker> :<></>
                                                                     ))
-                                                                :<></>
-                                                                }
-                                                            </tbody>
-                                                        </table>
+                                                                    :<></>
+                                                            }
+                                                        </MapContainer>
+                                                       
                                                     </Col>
                                                 </Row>
                                         </Col>
