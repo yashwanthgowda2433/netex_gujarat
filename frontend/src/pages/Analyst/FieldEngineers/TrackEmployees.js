@@ -153,18 +153,27 @@ const TrackEmployees = (props) => {
                                                             zoom={7}
                                                             style={{ height: "600px" }}
                                                             maxZoom={30}
-                                                            maxNativeZoom={7}
+                                                            maxNativeZoom={20}
                                                             zoomControl={false}
                                                             >
                                                             <TileLayer 
                                                                 url="https://{s}.tile.osm.org/{z}/{x}/{y}.png" 
                                                                 maxZoom={30}
-                                                                maxNativeZoom={7}
+                                                                maxNativeZoom={20}
                                                                 />
                                                             <ZoomControl position="bottomright" />
                                                             {opti_engineers.length > 0?
                                                                     opti_engineers.map((item, index)=>(
-                                                                        item.user_latitude != null ? <Marker position={[item.user_latitude, item.user_longitude]}></Marker> :<></>
+                                                                        item.user_latitude != null ? 
+                                                                            <Marker position={[item.user_latitude, item.user_longitude]}>
+                                                                                <Popup>
+                                                                                    <p><span style={{fontWeight:"700"}}>Emp ID :</span> {item.user_userid}</p>
+                                                                                    <p><span style={{fontWeight:"700"}}>Name :</span> {item.user_name}</p>
+                                                                                    <p><span style={{fontWeight:"700"}}>Mobile :</span> {item.user_mobile}</p>
+                                                                                </Popup>
+                                                                            </Marker> 
+                                                                        :
+                                                                            <></>
                                                                     ))
                                                                     :<></>
                                                             }

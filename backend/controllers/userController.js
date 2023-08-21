@@ -84,13 +84,19 @@ const getUser = async (req, res) => {
 const getAnalystOptiEngineers = async (req, res)=>{
 
   const user = req.user;
+  const {search_user} = req.body;
   
   if(user){
     if(user.user_role == analyst)
     {
       try {
+        if(search_user){
+          const user_data = await User.find({$and:[{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no},{ user_role:field_engineer},{user_addedby:user._id}], $or:[{user_userid:{ $regex :search_user}},{user_email:{ $regex :search_user}},{user_name:{ $regex :search_user}},{user_mobile:{ $regex :search_user}}]})
+          res.status(200).json({status:"Success", data:user_data})
+        }else{
           const user_data = await User.find({$and:[{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no},{ user_role:field_engineer},{user_addedby:user._id}]})
           res.status(200).json({status:"Success", data:user_data})
+        }
 
       }
       catch(error)
