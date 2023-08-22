@@ -11,9 +11,9 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 import classnames from "classnames"
 
 // test import
-import Dedicated from "./Tests/Dedicated";
-import Idle from "./Tests/Idle";
-import Ookla from "./Tests/Ookla";
+import Dedicated from "../Tests/Dedicated";
+import Idle from "../Tests/Idle";
+import Ookla from "../Tests/Ookla";
 
 const Balcony = (props) => {
     const [activeTab, setactiveTab] = useState("2")
@@ -63,9 +63,27 @@ const Balcony = (props) => {
                 </NavItem>
             </Nav>
             <TabContent activeTab={activeTab} className="p-3 text-muted">
-                <TabPane tabId="2"><Row><Dedicated data={dedidcated}/></Row></TabPane>
-                <TabPane tabId="3"><Row><Idle data={idle}/></Row></TabPane>
-                <TabPane tabId="4"><Row><Ookla data={ookla} /></Row></TabPane>
+                <TabPane tabId="2">
+                    <Row>
+                        <Col lg={8}>
+                            <Dedicated data={dedidcated}/>
+                        </Col>
+                    </Row>
+                </TabPane>
+                <TabPane tabId="3">
+                    <Row>
+                        <Col lg={8}>
+                            <Idle data={idle}/>
+                        </Col>
+                    </Row>
+                </TabPane>
+                <TabPane tabId="4">
+                    <Row>
+                        <Col lg={8}>
+                            <Ookla data={ookla} />
+                        </Col>
+                    </Row>
+                </TabPane>
             </TabContent>
         </Col>
     )

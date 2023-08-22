@@ -13,10 +13,10 @@ import { act } from "react-dom/test-utils";
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom";
 
 // CSS
-import "../../../../../assets/css/style.css";
+import "../../../../assets/css/style.css";
 
 // context 
-import { useAuthContext } from "../../../../../hooks/useAuthContext";
+import { useAuthContext } from "../../../../hooks/useAuthContext";
 
 // classnames
 import classnames from "classnames";

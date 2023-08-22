@@ -11,9 +11,9 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 import classnames from "classnames"
 
 // test import
-import Dedicated from "./Tests/Dedicated";
-import Idle from "./Tests/Idle";
-import Ookla from "./Tests/Ookla";
+import Dedicated from "../Tests/Dedicated";
+import Idle from "../Tests/Idle";
+import Ookla from "../Tests/Ookla";
 
 const Outdoor = (props) => {
     const [activeTab, setactiveTab] = useState("2")

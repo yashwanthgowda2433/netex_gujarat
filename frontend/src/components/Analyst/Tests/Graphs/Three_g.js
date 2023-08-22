@@ -13,7 +13,7 @@ import { act } from "react-dom/test-utils";
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
 
 // context 
-import { useAuthContext } from "../../../../../hooks/useAuthContext";
+import { useAuthContext } from "../../../../hooks/useAuthContext";
 
 // classnames
 import classnames from "classnames";
@@ -449,7 +449,7 @@ const Three_g = (props) => {
 
     return (
         <React.Fragment>
-            <Card>
+            {/* <Card> */}
             <style>{"\
                         .apexcharts-legend{\
                             top:20px!important;\
@@ -670,7 +670,7 @@ const Three_g = (props) => {
                         }
 
                 </CardBody>
-            </Card>
+            {/* </Card> */}
         </React.Fragment>
     )
 }
