@@ -36,6 +36,18 @@ const Two_g = (props) => {
     const [two_g_rxlevel_data, set_two_g_rxlevel_data] = useState([]);
     const [cid_rxlevel_data, set_cid_rxlevel_data] = useState({});
     const [cid_rxlevel_objdata, set_cid_rxlevel_objdata] = useState({});
+    const [rxlevel_good, set_rxlevel_good] = useState([]);
+    const [rxlevel_bad, set_rxlevel_bad] = useState([]);
+    const [rxlevel_poor, set_rxlevel_poor] = useState([]);
+    
+    const [rxlevel_good_percentage, set_rxlevel_good_percentage] = useState([]);
+    const [rxlevel_good_percentage_counts, set_rxlevel_good_percentage_counts] = useState([]);
+
+    const [rxlevel_bad_percentage, set_rxlevel_bad_percentage] = useState([]);
+    const [rxlevel_bad_percentage_counts, set_rxlevel_bad_percentage_counts] = useState([]);
+
+    const [rxlevel_poor_percentage, set_rxlevel_poor_percentage] = useState([]);
+    const [rxlevel_poor_percentage_counts, set_rxlevel_poor_percentage_counts] = useState([]);
 
 
     //counts
@@ -45,9 +57,20 @@ const Two_g = (props) => {
     const [two_g_rxqual_data, set_two_g_rxqual_data] = useState([]);
     const [cid_rxqual_data, set_cid_rxqual_data] = useState({});
     const [cid_rxqual_objdata, set_cid_rxqual_objdata] = useState({});
-
+    const [rxqual_good, set_rxqual_good] = useState([]);
+    const [rxqual_bad, set_rxqual_bad] = useState([]);
+    const [rxqual_poor, set_rxqual_poor] = useState([]);
 
     
+    const [rxqual_good_percentage, set_rxqual_good_percentage] = useState([]);
+    const [rxqual_good_percentage_counts, set_rxqual_good_percentage_counts] = useState([]);
+
+    const [rxqual_bad_percentage, set_rxqual_bad_percentage] = useState([]);
+    const [rxqual_bad_percentage_counts, set_rxqual_bad_percentage_counts] = useState([]);
+
+    const [rxqual_poor_percentage, set_rxqual_poor_percentage] = useState([]);
+    const [rxqual_poor_percentage_counts, set_rxqual_poor_percentage_counts] = useState([]);
+
 
     useEffect(() => {
         
@@ -96,9 +119,143 @@ const Two_g = (props) => {
             set_cid_rxlevel_data(c_id_obj_rxlvl);
             set_cid_rxqual_data(c_id_obj_rxqal);
 
+            
+            // rxlevel filter start
+            // let color = d >= -85 ? 'green' : d<-85 && d >= -95 ? 'yellow' : d < -95 ? 'red' :"";
+
             set_two_g_rxlevel_data(rx_data);
+            const rxlevelgood = rx_data.map((value,index) => value >= -85 ? value : null );
+            const rxlevelgood_null_removed = rxlevelgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rxlevelgood_per = (rxlevelgood_null_removed.length/data.length)*100;
+            set_rxlevel_good_percentage(parseInt(rxlevelgood_per));
+            set_rxlevel_good_percentage_counts(rxlevelgood_null_removed.length);
+
+            const rxlevelbad = rx_data.map((value,index) => value < -85 && value >= -95 ? value : null );
+            const rxlevelbad_null_removed = rxlevelbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rxlevelbad_per = (rxlevelbad_null_removed.length/data.length)*100;
+            set_rxlevel_bad_percentage(parseInt(rxlevelbad_per));
+            set_rxlevel_bad_percentage_counts(rxlevelbad_null_removed.length);
+
+            const rxlevelpoor = rx_data.map((value,index) => value < -95 ? value : null );
+            const rxlevelpoor_null_removed = rxlevelpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rxlevelpoor_per = (rxlevelpoor_null_removed.length/data.length)*100;
+            set_rxlevel_poor_percentage(parseInt(rxlevelpoor_per));
+            set_rxlevel_poor_percentage_counts(rxlevelpoor_null_removed.length);
+
+            for(var i=0; i<rxlevelgood.length-1; i++)
+            {
+                if(rxlevelgood[i] != null)
+                {
+                    if(rxlevelbad[i] == null && rxlevelbad[i+1] != null)
+                    {
+                        rxlevelbad[i] = rxlevelgood[i];
+                    }
+                    if(rxlevelpoor[i] == null && rxlevelpoor[i+1] != null)
+                    {
+                        rxlevelpoor[i] = rxlevelgood[i];
+                    }
+                }
+
+                if(rxlevelbad[i] != null)
+                {
+                    if(rxlevelgood[i] == null && rxlevelgood[i+1] != null)
+                    {
+                        rxlevelgood[i] = rxlevelbad[i];
+                    }
+                    if(rxlevelpoor[i] == null && rxlevelpoor[i+1] != null)
+                    {
+                        rxlevelpoor[i] = rxlevelbad[i];
+                    }
+                }
+
+                if(rxlevelpoor[i] != null)
+                {
+                    if(rxlevelbad[i] == null && rxlevelbad[i+1] != null)
+                    {
+                        rxlevelbad[i] = rxlevelpoor[i];
+                    }
+                    if(rxlevelgood[i] == null && rxlevelgood[i+1] != null)
+                    {
+                        rxlevelgood[i] = rxlevelpoor[i];
+                    }
+                }
+            }
+           
+            set_rxlevel_good(rxlevelgood);
+            set_rxlevel_bad(rxlevelbad);
+            set_rxlevel_poor(rxlevelpoor);
+            // end filter rxlevel data
+
+
             set_two_g_rxlevel_count(rx_count);
+
+
+            // rxqual filter start
+            // let color = d >= -0 && d <= 4 ? 'green' : d >= 5 && d <= 7 ? 'yellow' : d > 7 ? 'red' :"";
+
             set_two_g_rxqual_data(rx_qual_data);
+            const rxqualgood = rx_qual_data.map((value,index) => value >= 0 && value <= 4 ? value : null );
+            const rxqualgood_null_removed = rxqualgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rxqualgood_per = (rxqualgood_null_removed.length/data.length)*100;
+            set_rxqual_good_percentage(parseInt(rxqualgood_per));
+            set_rxqual_good_percentage_counts(rxqualgood_null_removed.length);
+
+            const rxqualbad = rx_qual_data.map((value,index) => value > 4 && value <= 7 ? value : null );
+            const rxqualbad_null_removed = rxqualbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rxqualbad_per = (rxqualbad_null_removed.length/data.length)*100;
+            set_rxqual_bad_percentage(parseInt(rxqualbad_per));
+            set_rxqual_bad_percentage_counts(rxqualbad_null_removed.length);
+
+            const rxqualpoor = rx_qual_data.map((value,index) => value > 7 ? value : null );
+            const rxqualpoor_null_removed = rxqualpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rxqualpoor_per = (rxqualpoor_null_removed.length/data.length)*100;
+            set_rxqual_poor_percentage(parseInt(rxqualpoor_per));
+            set_rxqual_poor_percentage_counts(rxqualpoor_null_removed.length);
+
+
+            for(var i=0; i<rxqualgood.length-1; i++)
+            {
+                if(rxqualgood[i] != null)
+                {
+                    if(rxqualbad[i] == null && rxqualbad[i+1] != null)
+                    {
+                        rxqualbad[i] = rxqualgood[i];
+                    }
+                    if(rxqualpoor[i] == null && rxqualpoor[i+1] != null)
+                    {
+                        rxqualpoor[i] = rxqualgood[i];
+                    }
+                }
+
+                if(rxqualbad[i] != null)
+                {
+                    if(rxqualgood[i] == null && rxqualgood[i+1] != null)
+                    {
+                        rxqualgood[i] = rxqualbad[i];
+                    }
+                    if(rxqualpoor[i] == null && rxqualpoor[i+1] != null)
+                    {
+                        rxqualpoor[i] = rxqualbad[i];
+                    }
+                }
+
+                if(rxqualpoor[i] != null)
+                {
+                    if(rxqualbad[i] == null && rxqualbad[i+1] != null)
+                    {
+                        rxqualbad[i] = rxqualpoor[i];
+                    }
+                    if(rxqualgood[i] == null && rxqualgood[i+1] != null)
+                    {
+                        rxqualgood[i] = rxqualpoor[i];
+                    }
+                }
+            }
+           
+            set_rxqual_good(rxqualgood);
+            set_rxqual_bad(rxqualbad);
+            set_rxqual_poor(rxqualpoor);
+            // end filter rxqual data
     
         }
     },[user])
@@ -140,13 +297,15 @@ const Two_g = (props) => {
                   '</div>'
             }
         },
+        colors: ['#008000', '#FFFF00', '#FF0000'],
         dataLabels: {
             enabled: false,
         },
         stroke: {
             curve: 'smooth',
             width: '3',
-            dashArray: [0, 4],  
+            lineCao: 'butt',
+            dashArray: [0,0,0],
         },
         legend: {
             show:false,
@@ -164,6 +323,8 @@ const Two_g = (props) => {
                 color:'#969494',
                
             },
+            //tickAmount: 4
+
         },
         yaxis: {
             title:{
@@ -175,7 +336,7 @@ const Two_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 4
 
         },
         annotations: {
@@ -186,14 +347,18 @@ const Two_g = (props) => {
             
         },
         fill: {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 1,
-              opacityTo: 1,
-              colorStops:generateColorRXlevel(two_g_rxlevel_data)
-            },
+            type: 'solid',
+            opacity: [1, 1, 1],
         },
+        // fill: {
+        //     type: 'gradient',
+        //     gradient: {
+        //       shadeIntensity: 1,
+        //       opacityFrom: 1,
+        //       opacityTo: 1,
+        //       colorStops:generateColorRXlevel(two_g_rxlevel_data)
+        //     },
+        // },
         
         
     }
@@ -237,13 +402,14 @@ const Two_g = (props) => {
                   '</div>'
             }
         },
+        colors: ['#008000', '#FFFF00', '#FF0000'],
         dataLabels: {
             enabled: false,
         },
         stroke: {
             curve: 'smooth',
             width: '3',
-            dashArray: [0, 4],  
+            dashArray: [0,0,0],
         },
         legend: {
             show:false,
@@ -259,8 +425,9 @@ const Two_g = (props) => {
             axisBorder: {
                 show:true,
                 color:'#969494',
-               
             },
+            //tickAmount: 4
+
         },
         yaxis: {
             title:{
@@ -272,17 +439,21 @@ const Two_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 4
         },
         fill: {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 1,
-              opacityTo: 1,
-              colorStops:generateColorRXqual(two_g_rxqual_data)
-            },
+            type: 'solid',
+            opacity: [1, 1, 1],
         },
+        // fill: {
+        //     type: 'gradient',
+        //     gradient: {
+        //       shadeIntensity: 1,
+        //       opacityFrom: 1,
+        //       opacityTo: 1,
+        //       colorStops:generateColorRXqual(two_g_rxqual_data)
+        //     },
+        // },
         
     }
 
@@ -290,7 +461,7 @@ const Two_g = (props) => {
 
     return (
         <React.Fragment>
-            <Card>
+            {/* <Card> */}
             <style>{"\
                         .apexcharts-legend{\
                             top:20px!important;\
@@ -303,16 +474,39 @@ const Two_g = (props) => {
             "}</style>
                 <CardBody>
                         <h3>RX LEVEL</h3>
-                      
+                        <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="rxlevelgood">Good({rxlevel_good_percentage_counts} - {rxlevel_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="rxlevelbad">Bad({rxlevel_bad_percentage_counts} - {rxlevel_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="rxlevelpoor">Poor({rxlevel_poor_percentage_counts} - {rxlevel_poor_percentage}%)</span>
+				            </div>
+			            </div>
                        <ReactApexChart 
                        options={options_graph_rx_level} 
                        series={
                           [
                             {
-                               name: "RX LEVEL",
-                               type: 'line',
-                               data: two_g_rxlevel_data,
-                            }
+                                name: "Good",
+                                type: 'line',
+                                data: rxlevel_good,
+                             },
+                             {
+                                 name: "Bad",
+                                 type: 'line',
+                                 data: rxlevel_bad,
+                             },
+                             {
+                                 name: "Poor",
+                                 type: 'line',
+                                 data: rxlevel_poor,
+                             }
                            ]
                         } 
                         height="260" 
@@ -404,16 +598,39 @@ const Two_g = (props) => {
                         }
 
                       <h3>RX Qual</h3>
-                      
+                      <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="rxqualgood">Good({rxqual_good_percentage_counts} - {rxqual_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="rxqualbad">Bad({rxqual_bad_percentage_counts} - {rxqual_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="rxqualpoor">Poor({rxqual_poor_percentage_counts} - {rxqual_poor_percentage}%)</span>
+				            </div>
+			            </div>
                       <ReactApexChart 
                       options={options_graph_rx_qual} 
                       series={
                          [
-                           {
-                              name: "RX Qual",
-                              type: 'line',
-                              data: two_g_rxqual_data,
-                           }
+                            {
+                                name: "Good",
+                                type: 'line',
+                                data: rxqual_good,
+                             },
+                             {
+                                 name: "Bad",
+                                 type: 'line',
+                                 data: rxqual_bad,
+                             },
+                             {
+                                 name: "Poor",
+                                 type: 'line',
+                                 data: rxqual_poor,
+                             }
                           ]
                        } 
                        height="260" 
@@ -447,8 +664,8 @@ const Two_g = (props) => {
                                                 <td>{item}</td>
                                                 <td>{cid_rxqual_data[item].length}</td>
                                                 <td>{data?data.length:""}</td>
-                                                <td>{Math.max(...cid_rxqual_data[item])}</td>
-                                                <td>{Math.min(...cid_rxqual_data[item])}</td>
+                                                <td>{Math.max(...(cid_rxqual_data[item]).filter((value)=>{if(value!=null && value!=NaN){if(value==Infinity){return 0}return value}}))}</td>
+                                                <td>{Math.min(...(cid_rxqual_data[item]).filter((value)=>{if(value!=null && value!=NaN){if(value==Infinity){return 0}return value}}))}</td>
                                                 <td>{Math.round(cid_rxqual_data[item].reduce((a,b)=>a+b)/cid_rxqual_data[item].length)}</td>
                                                 <td>{cid_rxlevel_objdata[item]?cid_rxlevel_objdata[item][0].lac:""}</td>
                                                 <td>{cid_rxlevel_objdata[item]?cid_rxlevel_objdata[item][0].bsic:""}</td>
@@ -467,7 +684,7 @@ const Two_g = (props) => {
                         }
 
                 </CardBody>
-            </Card>
+            {/* </Card> */}
         </React.Fragment>
     )
 }

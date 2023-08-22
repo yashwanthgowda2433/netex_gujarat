@@ -10,7 +10,10 @@ import {
 
 import { act } from "react-dom/test-utils";
 
-import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
+import { Link, withRouter, useLocation, useNavigate } from "react-router-dom";
+
+// CSS
+import "../../../../../assets/css/style.css";
 
 // context 
 import { useAuthContext } from "../../../../../hooks/useAuthContext";
@@ -33,6 +36,19 @@ const Four_g = (props) => {
     const [cid_rsrp_data, set_cid_rsrp_data] = useState({});
     const [cid_rsrp_objdata, set_cid_rsrp_objdata] = useState({});
 
+    const [rsrp_good, set_rsrp_good] = useState([]);
+    const [rsrp_bad, set_rsrp_bad] = useState([]);
+    const [rsrp_poor, set_rsrp_poor] = useState([]);
+    
+    const [rsrp_good_percentage, set_rsrp_good_percentage] = useState([]);
+    const [rsrp_good_percentage_counts, set_rsrp_good_percentage_counts] = useState([]);
+
+    const [rsrp_bad_percentage, set_rsrp_bad_percentage] = useState([]);
+    const [rsrp_bad_percentage_counts, set_rsrp_bad_percentage_counts] = useState([]);
+
+    const [rsrp_poor_percentage, set_rsrp_poor_percentage] = useState([]);
+    const [rsrp_poor_percentage_counts, set_rsrp_poor_percentage_counts] = useState([]);
+
 
     //counts
     const [four_g_rsrp_count, set_four_g_rsrp_count] = useState([]);
@@ -41,13 +57,37 @@ const Four_g = (props) => {
     const [four_g_rsrq_data, set_four_g_rsrq_data] = useState([]);
     const [cid_rsrq_data, set_cid_rsrq_data] = useState({});
     const [cid_rsrq_objdata, set_cid_rsrq_objdata] = useState({});
+    const [rsrq_good, set_rsrq_good] = useState([]);
+    const [rsrq_bad, set_rsrq_bad] = useState([]);
+    const [rsrq_poor, set_rsrq_poor] = useState([]);
+
+    const [rsrq_good_percentage, set_rsrq_good_percentage] = useState([]);
+    const [rsrq_good_percentage_counts, set_rsrq_good_percentage_counts] = useState([]);
+
+    const [rsrq_bad_percentage, set_rsrq_bad_percentage] = useState([]);
+    const [rsrq_bad_percentage_counts, set_rsrq_bad_percentage_counts] = useState([]);
+
+    const [rsrq_poor_percentage, set_rsrq_poor_percentage] = useState([]);
+    const [rsrq_poor_percentage_counts, set_rsrq_poor_percentage_counts] = useState([]);
+
 
     // sinr
     const [four_g_sinr_data, set_four_g_sinr_data] = useState([]);
     const [cid_sinr_data, set_cid_sinr_data] = useState({});
     const [cid_sinr_objdata, set_cid_sinr_objdata] = useState({});
+    const [sinr_good, set_sinr_good] = useState([]);
+    const [sinr_bad, set_sinr_bad] = useState([]);
+    const [sinr_poor, set_sinr_poor] = useState([]);
 
-    
+    const [sinr_good_percentage, set_sinr_good_percentage] = useState([]);
+    const [sinr_good_percentage_counts, set_sinr_good_percentage_counts] = useState([]);
+
+    const [sinr_bad_percentage, set_sinr_bad_percentage] = useState([]);
+    const [sinr_bad_percentage_counts, set_sinr_bad_percentage_counts] = useState([]);
+
+    const [sinr_poor_percentage, set_sinr_poor_percentage] = useState([]);
+    const [sinr_poor_percentage_counts, set_sinr_poor_percentage_counts] = useState([]);
+
 
     useEffect(() => {
         
@@ -81,9 +121,9 @@ const Four_g = (props) => {
                 c_id_obj_rsrp[data[i].c_id+""].push(parseInt(data[i].rsrp));
                 c_id_obj_rsrpobj[data[i].c_id+""].push(data[i]);
 
-                rsrp_data.push(parseInt(data[i].rsrp));
+                rsrp_data.push(parseInt(data[i].rsrp)); 
 
-
+            
                 // RSRQ
                 if(!c_id_obj_rsrq[data[i].c_id+""]){
                     c_id_obj_rsrq[data[i].c_id+""] = [];
@@ -124,12 +164,204 @@ const Four_g = (props) => {
             set_cid_rsrq_data(c_id_obj_rsrq);
             set_cid_sinr_data(c_id_obj_sinr);
 
+            // filter rsrp data
+            set_four_g_rsrp_data(rsrp_data.map(value => isNaN(value)?null:value));
+            const rsrpgood = rsrp_data.map((value,index) => value >= -85 ? value : null );
+            const rsrpgood_null_removed = rsrpgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrpgood_per = (rsrpgood_null_removed.length/data.length)*100;
+            set_rsrp_good_percentage(parseInt(rsrpgood_per));
+            set_rsrp_good_percentage_counts(rsrpgood_null_removed.length);
+            
+            
+            const rsrpbad = rsrp_data.map((value,index) => value < -85 && value >= -99 ? value : null );
+            const rsrpbad_null_removed = rsrpbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrpbad_per = (rsrpbad_null_removed.length/data.length)*100;
+            set_rsrp_bad_percentage(parseInt(rsrpbad_per));
+            set_rsrp_bad_percentage_counts(rsrpbad_null_removed.length);
+            
+            const rsrppoor = rsrp_data.map((value,index) => value < -99 ? value : null );
+            const rsrppoor_null_removed = rsrppoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrppoor_per = (rsrppoor_null_removed.length/data.length)*100;
+            set_rsrp_poor_percentage(parseInt(rsrppoor_per));
+            set_rsrp_poor_percentage_counts(rsrppoor_null_removed.length);
+            
 
-            set_four_g_rsrp_data(rsrp_data);
+            for(var i=0; i<rsrpgood.length-1; i++)
+            {
+                if(rsrpgood[i] != null)
+                {
+                    if(rsrpbad[i] == null && rsrpbad[i+1] != null)
+                    {
+                        rsrpbad[i] = rsrpgood[i];
+                    }
+                    if(rsrppoor[i] == null && rsrppoor[i+1] != null)
+                    {
+                        rsrppoor[i] = rsrpgood[i];
+                    }
+                }
+
+                if(rsrpbad[i] != null)
+                {
+                    if(rsrpgood[i] == null && rsrpgood[i+1] != null)
+                    {
+                        rsrpgood[i] = rsrpbad[i];
+                    }
+                    if(rsrppoor[i] == null && rsrppoor[i+1] != null)
+                    {
+                        rsrppoor[i] = rsrpbad[i];
+                    }
+                }
+
+                if(rsrppoor[i] != null)
+                {
+                    if(rsrpbad[i] == null && rsrpbad[i+1] != null)
+                    {
+                        rsrpbad[i] = rsrppoor[i];
+                    }
+                    if(rsrpgood[i] == null && rsrpgood[i+1] != null)
+                    {
+                        rsrpgood[i] = rsrppoor[i];
+                    }
+                }
+            }
+           
+            set_rsrp_good(rsrpgood);
+            set_rsrp_bad(rsrpbad)
+            set_rsrp_poor(rsrppoor)
+            // end filter rsrp data
+
+            // filter rsrq data
             set_four_g_rsrp_count(rx_count);
-            set_four_g_rsrq_data(rsrq_data);
-            set_four_g_sinr_data(sinr_data);
+            set_four_g_rsrq_data(rsrq_data.map(value => isNaN(value)?null:value));
+            // let color = d >= -8 ? 'green' : d < -8 && d >= -14 ? 'yellow' : d < -14 ? 'red' :"";
 
+            const rsrqgood = rsrq_data.map((value,index) => value >= -8 ? value : null );
+            const rsrqgood_null_removed = rsrqgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrqgood_per = (rsrqgood_null_removed.length/data.length)*100;
+            set_rsrq_good_percentage(parseInt(rsrqgood_per));
+            set_rsrq_good_percentage_counts(rsrqgood_null_removed.length);
+            
+            const rsrqbad = rsrq_data.map((value,index) => value < -8 && value >= -14 ? value : null );
+            const rsrqbad_null_removed = rsrqbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrqbad_per = (rsrqbad_null_removed.length/data.length)*100;
+            set_rsrq_bad_percentage(parseInt(rsrqbad_per));
+            set_rsrq_bad_percentage_counts(rsrqbad_null_removed.length);
+
+            const rsrqpoor = rsrq_data.map((value,index) => value < -14 ? value : null );
+            const rsrqpoor_null_removed = rsrqpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrqpoor_per = (rsrqpoor_null_removed.length/data.length)*100;
+            set_rsrq_poor_percentage(parseInt(rsrqpoor_per));
+            set_rsrq_poor_percentage_counts(rsrqpoor_null_removed.length);
+
+            for(var i=0; i<rsrqgood.length-1; i++)
+            {
+                if(rsrqgood[i] != null)
+                {
+                    if(rsrqbad[i] == null && rsrqbad[i+1] != null)
+                    {
+                        rsrqbad[i] = rsrqgood[i];
+                    }
+                    if(rsrqpoor[i] == null && rsrqpoor[i+1] != null)
+                    {
+                        rsrqpoor[i] = rsrqgood[i];
+                    }
+                }
+
+                if(rsrqbad[i] != null)
+                {
+                    if(rsrqgood[i] == null && rsrqgood[i+1] != null)
+                    {
+                        rsrqgood[i] = rsrqbad[i];
+                    }
+                    if(rsrqpoor[i] == null && rsrqpoor[i+1] != null)
+                    {
+                        rsrqpoor[i] = rsrqbad[i];
+                    }
+                }
+
+                if(rsrqpoor[i] != null)
+                {
+                    if(rsrqbad[i] == null && rsrqbad[i+1] != null)
+                    {
+                        rsrqbad[i] = rsrqpoor[i];
+                    }
+                    if(rsrqgood[i] == null && rsrqgood[i+1] != null)
+                    {
+                        rsrqgood[i] = rsrqpoor[i];
+                    }
+                }
+            }
+           
+            set_rsrq_good(rsrqgood);
+            set_rsrq_bad(rsrqbad);
+            set_rsrq_poor(rsrqpoor);
+            // end filter rsrq data
+
+            // filter sinr data
+            // let color = d >= 20 ? 'green' : d > 5 && d < 20 ? 'yellow' : d > -20 && d <= 5 ? 'red' :"";
+
+            set_four_g_sinr_data(sinr_data.map(value => isNaN(value)?null:value));
+            const sinrgood = sinr_data.map((value,index) => value >= 20 ? value : null );
+            const sinrgood_null_removed = sinrgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const sinrgood_per = (sinrgood_null_removed.length/data.length)*100;
+            set_sinr_good_percentage(parseInt(sinrgood_per));
+            set_sinr_good_percentage_counts(sinrgood_null_removed.length);
+            
+            const sinrbad = sinr_data.map((value,index) => value > 5 && value <= 20 ? value : null );
+            const sinrbad_null_removed = sinrbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const sinrbad_per = (sinrbad_null_removed.length/data.length)*100;
+            set_sinr_bad_percentage(parseInt(sinrbad_per));
+            set_sinr_bad_percentage_counts(sinrbad_null_removed.length);
+
+            const sinrpoor = sinr_data.map((value,index) => value <= 5 ? value : null );
+            const sinrpoor_null_removed = sinrpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const sinrpoor_per = (sinrpoor_null_removed.length/data.length)*100;
+            set_sinr_poor_percentage(parseInt(sinrpoor_per));
+            set_sinr_poor_percentage_counts(sinrpoor_null_removed.length);
+
+            for(var i=0; i<sinrgood.length-1; i++)
+            {
+                if(sinrgood[i] != null)
+                {
+                    if(sinrbad[i] == null && sinrbad[i+1] != null)
+                    {
+                        sinrbad[i] = sinrgood[i];
+                    }
+                    if(sinrpoor[i] == null && sinrpoor[i+1] != null)
+                    {
+                        sinrpoor[i] = sinrgood[i];
+                    }
+                }
+
+                if(sinrbad[i] != null)
+                {
+                    if(sinrgood[i] == null && sinrgood[i+1] != null)
+                    {
+                        sinrgood[i] = sinrbad[i];
+                    }
+                    if(sinrpoor[i] == null && sinrpoor[i+1] != null)
+                    {
+                        sinrpoor[i] = sinrbad[i];
+                    }
+                }
+
+                if(sinrpoor[i] != null)
+                {
+                    if(sinrbad[i] == null && sinrbad[i+1] != null)
+                    {
+                        sinrbad[i] = sinrpoor[i];
+                    }
+                    if(sinrgood[i] == null && sinrgood[i+1] != null)
+                    {
+                        sinrgood[i] = sinrpoor[i];
+                    }
+                }
+            }
+           
+            set_sinr_good(sinrgood);
+            set_sinr_bad(sinrbad)
+            set_sinr_poor(sinrpoor)
+            // end filter sinr data
     
         }
     },[user])
@@ -146,7 +378,7 @@ const Four_g = (props) => {
 
             let color = d >= -85 ? 'green' : d <-85 && d >= -99 ? 'yellow' : d < -99 ? 'red' :"";
             return {
-                offset: idx/datas.length*105,
+                offset: idx/datas.length*100,
                 color,
                 opacity:1
             }
@@ -171,13 +403,14 @@ const Four_g = (props) => {
                   '</div>'
             }
         },
+        colors: ['#008000', '#FFFF00', '#FF0000'],
         dataLabels: {
             enabled: false,
         },
         stroke: {
             curve: 'smooth',
             width: '3',
-            dashArray: [0, 4],  
+            dashArray: [0,0,0],
         },
         legend: {
             show:false,
@@ -196,7 +429,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         yaxis: {
             title:{
@@ -208,17 +441,25 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         fill: {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 1,
-              opacityTo: 1,
-              colorStops:generateColorrsrp(four_g_rsrp_data)
-            },
+            type: 'solid',
+            opacity: [1, 1, 1],
         },
+        // fill: {
+        //     type: 'gradient',
+        //     gradient: {
+        //         shade: 'dark',
+        //         type: "horizontal",
+        //         shadeIntensity: 0,
+        //         opacityFrom: 0,
+        //         gradientToColors: undefined,
+        //         opacityTo: 0,
+        //         inverseColors: false,
+        //         colorStops:generateColorrsrp(four_g_rsrp_data)
+        //     },
+        // },
         
     }
 
@@ -236,9 +477,9 @@ const Four_g = (props) => {
 
             let color = d >= -8 ? 'green' : d < -8 && d >= -14 ? 'yellow' : d < -14 ? 'red' :"";
             return {
-                offset: idx/datas.length*105,
+                offset: idx/datas.length*100,
                 color,
-                opacity:1
+                opacity:0.6
             }
         })
 
@@ -257,17 +498,18 @@ const Four_g = (props) => {
             enabled: true,
             custom: function({series, seriesIndex, dataPointIndex, w}) {
                 return '<div class="arrow_box" style="padding:10px;"><span style="color:#000;font-weight:600;">CELL ID :</span>' +
-                  '<span>' + data[dataPointIndex]?data[dataPointIndex].c_id?data[dataPointIndex].c_id:"":""+ '</span>' +
+                  '<span>' + data[dataPointIndex].c_id?data[dataPointIndex].c_id:""+ '</span>' +
                   '</div>'
             }
         },
+        colors: ['#008000', '#FFFF00', '#FF0000'],
         dataLabels: {
             enabled: false,
         },
         stroke: {
             curve: 'smooth',
             width: '3',
-            dashArray: [0, 4],  
+            dashArray: [0,0,0],
         },
         legend: {
             show:false,
@@ -286,7 +528,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         yaxis: {
             title:{
@@ -298,17 +540,25 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         fill: {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 1,
-              opacityTo: 1,
-              colorStops:generateColorrsrq(four_g_rsrq_data)
-            },
+            type: 'solid',
+            opacity: [1, 1, 1],
         },
+        // fill: {
+        //     type: 'gradient',
+        //     gradient: {
+        //         shade: 'dark',
+        //         type: "horizontal",
+        //         shadeIntensity: 0,
+        //         opacityFrom: 0,
+        //         gradientToColors: undefined,
+        //         opacityTo: 0,
+        //         inverseColors: false,
+        //         colorStops:generateColorrsrq(four_g_rsrq_data)
+        //     },
+        // },
         
     }
 
@@ -327,7 +577,7 @@ const Four_g = (props) => {
 
             let color = d >= 20 ? 'green' : d > 5 && d < 20 ? 'yellow' : d > -20 && d <= 5 ? 'red' :"";
             return {
-                offset: idx/datas.length*105,
+                offset: idx/datas.length*100,
                 color,
                 opacity:1
             }
@@ -352,13 +602,14 @@ const Four_g = (props) => {
                   '</div>'
             }
         },
+        colors: ['#008000', '#FFFF00', '#FF0000'],
         dataLabels: {
             enabled: false,
         },
         stroke: {
             curve: 'smooth',
             width: '3',
-            dashArray: [0, 4],  
+            dashArray: [0,0,0],
         },
         legend: {
             show:false,
@@ -377,7 +628,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            // //tickAmount: 50
         },
         yaxis: {
             title:{
@@ -389,17 +640,21 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            // //tickAmount: 50
         },
         fill: {
-            type: 'gradient',
-            gradient: {
-              shadeIntensity: 1,
-              opacityFrom: 1,
-              opacityTo: 1,
-              colorStops:generateColorsinr(four_g_rsrq_data)
-            },
+            type: 'solid',
+            opacity: [1, 1, 1],
         },
+        // fill: {
+        //     type: 'gradient',
+        //     gradient: {
+        //       shadeIntensity: 1,
+        //       opacityFrom: 1,
+        //       opacityTo: 1,
+        //       colorStops:generateColorsinr(four_g_sinr_data)
+        //     },
+        // },
         
     }
 
@@ -416,15 +671,38 @@ const Four_g = (props) => {
             "}</style>
                 <CardBody>
                         <h3 className="mt-5">RSRP</h3>
-                      
+                        <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="rsrpgood">Good({rsrp_good_percentage_counts} - {rsrp_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="rsrpbad">Bad({rsrp_bad_percentage_counts} - {rsrp_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="rsrppoor">Poor({rsrp_poor_percentage_counts} - {rsrp_poor_percentage}%)</span>
+				            </div>
+			            </div>
                        <ReactApexChart 
                        options={options_graph_rsrp} 
                        series={
                           [
                             {
-                               name: "RSRP",
+                               name: "Good",
                                type: 'line',
-                               data: four_g_rsrp_data,
+                               data: rsrp_good,
+                            },
+                            {
+                                name: "Bad",
+                                type: 'line',
+                                data: rsrp_bad,
+                            },
+                            {
+                                name: "Poor",
+                                type: 'line',
+                                data: rsrp_poor,
                             }
                            ]
                         } 
@@ -521,17 +799,40 @@ const Four_g = (props) => {
 
 
                       <h3 className="mt-5">RSRQ</h3>
-                      
+                        <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="rsrqgood">Good({rsrq_good_percentage_counts} - {rsrq_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="rsrqbad">Bad({rsrq_bad_percentage_counts} - {rsrq_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="rsrqpoor">Poor({rsrq_poor_percentage_counts} - {rsrq_poor_percentage}%)</span>
+				            </div>
+			            </div>
                       <ReactApexChart 
                       options={options_graph_rsrq} 
                       series={
-                         [
-                           {
-                              name: "RSRQ",
-                              type: 'line',
-                              data: four_g_rsrq_data,
-                           }
-                          ]
+                          [
+                            {
+                               name: "Good",
+                               type: 'line',
+                               data: rsrq_good,
+                            },
+                            {
+                                name: "Bad",
+                                type: 'line',
+                                data: rsrq_bad,
+                            },
+                            {
+                                name: "Poor",
+                                type: 'line',
+                                data: rsrq_poor,
+                            }
+                           ]
                        } 
                        height="260" 
                        type="line" 
@@ -583,17 +884,40 @@ const Four_g = (props) => {
                         }
 
                        <h3 className="mt-5">SINR</h3>
-                      
+                       <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="sinrgood">Good({sinr_good_percentage_counts} - {sinr_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="sinrbad">Bad({sinr_bad_percentage_counts} - {sinr_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="sinrpoor">Poor({sinr_poor_percentage_counts} - {sinr_poor_percentage}%)</span>
+				            </div>
+			            </div>
                       <ReactApexChart 
                       options={options_graph_sinr} 
                       series={
-                         [
-                           {
-                              name: "SINR",
-                              type: 'line',
-                              data: four_g_sinr_data,
-                           }
-                          ]
+                          [
+                            {
+                               name: "Good",
+                               type: 'line',
+                               data: sinr_good,
+                            },
+                            {
+                                name: "Bad",
+                                type: 'line',
+                                data: sinr_bad,
+                            },
+                            {
+                                name: "Poor",
+                                type: 'line',
+                                data: sinr_poor,
+                            }
+                           ]
                        } 
                        height="260" 
                        type="line" 
@@ -625,9 +949,9 @@ const Four_g = (props) => {
                                                 <td>{item}</td>
                                                 <td>{cid_sinr_data[item].length}</td>
                                                 <td>{data?data.length:""}</td>
-                                                <td>{Math.max(...cid_sinr_data[item])}</td>
-                                                <td>{Math.min(...cid_sinr_data[item])}</td>
-                                                <td>{Math.round(cid_sinr_data[item].reduce((a,b)=>a+b)/cid_sinr_data[item].length)}</td>
+                                                <td>{Math.max(...(cid_sinr_data[item].filter((value)=>{if(value!=null && value!=NaN){return value}})))}</td>
+                                                <td>{Math.min(...(cid_sinr_data[item]).filter((value)=>{if(value!=null && value!=NaN){return value}}))}</td>
+                                                <td>{Math.round((cid_sinr_data[item].filter((value)=>{if(value!=null && value!=NaN){return value}})).reduce((a,b)=>a+b)/cid_sinr_data[item].length)}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].tac:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].pci:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].band:""}</td>

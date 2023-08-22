@@ -10,7 +10,10 @@ import {
 
 import { act } from "react-dom/test-utils";
 
-import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
+import { Link, withRouter, useLocation, useNavigate } from "react-router-dom";
+
+// CSS
+import "../../../../../assets/css/style.css";
 
 // context 
 import { useAuthContext } from "../../../../../hooks/useAuthContext";
@@ -32,11 +35,19 @@ const Four_g = (props) => {
     const [four_g_rsrp_data, set_four_g_rsrp_data] = useState([]);
     const [cid_rsrp_data, set_cid_rsrp_data] = useState({});
     const [cid_rsrp_objdata, set_cid_rsrp_objdata] = useState({});
+
     const [rsrp_good, set_rsrp_good] = useState([]);
     const [rsrp_bad, set_rsrp_bad] = useState([]);
     const [rsrp_poor, set_rsrp_poor] = useState([]);
     
+    const [rsrp_good_percentage, set_rsrp_good_percentage] = useState([]);
+    const [rsrp_good_percentage_counts, set_rsrp_good_percentage_counts] = useState([]);
 
+    const [rsrp_bad_percentage, set_rsrp_bad_percentage] = useState([]);
+    const [rsrp_bad_percentage_counts, set_rsrp_bad_percentage_counts] = useState([]);
+
+    const [rsrp_poor_percentage, set_rsrp_poor_percentage] = useState([]);
+    const [rsrp_poor_percentage_counts, set_rsrp_poor_percentage_counts] = useState([]);
 
 
     //counts
@@ -50,6 +61,15 @@ const Four_g = (props) => {
     const [rsrq_bad, set_rsrq_bad] = useState([]);
     const [rsrq_poor, set_rsrq_poor] = useState([]);
 
+    const [rsrq_good_percentage, set_rsrq_good_percentage] = useState([]);
+    const [rsrq_good_percentage_counts, set_rsrq_good_percentage_counts] = useState([]);
+
+    const [rsrq_bad_percentage, set_rsrq_bad_percentage] = useState([]);
+    const [rsrq_bad_percentage_counts, set_rsrq_bad_percentage_counts] = useState([]);
+
+    const [rsrq_poor_percentage, set_rsrq_poor_percentage] = useState([]);
+    const [rsrq_poor_percentage_counts, set_rsrq_poor_percentage_counts] = useState([]);
+
 
     // sinr
     const [four_g_sinr_data, set_four_g_sinr_data] = useState([]);
@@ -58,6 +78,16 @@ const Four_g = (props) => {
     const [sinr_good, set_sinr_good] = useState([]);
     const [sinr_bad, set_sinr_bad] = useState([]);
     const [sinr_poor, set_sinr_poor] = useState([]);
+
+    const [sinr_good_percentage, set_sinr_good_percentage] = useState([]);
+    const [sinr_good_percentage_counts, set_sinr_good_percentage_counts] = useState([]);
+
+    const [sinr_bad_percentage, set_sinr_bad_percentage] = useState([]);
+    const [sinr_bad_percentage_counts, set_sinr_bad_percentage_counts] = useState([]);
+
+    const [sinr_poor_percentage, set_sinr_poor_percentage] = useState([]);
+    const [sinr_poor_percentage_counts, set_sinr_poor_percentage_counts] = useState([]);
+
 
     useEffect(() => {
         
@@ -137,8 +167,24 @@ const Four_g = (props) => {
             // filter rsrp data
             set_four_g_rsrp_data(rsrp_data.map(value => isNaN(value)?null:value));
             const rsrpgood = rsrp_data.map((value,index) => value >= -85 ? value : null );
-            const rsrpbad = rsrp_data.map((value,index) => value <= -85 && value >= -99 ? value : null );
-            const rsrppoor = rsrp_data.map((value,index) => value <= -99 ? value : null );
+            const rsrpgood_null_removed = rsrpgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrpgood_per = (rsrpgood_null_removed.length/data.length)*100;
+            set_rsrp_good_percentage(parseInt(rsrpgood_per));
+            set_rsrp_good_percentage_counts(rsrpgood_null_removed.length);
+            
+            
+            const rsrpbad = rsrp_data.map((value,index) => value < -85 && value >= -99 ? value : null );
+            const rsrpbad_null_removed = rsrpbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrpbad_per = (rsrpbad_null_removed.length/data.length)*100;
+            set_rsrp_bad_percentage(parseInt(rsrpbad_per));
+            set_rsrp_bad_percentage_counts(rsrpbad_null_removed.length);
+            
+            const rsrppoor = rsrp_data.map((value,index) => value < -99 ? value : null );
+            const rsrppoor_null_removed = rsrppoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrppoor_per = (rsrppoor_null_removed.length/data.length)*100;
+            set_rsrp_poor_percentage(parseInt(rsrppoor_per));
+            set_rsrp_poor_percentage_counts(rsrppoor_null_removed.length);
+            
 
             for(var i=0; i<rsrpgood.length-1; i++)
             {
@@ -190,8 +236,22 @@ const Four_g = (props) => {
             // let color = d >= -8 ? 'green' : d < -8 && d >= -14 ? 'yellow' : d < -14 ? 'red' :"";
 
             const rsrqgood = rsrq_data.map((value,index) => value >= -8 ? value : null );
-            const rsrqbad = rsrq_data.map((value,index) => value <= -8 && value >= -14 ? value : null );
-            const rsrqpoor = rsrq_data.map((value,index) => value <= -14 ? value : null );
+            const rsrqgood_null_removed = rsrqgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrqgood_per = (rsrqgood_null_removed.length/data.length)*100;
+            set_rsrq_good_percentage(parseInt(rsrqgood_per));
+            set_rsrq_good_percentage_counts(rsrqgood_null_removed.length);
+            
+            const rsrqbad = rsrq_data.map((value,index) => value < -8 && value >= -14 ? value : null );
+            const rsrqbad_null_removed = rsrqbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrqbad_per = (rsrqbad_null_removed.length/data.length)*100;
+            set_rsrq_bad_percentage(parseInt(rsrqbad_per));
+            set_rsrq_bad_percentage_counts(rsrqbad_null_removed.length);
+
+            const rsrqpoor = rsrq_data.map((value,index) => value < -14 ? value : null );
+            const rsrqpoor_null_removed = rsrqpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const rsrqpoor_per = (rsrqpoor_null_removed.length/data.length)*100;
+            set_rsrq_poor_percentage(parseInt(rsrqpoor_per));
+            set_rsrq_poor_percentage_counts(rsrqpoor_null_removed.length);
 
             for(var i=0; i<rsrqgood.length-1; i++)
             {
@@ -233,8 +293,8 @@ const Four_g = (props) => {
             }
            
             set_rsrq_good(rsrqgood);
-            set_rsrq_bad(rsrqbad)
-            set_rsrq_poor(rsrqpoor)
+            set_rsrq_bad(rsrqbad);
+            set_rsrq_poor(rsrqpoor);
             // end filter rsrq data
 
             // filter sinr data
@@ -242,8 +302,22 @@ const Four_g = (props) => {
 
             set_four_g_sinr_data(sinr_data.map(value => isNaN(value)?null:value));
             const sinrgood = sinr_data.map((value,index) => value >= 20 ? value : null );
-            const sinrbad = sinr_data.map((value,index) => value >= 5 && value <= 20 ? value : null );
+            const sinrgood_null_removed = sinrgood.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const sinrgood_per = (sinrgood_null_removed.length/data.length)*100;
+            set_sinr_good_percentage(parseInt(sinrgood_per));
+            set_sinr_good_percentage_counts(sinrgood_null_removed.length);
+            
+            const sinrbad = sinr_data.map((value,index) => value > 5 && value <= 20 ? value : null );
+            const sinrbad_null_removed = sinrbad.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const sinrbad_per = (sinrbad_null_removed.length/data.length)*100;
+            set_sinr_bad_percentage(parseInt(sinrbad_per));
+            set_sinr_bad_percentage_counts(sinrbad_null_removed.length);
+
             const sinrpoor = sinr_data.map((value,index) => value <= 5 ? value : null );
+            const sinrpoor_null_removed = sinrpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
+            const sinrpoor_per = (sinrpoor_null_removed.length/data.length)*100;
+            set_sinr_poor_percentage(parseInt(sinrpoor_per));
+            set_sinr_poor_percentage_counts(sinrpoor_null_removed.length);
 
             for(var i=0; i<sinrgood.length-1; i++)
             {
@@ -355,7 +429,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         yaxis: {
             title:{
@@ -367,7 +441,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         fill: {
             type: 'solid',
@@ -454,7 +528,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         yaxis: {
             title:{
@@ -466,7 +540,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            //tickAmount: 50
         },
         fill: {
             type: 'solid',
@@ -554,7 +628,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            // //tickAmount: 50
         },
         yaxis: {
             title:{
@@ -566,7 +640,7 @@ const Four_g = (props) => {
                 offsetX:1,
                 offsetY:1,
             },
-            tickAmount: 6
+            // //tickAmount: 50
         },
         fill: {
             type: 'solid',
@@ -588,7 +662,7 @@ const Four_g = (props) => {
 
     return (
         <React.Fragment>
-            <Card>
+            {/* <Card> */}
             <style>{"\
                         .apexcharts-legend{\
                             top:20px!important;\
@@ -597,7 +671,20 @@ const Four_g = (props) => {
             "}</style>
                 <CardBody>
                         <h3 className="mt-5">RSRP</h3>
-                      
+                        <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="rsrpgood">Good({rsrp_good_percentage_counts} - {rsrp_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="rsrpbad">Bad({rsrp_bad_percentage_counts} - {rsrp_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="rsrppoor">Poor({rsrp_poor_percentage_counts} - {rsrp_poor_percentage}%)</span>
+				            </div>
+			            </div>
                        <ReactApexChart 
                        options={options_graph_rsrp} 
                        series={
@@ -712,7 +799,20 @@ const Four_g = (props) => {
 
 
                       <h3 className="mt-5">RSRQ</h3>
-                      
+                        <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="rsrqgood">Good({rsrq_good_percentage_counts} - {rsrq_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="rsrqbad">Bad({rsrq_bad_percentage_counts} - {rsrq_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="rsrqpoor">Poor({rsrq_poor_percentage_counts} - {rsrq_poor_percentage}%)</span>
+				            </div>
+			            </div>
                       <ReactApexChart 
                       options={options_graph_rsrq} 
                       series={
@@ -784,7 +884,20 @@ const Four_g = (props) => {
                         }
 
                        <h3 className="mt-5">SINR</h3>
-                      
+                       <div class="row graph-info-box-center">
+				            <div class="col-sm-4">
+					            <div class="graph-info-box good"></div>
+					            <span id="sinrgood">Good({sinr_good_percentage_counts} - {sinr_good_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box bad"></div>
+					            <span id="sinrbad">Bad({sinr_bad_percentage_counts} - {sinr_bad_percentage}%)</span>
+				            </div>
+				            <div class="col-sm-4">
+					            <div class="graph-info-box poor"></div>
+					            <span id="sinrpoor">Poor({sinr_poor_percentage_counts} - {sinr_poor_percentage}%)</span>
+				            </div>
+			            </div>
                       <ReactApexChart 
                       options={options_graph_sinr} 
                       series={
@@ -836,9 +949,9 @@ const Four_g = (props) => {
                                                 <td>{item}</td>
                                                 <td>{cid_sinr_data[item].length}</td>
                                                 <td>{data?data.length:""}</td>
-                                                <td>{Math.max(...cid_sinr_data[item])}</td>
-                                                <td>{Math.min(...cid_sinr_data[item])}</td>
-                                                <td>{Math.round(cid_sinr_data[item].reduce((a,b)=>a+b)/cid_sinr_data[item].length)}</td>
+                                                <td>{Math.max(...(cid_sinr_data[item].filter((value)=>{if(value!=null && value!=NaN){return value}})))}</td>
+                                                <td>{Math.min(...(cid_sinr_data[item]).filter((value)=>{if(value!=null && value!=NaN){return value}}))}</td>
+                                                <td>{Math.round((cid_sinr_data[item].filter((value)=>{if(value!=null && value!=NaN){return value}})).reduce((a,b)=>a+b)/cid_sinr_data[item].length)}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].tac:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].pci:""}</td>
                                                 <td>{cid_rsrp_objdata[item]?cid_rsrp_objdata[item][0].band:""}</td>
@@ -855,7 +968,7 @@ const Four_g = (props) => {
                         }
 
                 </CardBody>
-            </Card>
+            {/* </Card> */}
         </React.Fragment>
     )
 }

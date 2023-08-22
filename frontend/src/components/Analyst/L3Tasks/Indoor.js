@@ -144,21 +144,21 @@ const Indoor = (props) => {
             <TabContent activeTab={activeTab} className="p-3 text-muted">
                 <TabPane tabId="2">
                     <Row>
-                        <Col lg={8}>
+                        <Col lg={9}>
                             <Dedicated data={dedidcated}/>
                         </Col>
                     </Row>
                 </TabPane>
                 <TabPane tabId="3">
                     <Row>
-                        <Col lg={8}>
+                        <Col lg={9}>
                             <Idle data={idle}/>
                         </Col>
                     </Row>
                 </TabPane>
                 <TabPane tabId="4">
                     <Row>
-                        <Col lg={8}>
+                        <Col lg={9}>
                             <Ookla data={ookla} />
                         </Col>
                     </Row>
