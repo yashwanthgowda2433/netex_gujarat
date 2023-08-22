@@ -12,8 +12,8 @@ const TestPre = require('../data_model/testpre');
 const TestPost = require('../data_model/testpost');
 
 
-// getReport
-const getReport = async (req, res) => {
+// getPreReport
+const getPreReport = async (req, res) => {
     const user = req.user;
     const data = req.body;
     
@@ -21,11 +21,11 @@ const getReport = async (req, res) => {
     {
         if(user.user_role == analyst)
         {
-            const test_data = await Test.getTestReport(data);
-            const test_pre = await TestPre.getTestReportExists(data);
+            const test_data = await Test.getTestReportExists(data);
+            const test_pre = await TestPre.getTestReport(data);
             const test_post = await TestPost.getTestReportExists(data);
 
-            res.status(200).json({status:"Success", data:test_data, test_pre:test_pre, test_post:test_post});
+            res.status(200).json({status:"Success", data:test_pre, test:test_data, test_post:test_post});
 
         }else{
             res.status(200).json({status:"Error", message: "You Don't have permission access to this feature."})
@@ -35,4 +35,4 @@ const getReport = async (req, res) => {
     }
 }
 
-module.exports = { getReport }
+module.exports = { getPreReport }

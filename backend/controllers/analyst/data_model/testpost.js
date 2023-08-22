@@ -4,7 +4,7 @@ const {
 
 const User = require('../../../models/userModel');
 const Task = require('../../../models/taskModel');
-const Test = require('../../../models/test_reportModel');
+const Test = require('../../../models/test_reportPostModel');
 
 const addTest = async (user, test_data, task_id) => {
     console.log(task_id)
