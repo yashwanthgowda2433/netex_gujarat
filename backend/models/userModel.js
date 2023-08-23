@@ -154,7 +154,7 @@ userSchema.statics.addUser = async function(user_data) {
   if (!validator.isEmail(user_data.email)) {
     throw Error('Email not valid')
   }
-  if (!validator.isAlpha(user_data.name)) {
+  if (!validator.isAlphanumeric(user_data.name)) {
     throw Error('Name not valid')
   }
   if (!validator.isNumeric(user_data.mobile)) {

@@ -1,3 +1,4 @@
+import { analyst,l3tl } from "./global_variables/user_variables";
 import React from "react"
 import { Switch, BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthContext } from './hooks/useAuthContext'
@@ -23,8 +24,22 @@ import Analyst_view_employess from './pages/Analyst/FieldEngineers/ViewEmployees
 import Analyst_task_prereport from "./pages/Analyst/Tasks/PreReport";
 import Analyst_task_postreport from "./pages/Analyst/Tasks/PostReport";
 
-
 // ANALYST IMPORTS ENDS
+
+// L3TL IMPORTS START
+import L3tl_dashboard from './pages/L3tl/Dashboard';
+// import L3tl_task_add from './pages/L3tl/Tasks/Add';
+import L3tl_task_view from './pages/L3tl/Tasks/View';
+import L3tl_task_report from "./pages/L3tl/Tasks/Report";
+import L3tl_task_executiveview from "./pages/L3tl/Tasks/ExecutiveView";
+import L3tl_task_executivereport from "./pages/L3tl/Tasks/ExecutiveReport";
+import L3tl_viewmap from "./pages/L3tl/ViewMap/ViewMap";
+import L3tl_track_employess from './pages/L3tl/FieldEngineers/TrackEmployees';
+import L3tl_view_employess from './pages/L3tl/FieldEngineers/ViewEmployees';
+import L3tl_task_prereport from "./pages/L3tl/Tasks/PreReport";
+import L3tl_task_postreport from "./pages/L3tl/Tasks/PostReport";
+
+// L3tl IMPORTS ENDS
 
 
 // import Posmachines from "./pages/Pos_machines/Pos_machines";
@@ -55,7 +70,7 @@ function App() {
   if(user != "" && user != null){
 
       //ANALYST LOGIN
-      if(user.user_role == process.env.REACT_APP_ANALYST)
+      if(user.user_role == analyst)
       {
           return (
               <div className="App lgin">
@@ -75,6 +90,35 @@ function App() {
                               <Route path="/fieldengineers" element={ user ? <Analyst_view_employess/> : <Login/> } />
                               <Route path="/tasks/report/pre" element={ user ? <Analyst_task_prereport/> : <Login/> } />
                               <Route path="/tasks/report/post" element={ user ? <Analyst_task_postreport/> : <Login/> } />
+
+
+                          </Routes>
+                      </div>
+                  </BrowserRouter>
+              </div>
+          )
+      }
+
+      //L3TL LOGIN
+      if(user.user_role == l3tl)
+      {
+          return (
+              <div className="App lgin">
+                  <BrowserRouter>
+                      <div className="pages">
+                          <Routes>
+                              <Route path="/" element={ user ? <Navigate to="/dashboard" /> : <Login/> } />
+
+                              <Route path="/dashboard" element={ user ? <L3tl_dashboard/> : <Login/> } />\
+                              <Route path="/tasks/view" element={ user ? <L3tl_task_view/> : <Login/> } />
+                              <Route path="/tasks/report" element={ user ? <L3tl_task_report/> : <Login/> } />
+                              <Route path="/tasks/executiveTasks" element={ user ? <L3tl_task_executiveview/> : <Login/> } />
+                              <Route path="/tasks/executivereport" element={ user ? <L3tl_task_executivereport/> : <Login/> } />
+                              <Route path="/view_map" element={ user ? <L3tl_viewmap/> : <Login/> } />
+                              <Route path="/field-engineers/track" element={ user ? <L3tl_track_employess/> : <Login/> } />
+                              <Route path="/fieldengineers" element={ user ? <L3tl_view_employess/> : <Login/> } />
+                              <Route path="/tasks/report/pre" element={ user ? <L3tl_task_prereport/> : <Login/> } />
+                              <Route path="/tasks/report/post" element={ user ? <L3tl_task_postreport/> : <Login/> } />
 
 
                           </Routes>

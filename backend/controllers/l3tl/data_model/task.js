@@ -238,6 +238,8 @@ const getTasks = async (user, filter_data) => {
 
     // user added by
     And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
+    And_Where_Tasks.push({ $eq: ["$task_deleted", deleted_no] });
+
 
     // status
     var status = "";
@@ -302,8 +304,6 @@ const getTasks = async (user, filter_data) => {
     {
         And_Where_Tasks.push({ $lte: ["$task_createdon", new Date(to_date)] });
     }
-    And_Where_Tasks.push({ $eq: ["$task_rth_flag", rth_no] });
-
 
     var Or_Where_Tasks = [];
     var search_param = filter_data.search;
@@ -313,10 +313,8 @@ const getTasks = async (user, filter_data) => {
         Or_Where_Tasks.push({ "task_customer_name" : { $regex : search_param }});
         Or_Where_Tasks.push({ "task_mobile_number" : { $regex : search_param }});
     }
-    Or_Where_Tasks.push({ "task_status" : analysis_required});
-    Or_Where_Tasks.push({ "task_is_rf_fieldvisit" : fieldvisit_yes});
-    Or_Where_Tasks.push({ "task_status" : analysed});
-
+    Or_Where_Tasks.push({ "task_is_fieldvisit" : fieldvisit_yes});
+    Or_Where_Tasks.push({ "task_fwdtofe" : fwdtofe_yes});
 
     var query = {};
     query.$expr = { 
@@ -355,7 +353,7 @@ const getTasks = async (user, filter_data) => {
 }
 
 
-const getL3Tasks = async (user, filter_data) => {
+const getExecutiveTasks = async (user, filter_data) => {
     console.log(user);
     const total_size = (await Task.aggregate([
         {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
@@ -426,8 +424,6 @@ const getL3Tasks = async (user, filter_data) => {
         And_Where_Tasks.push({ $eq: ["$task_status", status] });
     }
     And_Where_Tasks.push({ $eq: ["$task_status", analysis_required_fwdbyl3] });
-    And_Where_Tasks.push({ $eq: ["$task_rth_flag", rth_no] });
-
 
     // from date and to date
     var from_date = filter_data.from_date;
@@ -440,7 +436,7 @@ const getL3Tasks = async (user, filter_data) => {
     {
         And_Where_Tasks.push({ $lte: ["$task_createdon", new Date(to_date)] });
     }
-    
+
     var Or_Where_Tasks = [];
     var search_param = filter_data.search;
     if(search_param != "")
@@ -486,4 +482,4 @@ const getL3Tasks = async (user, filter_data) => {
     
 }
 
-module.exports = { addTask, getTasks, getL3Tasks }
+module.exports = { addTask, getTasks, getExecutiveTasks }

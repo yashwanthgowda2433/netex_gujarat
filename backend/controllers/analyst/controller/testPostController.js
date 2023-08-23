@@ -12,8 +12,8 @@ const TestPre = require('../data_model/testpre');
 const TestPost = require('../data_model/testpost');
 
 
-// getPostReport
-const getPostReport = async (req, res) => {
+// getAnalystPostReport
+const getAnalystPostReport = async (req, res) => {
     const user = req.user;
     const data = req.body;
     
@@ -35,4 +35,4 @@ const getPostReport = async (req, res) => {
     }
 }
 
-module.exports = { getPostReport }
+module.exports = { getAnalystPostReport }

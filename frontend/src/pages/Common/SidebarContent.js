@@ -1,3 +1,5 @@
+import { analyst,l3tl } from "../../global_variables/user_variables";
+
 import PropTypes from "prop-types"
 import React, { useEffect, useRef, useCallback, useState } from "react"
 
@@ -138,56 +140,112 @@ const SidebarContent = () => {
         <div id="sidebar-menu" className="mm-show">
           <ul className="metismenu list-unstyled" id="side-menu">
             <li className="menu-title">Menu </li>
-            <li>
-              <Link to="/" className={'/'.includes(url_path) || '/dashboard'.includes(url_path) ? 'waves-effect mm-active' : 'waves-effect'}>
-                <i className="mdi mdi-airplay"></i>
-                <span>Dashboard</span>
-              </Link>
-            </li>
 
-            <li className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "mm-active" : "" }>
-              <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
-                <i className="mdi mdi-inbox-full"></i>
-                <span>Field Engineers</span>
-              </Link>
-              <ul className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
-                <li>
-                  <Link to="/field-engineers/track" className={'/field-engineers/track'.includes(url_path) ? "mm-active" : "" }>Track Employees</Link>
-                </li>
-                <li>
-                  <Link to="/fieldengineers" className={'/fieldengineers'.includes(url_path) ? "mm-active" : "" }>View Employees</Link>
-                </li>
-              </ul>
-            </li>
+            {/* ANALYST Login */}
 
-            <li>
-              
-              <Link to="/view_map" className={'/view_map'.includes(url_path) ? "mm-active" : "" }>
-                  <i className="mdi mdi-inbox-full"></i>
-                  View Map
-              </Link>
+              { user.user_role == analyst ? 
+                <>
+                    <li>
+                        <Link to="/" className={'/'.includes(url_path) || '/dashboard'.includes(url_path) ? 'waves-effect mm-active' : 'waves-effect'}>
+                            <i className="mdi mdi-airplay"></i>
+                            <span>Dashboard</span>
+                        </Link>
+                    </li>
 
-            </li>
+                    <li className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "mm-active" : "" }>
+                        <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
+                            <i className="mdi mdi-inbox-full"></i>
+                            <span>Field Engineers</span>
+                        </Link>
+                        <ul className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
+                            <li>
+                                <Link to="/field-engineers/track" className={'/field-engineers/track'.includes(url_path) ? "mm-active" : "" }>Track Employees</Link>
+                            </li>
+                            <li>
+                                <Link to="/fieldengineers" className={'/fieldengineers'.includes(url_path) ? "mm-active" : "" }>View Employees</Link>
+                            </li>
+                        </ul>
+                    </li>
 
-            <li className={ /tasks/.test(url_path) ? "mm-active" : "" }>
-              <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
-                <i className="mdi mdi-inbox-full"></i>
-                <span>Tasks</span>
-              </Link>
-              <ul className={ /tasks/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
-                <li>
-                    <Link to="/tasks/add" className={'/tasks/add'.includes(url_path) ? "mm-active" : "" }>Task Add</Link>
-                </li>
-                <li>
-                    <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) || '/tasks/report'.includes(url_path) ? "mm-active" : "" }>Tasks</Link>
-                </li>
-                <li>
-                    <Link to="/tasks/l3tlview" className={'/tasks/l3tlview'.includes(url_path) || '/tasks/l3tlreport'.includes(url_path) ? "mm-active" : "" }>RF Open Tasks</Link>
-                </li>
-              </ul>
-            </li>  
+                    <li>
+                          <Link to="/view_map" className={'/view_map'.includes(url_path) ? "mm-active" : "" }>
+                              <i className="mdi mdi-inbox-full"></i>
+                              View Map
+                          </Link>
+                    </li>
 
-            
+                    <li className={ /tasks/.test(url_path) ? "mm-active" : "" }>
+                        <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
+                            <i className="mdi mdi-inbox-full"></i>
+                            <span>Tasks</span>
+                        </Link>
+                        <ul className={ /tasks/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
+                            <li>
+                                <Link to="/tasks/add" className={'/tasks/add'.includes(url_path) ? "mm-active" : "" }>Task Add</Link>
+                            </li>
+                            <li>
+                                <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) || '/tasks/report'.includes(url_path) ? "mm-active" : "" }>Tasks</Link>
+                            </li>
+                            <li>
+                                <Link to="/tasks/l3tlview" className={'/tasks/l3tlview'.includes(url_path) || '/tasks/l3tlreport'.includes(url_path) ? "mm-active" : "" }>RF Open Tasks</Link>
+                            </li>
+                        </ul>
+                    </li>  
+                  </>
+                :  <></>
+              }
+
+
+              {/* L3TL Login */}
+              { user.user_role == l3tl ? 
+                <>
+                    <li>
+                        <Link to="/" className={'/'.includes(url_path) || '/dashboard'.includes(url_path) ? 'waves-effect mm-active' : 'waves-effect'}>
+                            <i className="mdi mdi-airplay"></i>
+                            <span>Dashboard</span>
+                        </Link>
+                    </li>
+
+                    <li className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "mm-active" : "" }>
+                        <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
+                            <i className="mdi mdi-inbox-full"></i>
+                            <span>Field Engineers</span>
+                        </Link>
+                        <ul className={ /field-engineers/.test(url_path) || /fieldengineers/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
+                            <li>
+                                <Link to="/field-engineers/track" className={'/field-engineers/track'.includes(url_path) ? "mm-active" : "" }>Track Employees</Link>
+                            </li>
+                            <li>
+                                <Link to="/fieldengineers" className={'/fieldengineers'.includes(url_path) ? "mm-active" : "" }>View Employees</Link>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li>
+                          <Link to="/view_map" className={'/view_map'.includes(url_path) ? "mm-active" : "" }>
+                              <i className="mdi mdi-inbox-full"></i>
+                              View Map
+                          </Link>
+                    </li>
+
+                    <li className={ /tasks/.test(url_path) ? "mm-active" : "" }>
+                        <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
+                            <i className="mdi mdi-inbox-full"></i>
+                            <span>Tasks</span>
+                        </Link>
+                        <ul className={ /tasks/.test(url_path) ? "sub-menu mm-collapse mm-show" :  "sub-menu" }>
+                            
+                            <li>
+                                <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) || '/tasks/report'.includes(url_path) ? "mm-active" : "" }>View Task Summary</Link>
+                            </li>
+                            <li>
+                                <Link to="/tasks/executiveTasks" className={'/tasks/executiveTasks'.includes(url_path) || '/tasks/l3tlreport'.includes(url_path) ? "mm-active" : "" }>View Open Complaint Summary</Link>
+                            </li>
+                        </ul>
+                    </li>  
+                  </>
+                :  <></>
+              }
           </ul>
         </div>
       </SimpleBar>

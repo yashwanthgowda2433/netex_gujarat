@@ -13,13 +13,13 @@ const TestPost = require('../data_model/testpost');
 
 
 // getReport
-const getAnalystReport = async (req, res) => {
+const getL3tlReport = async (req, res) => {
     const user = req.user;
     const data = req.body;
     
     if(user)
     {
-        if(user.user_role == analyst)
+        if(user.user_role == l3tl)
         {
             const test_data = await Test.getTestReport(data);
             const test_pre = await TestPre.getTestReportExists(data);
@@ -35,4 +35,4 @@ const getAnalystReport = async (req, res) => {
     }
 }
 
-module.exports = { getAnalystReport }
+module.exports = { getL3tlReport }
