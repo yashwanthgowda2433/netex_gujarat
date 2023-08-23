@@ -130,7 +130,7 @@ const Three_g = (props) => {
             set_rscp_bad_percentage(parseInt(rscpbad_per));
             set_rscp_bad_percentage_counts(rscpbad_null_removed.length);
 
-            const rscppoor = rscp_data.map((value,index) => value < -95 ? value : null );
+            const rscppoor = rscp_data.map((value,index) => value < -100 ? value : null );
             const rscppoor_null_removed = rscppoor.filter((value) => { if(value != null && value != NaN){ return value; }});
             const rscppoor_per = (rscppoor_null_removed.length/data.length)*100;
             set_rscp_poor_percentage(parseInt(rscppoor_per));

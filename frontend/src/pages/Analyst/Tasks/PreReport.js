@@ -21,7 +21,7 @@ import Balcony from "../../../components/Analyst/Tasks/Balcony";
 import Terrace from "../../../components/Analyst/Tasks/Terrace";
 import WalkDriveTest from "../../../components/Analyst/Tasks/WalkDriveTest";
 
-const Report = (props) => {
+const PreReport = (props) => {
     const navigate = useNavigate();
     const [activeTab, setactiveTab] = useState("1")
     const [test_data, set_test_data] = useState({});
@@ -32,6 +32,8 @@ const Report = (props) => {
     const [analysed_by_rf, set_analysed_by_rf] = useState({});
     const [pre_test, set_pre_test] = useState(false);
     const [post_test, set_post_test] = useState(false);
+    const [test, set_test] = useState(false);
+
 
     const [col5, setcol5] = useState(false)
 
@@ -93,7 +95,7 @@ const Report = (props) => {
     const getTaskTests = async () => {
         if(user)
         {
-            const response = await fetch('/api/tests/analyst/getReport', {
+            const response = await fetch('/api/tests/analyst/getPreReport', {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${user.token}` },
                 body: JSON.stringify({ task_id : task_data._id })
@@ -109,7 +111,7 @@ const Report = (props) => {
                     if(user){
                         if(test_data)
                         {
-                            set_pre_test(json.test_pre);
+                            set_test(json.test);
                             set_post_test(json.test_post);
 
                             // //console.log(test_data.analysed_by_l2)
@@ -222,12 +224,19 @@ const Report = (props) => {
                                                             <button onClick={() => { setcol5(!col5) }} className="btn bg-warning waves-effect m-b-15 mt-2" type="button" style={{ cursor: "pointer", color:"#ffffff" }} >RF Measurments</button>
                                                             <Collapse isOpen={col5}>
                                                                 <CardBody>
-                                                                    <Link className="btn btn-warning" to="/tasks/report/pre" state={task_data}>Pre Measurments</Link>
+                                                                
                                                                     <Link className="btn btn-warning" style={{marginLeft:"20px"}} to="/tasks/report/post" state={task_data}>Post Measurments</Link>
                                                                 </CardBody>
                                                             </Collapse>
                                                         </>
-                                                        : <></> 
+                                                        : <></> }
+                                                        {
+                                                            test ?
+                                                               <>
+                                                                    <Link className="btn btn-info" to="/tasks/report" state={task_data}>L3 Measurments</Link>
+                                                               </>
+                                                            : 
+                                                               <></>
                                                         }
                                                     </Col>
                                                 </Row>
@@ -304,5 +313,5 @@ const Report = (props) => {
     )
 }
 
-export default Report;
+export default PreReport;
                             

@@ -122,7 +122,7 @@ const getTestReport = async (data) => {
 
 const getTestReportExists = async (data) => {
     const test_data = await Test.findOne({testreport_task_id:data.task_id});
-    if(test_data && test_data.length > 0){
+    if(test_data){
         return true;
     }else{
         return false;

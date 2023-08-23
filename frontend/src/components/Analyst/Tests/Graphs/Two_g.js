@@ -130,13 +130,13 @@ const Two_g = (props) => {
             set_rxlevel_good_percentage(parseInt(rxlevelgood_per));
             set_rxlevel_good_percentage_counts(rxlevelgood_null_removed.length);
 
-            const rxlevelbad = rx_data.map((value,index) => value < -85 && value >= -95 ? value : null );
+            const rxlevelbad = rx_data.map((value,index) => value < -85 && value >= -94 ? value : null );
             const rxlevelbad_null_removed = rxlevelbad.filter((value) => { if(value != null && value != NaN){ return value; }});
             const rxlevelbad_per = (rxlevelbad_null_removed.length/data.length)*100;
             set_rxlevel_bad_percentage(parseInt(rxlevelbad_per));
             set_rxlevel_bad_percentage_counts(rxlevelbad_null_removed.length);
 
-            const rxlevelpoor = rx_data.map((value,index) => value < -95 ? value : null );
+            const rxlevelpoor = rx_data.map((value,index) => value <= -95 ? value : null );
             const rxlevelpoor_null_removed = rxlevelpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
             const rxlevelpoor_per = (rxlevelpoor_null_removed.length/data.length)*100;
             set_rxlevel_poor_percentage(parseInt(rxlevelpoor_per));

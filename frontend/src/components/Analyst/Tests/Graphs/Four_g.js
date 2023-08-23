@@ -166,20 +166,20 @@ const Four_g = (props) => {
 
             // filter rsrp data
             set_four_g_rsrp_data(rsrp_data.map(value => isNaN(value)?null:value));
-            const rsrpgood = rsrp_data.map((value,index) => value >= -85 ? value : null );
+            const rsrpgood = rsrp_data.map((value,index) => value <= -40 && value >= -100 ? value : null );
             const rsrpgood_null_removed = rsrpgood.filter((value) => { if(value != null && value != NaN){ return value; }});
             const rsrpgood_per = (rsrpgood_null_removed.length/data.length)*100;
             set_rsrp_good_percentage(parseInt(rsrpgood_per));
             set_rsrp_good_percentage_counts(rsrpgood_null_removed.length);
             
             
-            const rsrpbad = rsrp_data.map((value,index) => value < -85 && value >= -99 ? value : null );
+            const rsrpbad = rsrp_data.map((value,index) => value < -100 && value >= -110 ? value : null );
             const rsrpbad_null_removed = rsrpbad.filter((value) => { if(value != null && value != NaN){ return value; }});
             const rsrpbad_per = (rsrpbad_null_removed.length/data.length)*100;
             set_rsrp_bad_percentage(parseInt(rsrpbad_per));
             set_rsrp_bad_percentage_counts(rsrpbad_null_removed.length);
             
-            const rsrppoor = rsrp_data.map((value,index) => value < -99 ? value : null );
+            const rsrppoor = rsrp_data.map((value,index) => value < -110 && value >= -140 ? value : null );
             const rsrppoor_null_removed = rsrppoor.filter((value) => { if(value != null && value != NaN){ return value; }});
             const rsrppoor_per = (rsrppoor_null_removed.length/data.length)*100;
             set_rsrp_poor_percentage(parseInt(rsrppoor_per));
@@ -301,19 +301,19 @@ const Four_g = (props) => {
             // let color = d >= 20 ? 'green' : d > 5 && d < 20 ? 'yellow' : d > -20 && d <= 5 ? 'red' :"";
 
             set_four_g_sinr_data(sinr_data.map(value => isNaN(value)?null:value));
-            const sinrgood = sinr_data.map((value,index) => value >= 20 ? value : null );
+            const sinrgood = sinr_data.map((value,index) => value > 5 && value <= 30 ? value : null );
             const sinrgood_null_removed = sinrgood.filter((value) => { if(value != null && value != NaN){ return value; }});
             const sinrgood_per = (sinrgood_null_removed.length/data.length)*100;
             set_sinr_good_percentage(parseInt(sinrgood_per));
             set_sinr_good_percentage_counts(sinrgood_null_removed.length);
             
-            const sinrbad = sinr_data.map((value,index) => value > 5 && value <= 20 ? value : null );
+            const sinrbad = sinr_data.map((value,index) => value > 0 && value <= 5 ? value : null );
             const sinrbad_null_removed = sinrbad.filter((value) => { if(value != null && value != NaN){ return value; }});
             const sinrbad_per = (sinrbad_null_removed.length/data.length)*100;
             set_sinr_bad_percentage(parseInt(sinrbad_per));
             set_sinr_bad_percentage_counts(sinrbad_null_removed.length);
 
-            const sinrpoor = sinr_data.map((value,index) => value <= 5 ? value : null );
+            const sinrpoor = sinr_data.map((value,index) => value >= -20 && value <= 0 ? value : null );
             const sinrpoor_null_removed = sinrpoor.filter((value) => { if(value != null && value != NaN){ return value; }});
             const sinrpoor_per = (sinrpoor_null_removed.length/data.length)*100;
             set_sinr_poor_percentage(parseInt(sinrpoor_per));
