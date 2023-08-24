@@ -15,7 +15,12 @@ const { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_n
     directL2Close_option,resolvedClosed_option,notResolvedClosed_option,
     } = require('../../../global_variables/task_variables');
 
-const { deleted_no } = require('../../../global_variables/user_variables');
+    // import user table variables
+const { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
+    admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
+    roles, sla_fwz_depts, zones, is_logged_in_yes, is_logged_in_no, male, female, deleted_yes, deleted_no} = require('../../../global_variables/user_variables');
+  
+
 
 
 const User = require('../../../models/userModel');
@@ -237,7 +242,12 @@ const getTasks = async (user, filter_data) => {
     var And_Where_Tasks = [];
 
     // user added by
-    And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
+    const user_data = await User.find({$or:[{user_role:l3tl}, {user_role:field_engineer}, {user_role:l2tl}, {user_role:executive}, {user_role:outcall}]}, {_id:1})
+    console.log("++++++++++++++++++++++")
+    var user_addedby_arr = user_data.map((val,index)=> val._id.toString());
+    console.log(user_addedby_arr)
+
+    And_Where_Tasks.push({ $in: ["$task_addedby", user_addedby_arr] });
     And_Where_Tasks.push({ $eq: ["$task_deleted", deleted_no] });
 
 
