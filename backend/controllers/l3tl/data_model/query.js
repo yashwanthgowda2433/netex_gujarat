@@ -22,3 +22,7 @@ db.tasks.find(
 		"task_id" : -1
 	}
 );
+
+
+
+tasks.aggregate([ { '$match': { '$expr': { '$and': [ { '$in': [ '$task_addedby', [ '64c8a44fce97bad97a87a584', '64e5c5024fec7bb4193046bd' ] ] }, { '$eq': [ '$task_deleted', 0 ] }, { '$not': { '$in': [ '$task_status', [ 8, 9 ] ] } }]}}}])
