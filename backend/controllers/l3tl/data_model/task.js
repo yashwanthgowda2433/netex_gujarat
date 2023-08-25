@@ -39,9 +39,9 @@ const addTask = async (user, task_data) => {
     
 
     var data = {};
-    console.log("=====================")
-    console.log(task_data.crystal_date);
-    console.log(new Date(task_data.crystal_date));
+    // console.log("=====================")
+    // console.log(task_data.crystal_date);
+    // console.log(new Date(task_data.crystal_date));
 
     data.task_employee_id = task_data.employee_id ? task_data.employee_id : "";
     data.task_rf_employee_id = task_data.rf_employee_id ? task_data.rf_employee_id : "";
@@ -226,7 +226,7 @@ const addTask = async (user, task_data) => {
 }
 
 const getTasks = async (user, filter_data) => {
-    console.log(user);
+    // console.log(user);
     const total_size = (await Task.aggregate([
         {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
         {
@@ -243,12 +243,13 @@ const getTasks = async (user, filter_data) => {
 
     // user added by
     const user_data = await User.find({$or:[{user_role:l3tl}, {user_role:field_engineer}, {user_role:l2tl}, {user_role:executive}, {user_role:outcall}]}, {_id:1})
-    console.log("++++++++++++++++++++++")
     var user_addedby_arr = user_data.map((val,index)=> val._id.toString());
-    console.log(user_addedby_arr)
 
     And_Where_Tasks.push({ $in: ["$task_addedby", user_addedby_arr] });
     And_Where_Tasks.push({ $eq: ["$task_deleted", deleted_no] });
+    And_Where_Tasks.push({ $not: { $in : ["$task_status", [addedbyl2_executive, approve_for_fieldvisit]] }});
+    And_Where_Tasks.push({ $or: [ {$eq : ["$task_is_fieldvisit", fieldvisit_yes] }, {$eq : ["$task_fwdtofe", fwdtofe_yes] }]});
+
 
 
     // status
@@ -323,9 +324,7 @@ const getTasks = async (user, filter_data) => {
         Or_Where_Tasks.push({ "task_customer_name" : { $regex : search_param }});
         Or_Where_Tasks.push({ "task_mobile_number" : { $regex : search_param }});
     }
-    Or_Where_Tasks.push({ "task_is_fieldvisit" : fieldvisit_yes});
-    Or_Where_Tasks.push({ "task_fwdtofe" : fwdtofe_yes});
-
+    
     var query = {};
     query.$expr = { 
             $and : And_Where_Tasks,
@@ -352,7 +351,10 @@ const getTasks = async (user, filter_data) => {
             }
         },
         {$skip:filter_data.pageStart},
-        {$limit:filter_data.pageLimit}
+        {$limit:filter_data.pageLimit},
+        {
+            $sort:{ "task_id" : -1 }
+        }
     ])
 
     // const total_size = (await Task.find()).length;
@@ -364,7 +366,7 @@ const getTasks = async (user, filter_data) => {
 
 
 const getExecutiveTasks = async (user, filter_data) => {
-    console.log(user);
+    // console.log(user);
     const total_size = (await Task.aggregate([
         {$addFields:{emp_id:{$toObjectId:"$task_employee_id"}}},
         {

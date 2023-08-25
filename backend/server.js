@@ -24,6 +24,7 @@ app.use('/api/tests', testRoutes)
 
 
 // connect to db
+mongoose.set('debug', true);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     // listen for requests  

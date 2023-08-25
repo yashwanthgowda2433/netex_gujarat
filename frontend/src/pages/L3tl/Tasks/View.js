@@ -14,6 +14,12 @@ import { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_
     visit_progress_option,optimization_progress_option,visit_completed_option,analyze_completed_option,revertTeam_option,closedwithoutFV_option,
     directL2Close_option,resolvedClosed_option,notResolvedClosed_option,
     } from '../../../global_variables/task_variables';
+
+// import user table variables
+import { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
+    admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
+    roles, sla_fwz_depts,  is_logged_in_yes, is_logged_in_no, male, female, deleted_yes, deleted_no} from '../../../global_variables/user_variables';
+  
     
 import React, { useEffect, useState } from "react";
 import Header from "../../Common/Header";
@@ -45,6 +51,7 @@ const View = () => {
 
     const arr_date_type  = {'visit':'visit uploaded date','assign':'Assign to field date'};							   
     const arr2_date_type = ['visit','assign'];
+    const postpaid_arr = ['R-10 Plus Years','R-Family Base','R-High Value','R-Senior Citizen'];
 
     const {user} = useAuthContext()
     const propsData = useLocation();
@@ -307,27 +314,24 @@ const View = () => {
                 accessor: 'task_customer_name',
             },
             {
-                Header: 'Company Name',
-                accessor: 'task_company_name',
-            },
-            {
                 Header: 'Customer Mobile',
                 accessor: 'task_mobile_number',
             },
-            {
-                Header: 'L3 remarks',
-                accessor: a=>(
-                    
-                    <button type="button" class="btn btn-primary btn-xs waves-effect" 
-                        data-bs-container="body" 
-                        data-bs-toggle="popover" 
-                        data-bs-placement="bottom" 
-                        title="Message"
-                        data-bs-content="No Remarks"
-                        data-bs-trigger="focus"  style={styles.showbtn}>Show</button>
-                )
-            },
-            {
+            user.user_role == dept_user ? 
+                {
+                    Header: 'Task Forwarded on',
+                    accessor: 'cc',
+                } 
+            : 
+                {
+                    Header: 'TAT',
+                    accessor: '',
+                },
+                {
+                    Header: 'ATAT Reason',
+                    accessor: '',
+                }
+            ,{
                 Header: 'Assign to field date',
                 accessor: 'task_assigned_on',
             },
@@ -337,7 +341,7 @@ const View = () => {
             },
             {
                 Header: 'Customer Subtype',
-                accessor: 'task_postpaid_sub_type',
+                accessor: a => (postpaid_arr.includes(a.task_postpaid_sub_type) ? <span className='btn btn-warning' style={styles.status}>{a.task_postpaid_sub_type}</span>:a.task_postpaid_sub_type),
             },
             {
                 Header: 'Status',
