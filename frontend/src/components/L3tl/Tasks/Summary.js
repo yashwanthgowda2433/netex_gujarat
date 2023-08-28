@@ -31,7 +31,7 @@ import {
 import '../../../assets/css/style.css';
 
 import React, { useEffect, useState } from "react"
-import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress } from "reactstrap"
+import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress, Collapse, Form, Button } from "reactstrap"
 import { isEmpty, map, size } from "lodash"
 
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
@@ -55,6 +55,31 @@ const Summary = (props) => {
     const analysed_by_l2 = props.data.analysed_by_l2;
     const analysed_by_l3 = props.data.analysed_by_l3;
     const analysed_by_rf = props.data.analysed_by_rf;
+
+    const [col5, setcol5] = useState(false)
+
+    const [rows1, setrows1] = useState([])
+    const [rows2, setrows2] = useState([])
+
+    function handleAddRowNested() {
+        const item1 = { name1: "" }
+        setrows1([...rows1, item1])
+    }
+
+    function handleRemoveRow(e, id) {
+        if (typeof id != "undefined"){
+            document.getElementById("addr" + id).style.display = "none";
+        }
+    }
+
+    function handleRemoveRowNested(e, id) {
+        document.getElementById("nested" + id).style.display = "none"
+    }
+
+    function handleAddRowNested1() {
+        const item2 = { name1: "" }
+        setrows2([...rows2, item2])
+    }
 
     ////console.log(task_data)
     ////console.log(analysed_by_l2)
@@ -922,7 +947,7 @@ const Summary = (props) => {
 
                         <div class="card mt-5">
 				            <div class="panel">
-					            <div class="panel-body">
+					            <div class="panel-body row">
 					                <div class="header">
 						                <h4>Report images </h4>
 						            </div>
@@ -946,48 +971,67 @@ const Summary = (props) => {
 					            </div>
 				            </div>
 			            </div>
-
+                        
                         {test_data?
-                            test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no ?
+                            test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no && task_data.task_is_rf_fieldvisit == fieldvisit_no && test_data.testreport_l3_remarks == "" && (task_data.task_status == completed || task_data.task_status == closed) ?
                                 <>
-                                    <a class="btn bg-pink waves-effect m-b-15" role="button" data-toggle="collapse" href="#uploadFile" aria-expanded="false" aria-controls="uploadFile">
-				                        Attach Analysed Files
-			                        </a>
-			                        <div class="collapse" id="uploadFile">
-				                        <form name="files_form" method="post" class="form-horizontal" action="<?= base_url().'tasks/report/upload_dept_files' ?>" enctype="multipart/form-data">
-					                        <input name="test_report_id" type="hidden" value="<?= $test_report_id ?>" />
-					                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-						                        <label for="email_address_2">Files :</label>
-					                        </div>
-					                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-						                        <div class="input-group control-group after-add-more col-lg-8 col-md-8 col-sm-8 col-xs-6">
-                                                    <input type="file" name="dept_files[]" class="form-control"/>
-                                                    <div class="input-group-btn"> 
-                                                        <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                                    <button onClick={() => { setcol5(!col5) }} className="btn bg-pink waves-effect m-b-15 mt-5" type="button" style={{ cursor: "pointer", color:"#ffffff" }} >Attach Analysed Files</button>
+                                    <Collapse isOpen={col5}>
+                                        <CardBody>
+                                        <Button onClick={() => { handleAddRowNested1() }} color="success" className="btn btn-success mt-3 mt-lg-0" style={{float:"right"}}>Add</Button>
+                                            <Form className="repeater" encType="multipart/form-data">
+                                            
+                                                <div data-repeater-list="group-a">
+                                                    <div data-repeater-item className="row" style={{width:"100%"}}>
+                                                        <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                          <div className="mb-3 col-lg-12">
+                                                            <label htmlFor="files" style={{fontWeight:"bold"}}>Files : </label>
+                                                            <input type="file" className="form-control" id="files" />
+                                                          </div>
+                                                        </Col>
+                                                        <Col lg={2} className="align-self-center">
+                                                            <div className="d-grid">
+                                                                {/* <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" /> */}
+                                                            </div>
+                                                        </Col>
                                                     </div>
-						                        </div>
-					                        </div>
-					
-					 
-					                        <div class="copy hide">
-					                            <div class="control-group input-group" style="margin-top:10px">
-						                            <input type="file" name="dept_files[]" class="form-control"/>
-						                            <div class="input-group-btn"> 
-                                                        <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
-                                                    </div>
+
                                                 </div>
-                                            </div>
-					
-					                        <div class="col-md-12 text-center">
-						                        <button type="submit"  id="upload" name="Import" class="btn btn-lg btn-primary m-t-15 waves-effect"><i class="material-icons">file_upload</i>Upload</button>
-					                        </div>
-				                        </form>
-			                        </div>
+                                                {rows2.map((item2, idx) => (
+                                                    <React.Fragment key={idx}>
+                                                        <div data-repeater-list="group-a" id={"addr" + idx} >
+                                                            <div data-repeater-item className="row mb-3"  style={{width:"100%"}}>
+                                                                
+                                                                <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                                    <div className="pl-2 ml-5 col-lg-12">
+                                                                        
+                                                                        <input type="file" className="form-control" id="files" />
+                                                                    </div>
+                                                                </Col>
+                                                                <Col lg={2} className="align-self-center d-grid">
+                                                                    <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" onClick={e => { handleRemoveRow(e , idx)}} />
+                                                                </Col>
+                                                            </div>
+
+                                                        </div>
+                                                    </React.Fragment>
+                                                ))}
+                                                <div class="col-md-12 mt-3 text-center">
+						                            <button type="submit"  id="upload" name="Import" class="btn btn-lg btn-info m-t-15 waves-effect">Upload</button>
+					                            </div>
+                                            </Form>
+                                        </CardBody>
+                                    </Collapse>
+			                       
 			                        <form name="sl_form" id="sl_form" method="get" class="form-horizontal" action="<?= base_url().'tasks/report/'.$test_report_id.'/testanalyzed' ?>">
-				                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                        <label for="email_address_2">Second level remarks :</label>
-				                        </div>
-				                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+                                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Second&nbsp;level&nbsp;remarks&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
 					                        <div class="form-group">
 						                        <div class="form-line">
                                                     <textarea name="sl_remarks" className='form-control' cols="0" rows="2" id="sl_remark"></textarea>
@@ -997,67 +1041,234 @@ const Summary = (props) => {
 						                            <input name="sl_submission_type" type="hidden"/>
 						                        </div>
 					                        </div>
-				                        </div>
-				                        <p id="sl_err" style="color:red;display:none;text-align:center">Please enter second level remark</p>
-				                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                        <label for="email_address_2">Suspected Site ID :</label>
-				                        </div>
-				                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-					                        <div class="form-group">
-						                        <div class="form-line">
-							                        <input type="text" name="suspected_kl_id" class="form-control" id="site_id"/>
-						                        </div>
-					                        </div>
-				                        </div>
-				                        <p id="siteid_err" style="color:red;display:none;text-align:center">Please enter suspected site id</p>
-				                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
-					                        <label for="email_address_2">Issue Technology :</label>
-				                        </div>
-				                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
-					                        <div class="form-group">
-						                        <select name="sl_issue_technology[]" id="stages" class="form-control network_type" placeholder="Network type"  multiple>
-											        <option value="2G">2G</option>
-											        <option value="3G">3G</option>
-											        <option value="4G">4G</option>
-											        <option value="VoLTE">VoLTE</option>
+				                                </div>
+                                                <p id="sl_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter second level remark</p>
+                                            </Col>
+                                        </Row>
+                                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Suspected&nbsp;Site&nbsp;ID&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <div class="form-line">
+							                                <input type="text" name="suspected_kl_id" class="form-control" id="site_id"/>
+                                                            <p id="siteid_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter suspected site id</p>
+						                                </div>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Issue&nbsp;Technology&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <select name="sl_issue_technology[]" id="stages" class="form-control network_type" placeholder="Network type"  multiple>
+											                <option value="2G">2G</option>
+											                <option value="3G">3G</option>
+											                <option value="4G">4G</option>
+											                <option value="VoLTE">VoLTE</option>
 											
-										        </select>
-					                        </div>
-				                        </div>
-				                        <p id="issue_err" style="color:red;display:none;text-align:center">Please enter issue category</p>
+										                </select>
+                                                        <p id="issue_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter issue category</p>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
 				              
-                                        <div class="row clearfix">
-								 
-								            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-									            <div class="card">
-										            <div class="header">
-											            <h2>KPI DashBoard</h2>
+                                        <Card className='mt-5'>
+                                                <CardTitle>
+											            <h3>KPI DashBoard</h3>
 											            <ul class="header-dropdown m-r--5">
-												            <button type="button" id="kpi-analyse" class="btn btn-info waves-effect">
-													            <i class="material-icons fa-cog">find_replace</i>
+												            <button type="button" id="kpi-analyse" class="btn btn-info waves-effect" style={{float:"right"}}>
+													            {/* <i class="material-icons fa-cog">find_replace</i> */}
 													            <span>Analyse</span>
 												            </button>
 											            </ul>
-										            </div>
-										            <div class="body">
+										        </CardTitle>
+                                            <CardBody>
+									            
 											            <div class="table-responsive">
 												            <table class="table table-bordered table-striped table-hover dataTable" id="example">
 												            </table>
 											            </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                    
+                                            </CardBody>
+                                        </Card>
+
 				                        <div class="text-center">
 				                            <p id="nb"></p>
 				                            <input type="hidden" name="rfempid" id="rfempid"/>
-				                            <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/>
-				                            <input  data-type="fwdtofiled" class="btn btn-info"  type="submit"  value="Assign to Field"/>
+				                            <input  data-type="submit" class="btn btn-success" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/>
+				                            <input  data-type="fwdtofiled" class="btn btn-info" style={{marginLeft:"10px"}}  type="submit"  value="Forward to RF"/>
                                             {/* <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/> */}
 				                            {/* <input data-type="sl_submit" class="btn btn-success" type="submit" value="Submit"/> */}
-					                        <input data-type="sl_fwz" class="btn btn-success" type="submit" value="Forward to Team"/>
+					                        {/* <input data-type="sl_fwz" class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Forward to Team"/> */}
 					                        {/* <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_rf"/> */}
-					                        <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_fwz_zone"/>
+					                        {/* <input class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Internal Transfer" data-type="sl_fwz_zone"/> */}
+				                            {/* <!--<input  data-type="submits" class="btn btn-info" value="Forward to Field Visit" onclick="slSubmit(this.value)" name="sl_submission_field"/> */}
+				                            {/* <input data-type="sl_fwz_zone" class="btn btn-success" type="submit" value="Forward to Zone"/>--> */}
+				                        </div>
+			                        </form>
+                                </>
+                            :
+
+                            test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no && task_data.task_is_rf_fieldvisit == fieldvisit_no && test_data.testreport_l3_remarks == "" && task_data.task_status == pending ?
+                                <>
+                                    <button onClick={() => { setcol5(!col5) }} className="btn bg-pink waves-effect m-b-15 mt-5" type="button" style={{ cursor: "pointer", color:"#ffffff" }} >Attach Analysed Files</button>
+                                    <Collapse isOpen={col5}>
+                                        <CardBody>
+                                        <Button onClick={() => { handleAddRowNested1() }} color="success" className="btn btn-success mt-3 mt-lg-0" style={{float:"right"}}>Add</Button>
+                                            <Form className="repeater" encType="multipart/form-data">
+                                            
+                                                <div data-repeater-list="group-a">
+                                                    <div data-repeater-item className="row" style={{width:"100%"}}>
+                                                        <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                          <div className="mb-3 col-lg-12">
+                                                            <label htmlFor="files" style={{fontWeight:"bold"}}>Files : </label>
+                                                            <input type="file" className="form-control" id="files" />
+                                                          </div>
+                                                        </Col>
+                                                        <Col lg={2} className="align-self-center">
+                                                            <div className="d-grid">
+                                                                {/* <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" /> */}
+                                                            </div>
+                                                        </Col>
+                                                    </div>
+
+                                                </div>
+                                                {rows2.map((item2, idx) => (
+                                                    <React.Fragment key={idx}>
+                                                        <div data-repeater-list="group-a" id={"addr" + idx} >
+                                                            <div data-repeater-item className="row mb-3"  style={{width:"100%"}}>
+                                                                
+                                                                <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                                    <div className="pl-2 ml-5 col-lg-12">
+                                                                        
+                                                                        <input type="file" className="form-control" id="files" />
+                                                                    </div>
+                                                                </Col>
+                                                                <Col lg={2} className="align-self-center d-grid">
+                                                                    <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" onClick={e => { handleRemoveRow(e , idx)}} />
+                                                                </Col>
+                                                            </div>
+
+                                                        </div>
+                                                    </React.Fragment>
+                                                ))}
+                                                <div class="col-md-12 mt-3 text-center">
+						                            <button type="submit"  id="upload" name="Import" class="btn btn-lg btn-info m-t-15 waves-effect">Upload</button>
+					                            </div>
+                                            </Form>
+                                        </CardBody>
+                                    </Collapse>
+			                       
+			                        <form name="sl_form" id="sl_form" method="get" class="form-horizontal" action="<?= base_url().'tasks/report/'.$test_report_id.'/testanalyzed' ?>">
+                                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Second&nbsp;level&nbsp;remarks&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                        <div class="form-group">
+						                        <div class="form-line">
+                                                    <textarea name="sl_remarks" className='form-control' cols="0" rows="2" id="sl_remark"></textarea>
+
+						                            <input name="sl_stage" type="hidden"/>
+						                            <input name="sl_zone" type="hidden"/>
+						                            <input name="sl_submission_type" type="hidden"/>
+						                        </div>
+					                        </div>
+				                                </div>
+                                                <p id="sl_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter second level remark</p>
+                                            </Col>
+                                        </Row>
+                                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Suspected&nbsp;Site&nbsp;ID&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <div class="form-line">
+							                                <input type="text" name="suspected_kl_id" class="form-control" id="site_id"/>
+                                                            <p id="siteid_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter suspected site id</p>
+						                                </div>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Issue&nbsp;Technology&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <select name="sl_issue_technology[]" id="stages" class="form-control network_type" placeholder="Network type"  multiple>
+											                <option value="2G">2G</option>
+											                <option value="3G">3G</option>
+											                <option value="4G">4G</option>
+											                <option value="VoLTE">VoLTE</option>
+											
+										                </select>
+                                                        <p id="issue_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter issue category</p>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
+				              
+                                        <Card className='mt-5'>
+                                                <CardTitle>
+											            <h3>KPI DashBoard</h3>
+											            <ul class="header-dropdown m-r--5">
+												            <button type="button" id="kpi-analyse" class="btn btn-info waves-effect" style={{float:"right"}}>
+													            {/* <i class="material-icons fa-cog">find_replace</i> */}
+													            <span>Analyse</span>
+												            </button>
+											            </ul>
+										        </CardTitle>
+                                            <CardBody>
+									            
+											            <div class="table-responsive">
+												            <table class="table table-bordered table-striped table-hover dataTable" id="example">
+												            </table>
+											            </div>
+                                                    
+                                            </CardBody>
+                                        </Card>
+
+				                        <div class="text-center">
+				                            <p id="nb"></p>
+				                            <input type="hidden" name="rfempid" id="rfempid"/>
+				                            <input type="button" data-type="submit" class="btn btn-success" onclick="slSubmit(this.value)" value="Assign to Field" name="sl_submission"/>
+                                            <input  data-type="fwdtofiled" class="btn btn-info" style={{marginLeft:"10px"}}  type="button"  value="Close"/>
+				                            <input  data-type="fwdtofiled" class="btn btn-info" style={{marginLeft:"10px"}}  type="button"  value="Forward to RF"/>
+                                            {/* <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/> */}
+				                            {/* <input data-type="sl_submit" class="btn btn-success" type="submit" value="Submit"/> */}
+					                        {/* <input data-type="sl_fwz" class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Forward to Team"/> */}
+					                        {/* <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_rf"/> */}
+					                        {/* <input class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Internal Transfer" data-type="sl_fwz_zone"/> */}
 				                            {/* <!--<input  data-type="submits" class="btn btn-info" value="Forward to Field Visit" onclick="slSubmit(this.value)" name="sl_submission_field"/> */}
 				                            {/* <input data-type="sl_fwz_zone" class="btn btn-success" type="submit" value="Forward to Zone"/>--> */}
 				                        </div>
@@ -1132,7 +1343,7 @@ const Summary = (props) => {
                         :<></>}
                         <div class="card mt-5">
 				            <div class="panel">
-					            <div class="panel-body">
+					            <div class="panel-body row">
 						            <div class="col-lg-6 col-sm-6 col-md-6 timelinebox">
 							            <div class="timeline">
 								            <div class="received containertimeline right">
@@ -1147,142 +1358,159 @@ const Summary = (props) => {
 									  <span class="label label-info">Assigned</span></h5>
 									</div>
 								</div>
+                                {task_data.task_status == approve_for_fieldvisit ?
+                                    <>
+                                        <div class="received containertimeline right">
+												<div class="timeline-content">
+													<h5>{convertdate(task_data.task_fwdtofe_on)}<span class="label label-warning">Forward to field</span></h5>
+                                                </div>
+                                        </div>
+                                    </>
+                                :<></>
+                                }
 								{ 
                                 task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
-								
-									    task_data.task_withdrawn == withdrawn_yes ?
+
+                                    task_data.task_status != pending ?
+                                        <>
 									        <div class="containertimeline right">
 										        <div class="timeline-content">
-											        <h5>{convertdate(task_data.task_withdrawn_on)}
-											        <span class="label label-info">Withdrawn</span></h5>
+											        <h5>{convertdate(task_data.task_end_datetime)}
+											        <span class="label label-info">Started</span></h5>
 										        </div>
-									        </div>
-									    :<></>
-                                  : <>{
-                                
-									task_data.task_assigned_on && task_data.task_assigned_on != ''?
-                                        
-									    <div class="containertimeline right">
-										        <div class="timeline-content">
-											        <h5>{convertdate(task_data.task_assigned_on)}
-											        <span class="label label-info">Reassigned</span></h5>
-										        </div>
-									    </div>
-									:<></>	
-                                    }
-									{/* if(is_array($attempts) && !empty($attempts)){
-										foreach($attempts as $attempt){ 
-										$datetime1 = new DateTime($attempt['call_starttime']);
-										$datetime2 = new DateTime($attempt['call_endtime']);
-										$interval = $datetime1->diff($datetime2);
-										?>														
-										<div class="containertimeline right">															
-											<div class="timeline-content">
-												<h5><?php echo date("h:i:s a F d Y", strtotime($attempt['call_datetime']));?>																
-												<span class="label label-info"><?= $attempt['call_name'] ?>(<?= $interval->format('%H:%I:%S') ?>)</span></h5>
-											</div>
-										</div>
-										<?php														
-										$i++;													
-										}
-									}?> */}
-									<div class="containertimeline right">
-										<div class="timeline-content">
-											<h5>{convertdate(task_data.task_end_datetime)}
-											<span class="label label-info">Started</span></h5>
-										</div>
-									</div>
-									{ 
-                                        task_data.task_status == cancelled ?
-									        <div class="received containertimeline right">
-										        <div class="timeline-content">
-											        <h5>{convertdate(task_data.task_cancelled_on)}
-											       <span class="label label-warning">Canceled</span></h5>
-										        </div>
-									        </div>
-									    :
-                                            task_data.task_status == closed ?
-									            <div class="closed containertimeline right">
-										            <div class="timeline-content">
-											            <h5>{convertdate(test_data?test_data.testreport_createdon:"")}
-											            <span class="label label-success">Closed without Visit</span></h5>
-										            </div>
-									            </div>
-									        :
-									            <div class="closed containertimeline right">
-										            <div class="timeline-content">
-											            <h5>{convertdate(test_data?test_data.testreport_createdon:"")}
-											            <span class="label label-success">Visit Completed</span></h5>
-										            </div>
-									            </div>
-                                     }
-								    </>
-                                }
+                                            </div>
+                                        </>
+                                        :
+									
+									        task_data.task_status == cancelled ?
+									            <>
+                                                    <div class="received containertimeline right">
+										                <div class="timeline-content">
+											                <h5>{convertdate(task_data.task_cancelled_on)}
+											                <span class="label label-warning">Canceled</span></h5>
+										                </div>
+									                </div>
+                                                </>
+                                            : 
+                                                task_data.task_status == closed ?
+                                                <>
+									                <div class="closed containertimeline right">
+										                <div class="timeline-content">
+										                    <h5>{convertdate(test_data.test_visit_upload)}
+											                <span class="label label-success">Closed without Visit</span></h5>
+										                </div>
+									                </div>
+                                                </>
+                                            :
 								
-                                { test_data?
-                                    test_data.testreport_analyzed_status == analyzed_yes ?
-								        <div class="closed containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_sl_submitted_on)}
-										        <span class="label label-success">RF Analysis Completed</span></h5>
-									        </div>
-								        </div>
-								    :<></>
-                                 :<></>
+									            task_data.task_status == pending ?
+                                                    <>
+                                                        <div class="closed containertimeline right">
+                                                            <div class="timeline-content">
+                                                                <h5>{convertdate(task_data.task_assigned_on)}
+                                                                <span class="label label-success">Visit Pending</span></h5>
+                                                            </div>
+                                                        </div>
+                                                    </>
+									            :
+                                                    <>
+                                                        <div class="closed containertimeline right">
+										                    <div class="timeline-content">
+											                    <h5>{convertdate(test_data.test_visit_upload)}
+											                    <span class="label label-success">Visit Completed</span></h5>
+										                    </div>
+									                    </div>
+                                                    </>
+                                :<></>
                                 }
-								{  task_data.testreport_id && task_data.testreport_is_fwz == sla_forward_to_zone_yes ?
-                                    <>
-								        <div class="containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_sl_submitted_on)}
-										        <span class="label label-info">Forward to Team</span></h5>
-									        </div>
-								        </div>
-                                    
-								    {  test_data.testreport_tl_submitted_on && test_data.testreport_tl_submitted_on != '' ? 
-								        <div class="closed containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										        <span class="label label-success">Revert from Team</span></h5>
-									        </div>
-								        </div>
-                                    :<></>
-                                    }</>
-                                    :<></>
+                                { 
+                                task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
+
+                                        task_data.task_status == analysis_required || task_data.task_status == analysis_required_fwdbyl3 ?
+                                            <>
+                                                <div class="received containertimeline right">
+                                                    <div class="timeline-content">
+                                                        <h5>{convertdate(task_data.task_fwdtoanalyst_on)}
+                                                        <span class="label label-warning">Forward to RF</span></h5>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        :<></>
+
+                                : <></>	
                                 }
-								{
-                                    task_data.task_status == closedbyl2_executive ?
-								        <div class="closed containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										        <span class="label label-success">Directly Closed By L2 Executive</span></h5>
-									        </div>
-								        </div>
-                                    :
-                                        task_data.task_status == resolved_and_closed ?
-								            <div class="closed containertimeline right">
+
+                                {
+                                    test_data.test_report_analyzed == analyzed_yes ?
+                                        <>
+                                            <div class="closed containertimeline right">
+                                                <div class="timeline-content">
+                                                    <h5>{convertdate(test_data.testreport_sl_submitted_on)}
+                                                    <span class="label label-success">RF Analysis Completed</span></h5>
+                                                </div>
+                                            </div>
+                                        </>
+                                        :<></>
+                                }
+									
+                                {
+                                    test_data.testreport_is_fwz == sla_forward_to_zone_yes ?
+                                        <>
+                                            <div class="containertimeline right">
 									            <div class="timeline-content">
-										            <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										            <span class="label label-success">Resolved and Closed</span></h5>
+										            <h5>{convertdate(test_data.testreport_sl_submitted_on)}
+										            <span class="label label-info">Forward to Team</span></h5>
 									            </div>
 								            </div>
-								        :
+								            {
+                                               test_data.testreport_tl_submitted_on && test_data.testreport_tl_submitted_on != '' ?
+								                    <div class="closed containertimeline right">
+									                    <div class="timeline-content">
+										                    <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+										                    <span class="label label-success">Revert from Team</span></h5>
+									                    </div>
+								                    </div>
+                                                :<></>
+                                            }
+                                        </>
+                                    :<></>
+                                }
+
+                                {
+                                    task_data.task_status == closedbyl2_executive ?
+                                        <div class="closed containertimeline right">
+                                            <div class="timeline-content">
+                                                <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+                                                <span class="label label-success">Directly Closed By L2 Executive</span></h5>
+                                            </div>
+                                        </div>
+                                    :
+
+                                        task_data.task_status == resolved_and_closed ?
+                                            <div class="closed containertimeline right">
+                                                <div class="timeline-content">
+                                                    <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+                                                    <span class="label label-success">Resolved and Closed</span></h5>
+                                                </div>
+                                            </div>
+                                        :
                                             task_data.task_status == not_resolved_and_closed ?
-								                <div class="closed containertimeline right">
-									                <div class="timeline-content">
-										                <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										                <span class="label label-success">Not Resolved and Closed</span></h5>
-									                </div>
-								                </div>
+                                                <div class="closed containertimeline right">
+                                                    <div class="timeline-content">
+                                                        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+                                                        <span class="label label-success">Not Resolved and Closed</span></h5>
+                                                    </div>
+                                                </div>
                                             :<></>
                                 }
+								
 							</div>
 						</div>
 						{task_data.task_is_fieldvisit == fieldvisit_yes ?
                             <>
 						        <div class="col-lg-3 col-sm-3 col-md-3">
 							        <div id="mapimg">
-								        <img src="https://vilkarnataka.telecomone.in/assets/images/map.png" id="mapmodal" class="mapbutton"/>
+								        <img src="https://vilkarnataka.telecomone.in/assets/images/map.png" id="mapmodal" class="mapbutton" style={{width:"100%"}}/>
 							        </div>
 						        </div>
 						        <div class="col-lg-3 col-sm-3 col-md-3">

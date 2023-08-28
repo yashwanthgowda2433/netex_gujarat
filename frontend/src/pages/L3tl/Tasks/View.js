@@ -63,7 +63,7 @@ const View = () => {
     const [from_date, set_from_date] = useState("");
     const [to_date, set_to_date] = useState("");
     const [search_task, set_search_task] = useState("");
-
+    const [addedby_type, set_addedby_type] = useState("");
 
     // const data = propsData.state;
    
@@ -115,7 +115,7 @@ const View = () => {
             const response = await fetch('/api/tasks/l3tl/get', {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json','Authorization': `Bearer ${user.token}` },
-                body: JSON.stringify({pageStart:start_num,pageLimit:page_limit, status:status_filter, date_type:date_type, from_date:from, to_date:to, search:search_task})
+                body: JSON.stringify({pageStart:start_num,pageLimit:page_limit, status:status_filter, addedby_type:addedby_type, date_type:date_type, from_date:from, to_date:to, search:search_task})
             })
             if(response.ok){
                const json = await response.json()
@@ -477,19 +477,30 @@ const View = () => {
                                                     <Card>
                                                         <CardBody>
                                                             <Row>
+                                                                
                                                                 <Col lg={2}>
                                                                     <select onChange={(event)=>{set_status_filter(event.target.value)}} className="form-select">
-                                                                        <option value="">All</option>
-                                                                        {arr2_filter.map((item, index)=> (
-                                                                            item == status_filter ? 
-                                                                                <option selected value={item}>{arr_filter1[item]}</option>
+                                                                        {Object.keys(task_status_filters).map((key)=> (
+                                                                            key == status_filter ? 
+                                                                                <option selected value={key}>{task_status_filters[key]}</option>
                                                                             :
-                                                                                <option value={item}>{arr_filter1[item]}</option>
+                                                                                <option value={key}>{task_status_filters[key]}</option>
                                                                         ))}
                                                                     </select>
                                                                 </Col>
 
-                                                                <Col lg={2}>
+                                                                <Col lg={1}>
+                                                                    <select onChange={(event)=>{set_addedby_type(event.target.value)}} className="form-select">
+                                                                        {Object.keys(task_addedby_options).map((key)=> (
+                                                                            key == addedby_type ? 
+                                                                                <option selected value={key}>{task_addedby_options[key]}</option>
+                                                                            :
+                                                                                <option value={key}>{task_addedby_options[key]}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                </Col>
+
+                                                                <Col lg={1}>
                                                                     <select onChange={(event)=>{set_date_type(event.target.value)}} className="form-select">
                                                                         <option value="">Select date type</option>
                                                                         {arr2_date_type.map((item, index)=> (

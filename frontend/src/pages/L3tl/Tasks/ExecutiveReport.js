@@ -14,13 +14,13 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 import classnames from "classnames"
 
 // tabs import
-import Summary from "../../../components/L3tl/L3Tasks/Summary";
-import MapView from "../../../components/L3tl/L3Tasks/MapView";
-import Indoor from "../../../components/L3tl/L3Tasks/Indoor";
-import Outdoor from "../../../components/L3tl/L3Tasks/Outdoor";
-import Balcony from "../../../components/L3tl/L3Tasks/Balcony";
-import Terrace from "../../../components/L3tl/L3Tasks/Terrace";
-import WalkDriveTest from "../../../components/L3tl/L3Tasks/WalkDriveTest";
+import Summary from "../../../components/L3tl/ExecutiveTasks/Summary";
+import MapView from "../../../components/L3tl/ExecutiveTasks/MapView";
+import Indoor from "../../../components/L3tl/ExecutiveTasks/Indoor";
+import Outdoor from "../../../components/L3tl/ExecutiveTasks/Outdoor";
+import Balcony from "../../../components/L3tl/ExecutiveTasks/Balcony";
+import Terrace from "../../../components/L3tl/ExecutiveTasks/Terrace";
+import WalkDriveTest from "../../../components/L3tl/ExecutiveTasks/WalkDriveTest";
 
 const ExecutiveReport = (props) => {
     const navigate = useNavigate();

@@ -242,8 +242,13 @@ const getTasks = async (user, filter_data) => {
     var And_Where_Tasks = [];
 
     // user added by
-    const user_data = await User.find({$or:[{user_role:l3tl}, {user_role:field_engineer}, {user_role:l2tl}, {user_role:executive}, {user_role:outcall}]}, {_id:1})
+    const user_data = await User.find({$or:[{user_role:l3tl}, {user_role:field_engineer}, {user_role:l2tl}, {user_role:executive}, {user_role:outcall}]}, {_id:1});
     var user_addedby_arr = user_data.map((val,index)=> val._id.toString());
+
+    // user added by L3
+    const user_l3_data = await User.find({$or:[{user_role:l3tl}]}, {_id:1})
+    var user_l3_data_arr = user_l3_data.map((val,index)=> val._id.toString());
+
 
     And_Where_Tasks.push({ $in: ["$task_addedby", user_addedby_arr] });
     And_Where_Tasks.push({ $eq: ["$task_deleted", deleted_no] });
@@ -257,51 +262,46 @@ const getTasks = async (user, filter_data) => {
     var params_status = filter_data.status;
     if(params_status != "")
     {
-        if(params_status == "prepending")
+        if(params_status == "pending")
         {
-            status = "prepending";
+            And_Where_Tasks.push({ $eq: ["$task_withdrawn", withdrawn_no] });
+            And_Where_Tasks.push({ $eq: ["$task_status", pending] });
+            And_Where_Tasks.push({ $eq: ["$task_is_rf_fieldvisit", fieldvisit_no] });
         }
-        if(params_status == "postpending")
+        if(params_status == "progress")
         {
-            status = "postpending";
-        }
-        else if(params_status == "withdrawn")
-        {
-            status = withdrawn_yes;
-        }
-        else if(params_status == "progress")
-        {
-            status = progress;
+            And_Where_Tasks.push({ $eq: ["$task_status", progress] });
+            And_Where_Tasks.push({ $eq: ["$task_is_rf_fieldvisit", fieldvisit_no] });
         }
         else if(params_status == "completed")
         {
-            status = completed;
-        }
-        else if(params_status == "cancelled")
-        {
-            status = cancelled;
+            And_Where_Tasks.push({ $eq: ["$task_status", completed] });
+            And_Where_Tasks.push({ $eq: ["$task_is_rf_fieldvisit", fieldvisit_no] });
+
         }
         else if(params_status == "closed")
         {
-            status = closed;
+            And_Where_Tasks.push({ $in: ["$task_status", [closed, closedbyl2_executive, l3_closed, resolved_and_closed, analysed, not_resolved_and_closed]] });
         }
         else if(params_status == "analysed")
         {
-            status = analysed;
+            And_Where_Tasks.push({ $eq: ["$task_status", analysed] });
+        }
+        else if(params_status == "cancelled")
+        {
+            And_Where_Tasks.push({ $eq: ["$task_status", cancelled] });
         }
         else if(params_status == "fwd")
         {
-            status = fwz;
+            And_Where_Tasks.push({ $in: ["$task_fwdtoanalyst_by", user_l3_data_arr] });
+            And_Where_Tasks.push({ $or: [ {$eq : ["$task_status", analysis_required_fwdbyl3] }, {$eq : ["$task_status", pending] }, {$eq : ["$task_status", progress] }, {$eq : ["$task_status", completed] }, {$eq : ["$task_status", postopti] }, {$eq : ["$task_status", preopti] }]});
         }
-        else if(params_status == "preopti")
+        else if(params_status == "withdrawn")
         {
-            status = preopti;
+            And_Where_Tasks.push({ $eq: ["$task_status", withdrawn_yes] });
         }
-        else if(params_status == "postopti")
-        {
-            status = postopti;
-        }
-        And_Where_Tasks.push({ $eq: ["$task_status", status] });
+        
+        // And_Where_Tasks.push({ $eq: ["$task_status", status] });
     }
 
     // from date and to date
@@ -383,6 +383,8 @@ const getExecutiveTasks = async (user, filter_data) => {
 
     // user added by
     And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
+    And_Where_Tasks.push({ $eq: ["$task_status", approve_for_fieldvisit] });
+
 
     // status
     var status = "";
@@ -435,8 +437,7 @@ const getExecutiveTasks = async (user, filter_data) => {
         }
         And_Where_Tasks.push({ $eq: ["$task_status", status] });
     }
-    And_Where_Tasks.push({ $eq: ["$task_status", analysis_required_fwdbyl3] });
-
+   
     // from date and to date
     var from_date = filter_data.from_date;
     if(from_date != "")
