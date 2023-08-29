@@ -4,7 +4,7 @@ const express = require('express')
 const requireAuth = require('../middleware/requireAuth')
 
 // controller functions
-const { loginUser, addUser, getUser, getAnalystOptiEngineers } = require('../controllers/userController')
+const { loginUser, addUser, getUser, getAnalystOptiEngineers, getL3tlEngineers } = require('../controllers/userController')
 
 const router = express.Router()
 
@@ -24,6 +24,10 @@ router.post('/get', getUser)
 router.post('/analyst/getOptiEngineers', getAnalystOptiEngineers)
 // ANALYST API's End
 
+// L3tl API's Start
+//get l3 Engineers
+router.post('/l3tl/getL3tlEngineers', getL3tlEngineers)
+// L3tl API's End
 
 
 

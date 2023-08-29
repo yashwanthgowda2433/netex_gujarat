@@ -26,13 +26,11 @@ import React, { useEffect, useState } from "react";
 import Header from "../../Common/Header";
 import Footer from "../../Common/Footer";
 import Sidebar from "../../Common/Sidebar";
-import { Card, CardBody, CardTitle, Col, Row, Progress,DropdownMenu,
-    DropdownItem,
-    DropdownToggle,ButtonDropdown } from "reactstrap";
+import { Card, CardBody, CardTitle, Col, Row, Progress,DropdownMenu, DropdownItem, Modal, DropdownToggle,ButtonDropdown,  } from "reactstrap";
 import { Link, withRouter, useLocation } from "react-router-dom"
 import { isEmpty, map, size } from "lodash"
 
-import { useTable, useSortBy, usePagination } from 'react-table';
+import { useTable, useSortBy, usePagination, useRowSelect } from 'react-table';
 
 //Context
 import { useAuthContext } from "../../../hooks/useAuthContext";
@@ -40,6 +38,7 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js';
 
 import Flatpickr from "react-flatpickr";
+
 
 
 const ExecutiveView = () => {
@@ -63,6 +62,27 @@ const ExecutiveView = () => {
     const [from_date, set_from_date] = useState("");
     const [to_date, set_to_date] = useState("");
     const [search_task, set_search_task] = useState("");
+    const [tasks_id, setTasksId] = useState([]);
+    const [l3_engineers, set_l3_engineers] = useState([]);
+    const [selectedEngineer, setSelectedEngineer] = useState("");
+    const [remarks, setRemarks] = useState("");
+
+    // modal
+    const [modal_backdrop, setmodal_backdrop] = useState(false)
+    function tog_backdrop() {
+        setmodal_backdrop(!modal_backdrop)
+        removeBodyCss()
+    }
+    // modal
+    const [modal_nobackdrop, setmodal_nobackdrop] = useState(false)
+    function tog_nobackdrop() {
+        setmodal_nobackdrop(!modal_nobackdrop)
+        removeBodyCss()
+    }
+    function removeBodyCss() {
+        document.body.classList.add("no_padding")
+    }
+    // modal
 
 
     // const data = propsData.state;
@@ -73,6 +93,7 @@ const ExecutiveView = () => {
         if(user)
         {
             getTasks(pageStart);
+            fetchL3tlEngineers();
         }
     },[user]);
 
@@ -81,7 +102,7 @@ const ExecutiveView = () => {
 
     }
 
-    // GET TASKS FUNCTION START
+    // GET TASKS FUNCTION API START
     const getTasks = async (start) =>{
         var from = "";
         var to = "";
@@ -138,7 +159,50 @@ const ExecutiveView = () => {
         }
         
     }
-    // GET TASKS FUNCTION END
+    // GET TASKS FUNCTION API END
+
+    // L3 Engineers APi
+    const fetchL3tlEngineers = async () => {
+        // setError("")
+        // setSuccess("")
+        const response = await fetch('/api/user/l3tl/getL3tlEngineers', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+            body: JSON.stringify({search_user:search_task})
+        })
+        if(response.ok){
+           const json = await response.json()
+           console.log(json)
+            if(json.status == "Success")
+            {
+            
+                set_l3_engineers(json.data);
+            }
+            if(json.status == "Error")
+            {
+                // setError("please try aftersometime!");
+            }
+        }else{
+            // setError("please try aftersometime!");
+        }
+
+
+    }
+    // L3 Engineers Api end
+
+    // Approve for FV
+    const approveFv = async ()=> {
+        const task_ids = []
+        var task_inputs = document.querySelectorAll("input[name='deleteRow']:checked").forEach((input)=>{task_ids.push(input.value)});
+        console.log(task_ids);
+        if(task_ids.length>0)
+        {
+            setTasksId(task_ids);
+            tog_backdrop();
+        }else{
+            tog_nobackdrop();
+        }
+    }
 
     // date Converison
     const convertdate = (olddate) => {
@@ -173,32 +237,42 @@ const ExecutiveView = () => {
                 message = <span className='btn btn-danger' style={styles.status}>Pending</span>;
             }
         }
-        // FWD to RF
+        // Closed
+        if(a.task_status == l3_closed)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>Closed</span>;
+        }
+        // approve_for_fieldvisit
+        if(a.task_status == approve_for_fieldvisit)
+        {
+            message = <span className='btn btn-danger' style={styles.status}>Approve for FV</span>;
+        }
+        // analysis_required_fwdbyl3
         if(a.task_status == analysis_required_fwdbyl3)
         {
             message = <span className='btn btn-danger' style={styles.status}>FWD to RF</span>;
         }
-        // Progress
+        // progress
         if(a.task_status == progress)
         {
             message = <span className='btn btn-warning' style={styles.status}>Progress</span>;
         }
-        // Cancelled
-        if(a.task_status == cancelled)
-        {
-            message = <span className='btn btn-danger' style={styles.status}>Cancelled</span>;
-        }
-        
         // Completed
         if(a.task_status == completed)
         {
             message = <span className='btn btn-success' style={styles.status}>Completed</span>;
         }
         
-        // Closed
+        // cancelled
+        if(a.task_status == cancelled)
+        {
+            message = <span className='btn btn-danger' style={styles.status}>Cancelled</span>;
+        }
+
+        // closed
         if(a.task_status == closed)
         {
-            message = <span className='btn btn-info' style={styles.status}>Closed</span>;
+            message = <span className='btn btn-primary' style={styles.status}>Closed</span>;
         }
         
         // Fwd To Team
@@ -206,56 +280,12 @@ const ExecutiveView = () => {
         {
             message = <span className='btn btn-primary' style={styles.status}>Fwd To Team</span>;
         }
-        // Forward to field visit
-        if(a.task_status == approve_for_fieldvisit)
+        // transfer
+        if(a.task_status == transfer)
         {
-            message = <span className='btn btn-warning' style={styles.status}>Forward to field visit</span>;
+            message = <span className='btn btn-warning' style={styles.status}>Transfer Requested</span>;
         }
-        // added by l2executive
-        if(a.task_status == addedbyl2_executive)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>added by l2executive</span>;
-        }
-        // Forward to RF
-        if(a.task_status == analysis_required)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>Forward to RF</span>;
-        }
-        // reverted from RF
-        if(a.task_status == analysed)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>reverted from RF</span>;
-        }
-        // withdrawn
-        if(a.task_status == withdraw)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>withdrawn</span>;
-        }
-        // Not resolved and closed
-        if(a.task_status == not_resolved_and_closed)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>Not resolved and closed</span>;
-        }
-        // Resolved and closed
-        if(a.task_status == resolved_and_closed)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>Resolved and closed</span>;
-        }
-        // Optimisation  in Progress
-        if(a.task_status == optimisationprogress)
-        {
-            message = <span className='btn btn-warning' style={styles.status}>Optimisation  in Progress</span>;
-        }
-        // Reverted from Team
-        if(a.task_status == optimised)
-        {
-            message = <span className='btn btn-warning' style={styles.status}>Reverted from Team</span>;
-        }
-        // Foward to zone
-        if(a.task_status == fwz_to_zone)
-        {
-            message = <span className='btn btn-warning' style={styles.status}>Foward to zone</span>;
-        }
+        
         
                     
         return message;
@@ -263,16 +293,51 @@ const ExecutiveView = () => {
     }
     // STATUS FUNCTION END
 
+    // Submit Approval Api
+    const SubmitApprove = async () => {
+        const employee_id = selectedEngineer;
+        const task_ids = tasks_id;
+        const fv_remarks = remarks;
+        const response = await fetch('/api/tasks/l3tl/approveFVTasks', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+            body: JSON.stringify({employee_id:employee_id, task_ids:task_ids, fv_remarks:fv_remarks})
+        })
+        if(response.ok){
+            const json = await response.json()
+            console.log(json)
+            if(json.status == "Success")
+            {
+                alert("Successfully Submitted");
+                window.location.reload();
+            }
+            if(json.status == "Error")
+            {
+                alert("Failed to Submit");
+            }
+        }else{
+            alert("Failed to Submit");
+
+        }
+    }
+    // End Submit Approval Api  
+
     // Define the columns for your table
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Select',
-                accessor: 
-                a => (
+                id: "selection",
+                // The header can use the table's getToggleAllRowsSelectedProps method
+                // to render a checkbox
+                Header: ({ getToggleAllRowsSelectedProps }) => (
                     <div>
-                        <input type="checkbox" className="delete-checkbox" value={a._id} id={"chk"+a._id}/>
-					    <input type="hidden" className={"close-status"+a._id} value={a.task_status }/>  
+                        <input type="checkbox" {...getToggleAllRowsSelectedProps()} />
+                    </div>
+                ),
+                accessor: "_id",
+                Cell: ({ row }) => (
+                    <div>
+                        <input type="checkbox" name="deleteRow" value={row.values.selection} {...row.getToggleRowSelectedProps()} />
                     </div>
                 ),
             },
@@ -292,46 +357,25 @@ const ExecutiveView = () => {
                 Header: 'Customer Mobile',
                 accessor: 'task_mobile_number',
             },
-            user.user_role != dept_user ? {
-                Header: 'Questionnaire',
-                accessor: a=>(
-                    
-                    user.user_role != dept_user ?
-                        <button type="button" class="btn btn-primary btn-xs waves-effect" 
-                            data-bs-container="body" 
-                            data-bs-toggle="popover" 
-                            data-bs-placement="bottom" 
-                            title="Questionnarie"
-                            data-bs-content={a.task_questionnaires != null && a.task_questionnaires != "" ?
-                                JSON.parse(a.task_questionnaires).map((question, index)=>(
-                                    Object.entries(question).map((value,key)=>(
-                                        (index+1)+". "+key+" : "+value+"  "
-                                    ))
-                                )):""
-                            }
-                            data-bs-trigger="focus" style={styles.showbtn}>Show</button>
-                    : 
-                        <button type="button" class="btn btn-primary btn-xs waves-effect" 
-                            data-bs-container="body" 
-                            data-bs-toggle="popover" 
-                            data-bs-placement="bottom" 
-                            title="Questionnarie"
-                            data-bs-content="No Remarks"
-                            data-bs-trigger="focus" style={styles.showbtn}>Show</button>
-                )
-            }:{},
-            user.user_role == dept_user ?
-                {
-                    Header: 'Task Forwarded on',
-                    accessor: 'task_assigned_on',
-                }
-            : {
-                Header: 'Task Visit Uploaded Date',
-                accessor: 'task_assigned_on',
+            {
+                Header: 'Area',
+                accessor: 'task_area',
+            },
+            {
+                Header: 'Pincode',
+                accessor: 'task_pincode',
+            },
+            {
+                Header: 'Task Created on',
+                accessor: a=>(convertdate(a.task_createdon)),
             },
             {
                 Header: 'Customer Subtype',
                 accessor: 'task_postpaid_sub_type',
+            },
+            {
+                Header: 'Distance',
+                accessor: 'task_distance',
             },
             {
                 Header: 'Status',
@@ -341,7 +385,7 @@ const ExecutiveView = () => {
             {
                 Header: 'Action',
                 accessor: a => (
-                    <Link className='btn btn-danger' to="/tasks/l3tlreport" state={a} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link>
+                    <Link className='btn btn-danger' to="/tasks/executivereport" state={a} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link>
                 ),
             },
       // Add more columns as needed
@@ -360,7 +404,9 @@ const ExecutiveView = () => {
         canNextPage,
         canPreviousPage,
         prepareRow,
-        state: { pageIndex, pageSize },
+        state: { pageIndex, pageSize, selectedRowPaths },
+        selectedFlatRows,
+        toggleAllRowsSelected
     } = useTable(
         {
             columns,
@@ -373,7 +419,9 @@ const ExecutiveView = () => {
             },
         },
         useSortBy,
-        usePagination
+        usePagination,
+        useRowSelect
+        
     );
     
     const loadChange = async (val)=>{
@@ -446,7 +494,7 @@ const ExecutiveView = () => {
                                                                <i className="bx bx-dots-vertical" style={{color:"#77787b"}}></i>
                                                             </DropdownToggle>
                                                             <DropdownMenu style={{marginLeft:"-120px",marginTop:"22px"}}>
-                                                                <DropdownItem  className="font-size-14">Direct Transfer</DropdownItem> 
+                                                                <DropdownItem onClick={approveFv} data-toggle="modal" className="font-size-14">Approve for FV</DropdownItem> 
                                                                 <DropdownItem  className="font-size-14">Excel Download</DropdownItem> 
                                                             </DropdownMenu>
                                                         </ButtonDropdown>
@@ -590,6 +638,78 @@ const ExecutiveView = () => {
                     <Footer />
                 </div>
             </div>
+            
+            {/* Modals */}
+            <Modal
+                isOpen={modal_backdrop}
+                toggle={() => {
+                    tog_backdrop()
+                }}
+                scrollable={true}
+                id="staticBackdrop"
+                >
+                    <div className="modal-header">
+                        <h5 className="modal-title" id="staticBackdropLabel">Approve Task</h5>
+                        <button type="button" className="btn-close"
+                            onClick={() => {
+                              setmodal_backdrop(false)
+                            }} aria-label="Close">
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <div className='form-control' style={{border:"none"}}>
+                                <label>Employee</label>
+                                <select className="form-select" onChange={(event)=>{setSelectedEngineer(event.target.value)}}>
+                                    <option value="">Select Employee</option>
+                                    {
+                                        l3_engineers.map((item, index)=> (
+                                            <option value={item._id}>{item.user_name}({item.user_userid})</option>
+                                        ))
+                                    }
+                                </select>
+                        </div>
+                        <div className='form-control' style={{border:"none"}}>
+                                <label>Remarks</label>
+                                <input type="text" name="remarks" onBlur={(event)=>{setRemarks(event.target.value)}} className="form-control"/>
+                        </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" onClick={SubmitApprove} className="btn btn-primary">Approve</button>
+
+                        <button type="button" className="btn btn-danger" onClick={() => {
+                            setmodal_backdrop(false)
+                          }}>Close</button>
+                    </div>
+            </Modal>
+            {/* End Modals */}
+
+            {/* No Modals */}
+            <Modal
+                isOpen={modal_nobackdrop}
+                toggle={() => {
+                    tog_nobackdrop()
+                }}
+                scrollable={true}
+                id="staticBackdrop"
+                >
+                    <div className="modal-header">
+                        {/* <h5 className="modal-title" id="staticBackdropLabel">Field Engineers</h5> */}
+                        <button type="button" className="btn-close"
+                            onClick={() => {
+                              setmodal_nobackdrop(false)
+                            }} aria-label="Close">
+                        </button>
+                    </div>
+                    <div className="modal-body" style={{textAlign:"center"}}>
+                        <p>Please select task to approve.</p>
+                    </div>
+                    <div className="modal-footer" style={{justifyContent:"center"}}>
+                        <button type="button" className="btn btn-primary" onClick={() => {
+                            setmodal_nobackdrop(false)
+                          }}>Close</button>
+                    </div>
+            </Modal>
+            {/* End No Modals */}
         </React.Fragment>
     );
 };
@@ -619,5 +739,6 @@ const styles = {
         padding: "3px 4px 0px 4px"
     }
 }
+
 
 export default ExecutiveView;

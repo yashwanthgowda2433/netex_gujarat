@@ -113,5 +113,40 @@ const getAnalystOptiEngineers = async (req, res)=>{
 }
 // ANALYST FUNCTIONS END
 
+// L3tl FUNCTIONS START
+const getL3tlEngineers = async (req, res)=>{
 
-module.exports = { addUser, loginUser, getUser, getAnalystOptiEngineers }
+  const user = req.user;
+  const {search_user} = req.body;
+  
+  if(user){
+    if(user.user_role == l3tl)
+    {
+      try {
+        const user_addedby = await User.find({user_role:l3tl});
+        var user_arr = user_addedby.map((item, index)=>(item._id));
+        console.log(user_arr);
+        if(search_user){
+          const user_data = await User.find({$and:[{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no},{ user_role:field_engineer},{$in:[user_addedby,user_arr]}], $or:[{user_userid:{ $regex :search_user}},{user_email:{ $regex :search_user}},{user_name:{ $regex :search_user}},{user_mobile:{ $regex :search_user}}]})
+          res.status(200).json({status:"Success", data:user_data});
+        }else{
+          const user_data = await User.find({$and:[{user_status:active},{user_confirmationstatus:active},{user_deleted:deleted_no},{ user_role:field_engineer},{$in:[user_addedby,user_arr]}]})
+          res.status(200).json({status:"Success", data:user_data})
+        }
+
+      }
+      catch(error)
+      {
+          res.status(200).json({status:"Error", message: error.message})
+      }
+    }else{
+      res.status(200).json({status:"Error", message: "You Don't have permission access to this feature."})
+    }
+  }else{
+    res.status(200).json({status:"Error", message: "Authorization failed!"})
+  }
+
+}
+// L3tl FUNCTIONS END
+
+module.exports = { addUser, loginUser, getUser, getAnalystOptiEngineers, getL3tlEngineers }

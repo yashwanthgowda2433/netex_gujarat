@@ -97,5 +97,27 @@ const getL3TlExecutiveTasks = async (req, res) => {
     }
 }
 
-module.exports = { getL3tlTasks, getL3TlExecutiveTasks }
+// l3approveFVTasks
+const l3approveFVTasks = async (req, res) => {
+    const user = req.user;
+    const data = req.body;
+    if(user)
+    {
+        if(user.user_role == l3tl)
+        {
+            const task_data = await Task.l3approveFVTasks(user, data);
+            if(task_data){
+                res.status(200).json({status:"Success", message:"Successfully to updated"});
+            }else{
+                res.status(200).json({status:"Failed", message:"Failed to update"});
+            }
+        }else{
+            res.status(200).json({status:"Error", message: "You Don't have permission access to this feature."})
+        }
+    }else{
+        res.status(200).json({status:"Error", message: "Authorization failed!"})
+    }
+}
+
+module.exports = { getL3tlTasks, getL3TlExecutiveTasks, l3approveFVTasks }
 

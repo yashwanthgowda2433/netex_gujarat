@@ -22,7 +22,7 @@ const { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super
   
 
 
-
+const mongoose = require('mongoose')
 const User = require('../../../models/userModel');
 const Task = require('../../../models/taskModel');
 const test = require('./test');
@@ -382,8 +382,10 @@ const getExecutiveTasks = async (user, filter_data) => {
     var And_Where_Tasks = [];
 
     // user added by
-    And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
+    // And_Where_Tasks.push({ $eq: ["$task_addedby", user._id.toString()] });
     And_Where_Tasks.push({ $eq: ["$task_status", approve_for_fieldvisit] });
+    And_Where_Tasks.push({ $eq: ["$task_rth_flag", rth_no] });
+    And_Where_Tasks.push({ $eq: ["$task_deleted", deleted_no] });
 
 
     // status
@@ -495,4 +497,19 @@ const getExecutiveTasks = async (user, filter_data) => {
     
 }
 
-module.exports = { addTask, getTasks, getExecutiveTasks }
+const l3approveFVTasks = async (user, data) => {
+    const employee_id = data.employee_id;
+    const fv_remarks = data.fv_remarks;
+    const task_ids = data.task_ids.map((item)=>(mongoose.Types.ObjectId(item)));
+    const status = pending;
+    console.log(task_ids)
+    const task_data = await Task.updateMany({_id: { $in : task_ids}},{$set:{task_employee_id:employee_id, task_remarks:fv_remarks, task_status: status, task_assigned_on:new Date(), task_is_fieldvisit: fieldvisit_yes}});
+    if(task_data)
+    {
+        return true;
+    }else{
+        return false;
+    }
+}
+
+module.exports = { addTask, getTasks, getExecutiveTasks, l3approveFVTasks }
