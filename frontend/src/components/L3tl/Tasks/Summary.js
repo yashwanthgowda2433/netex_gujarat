@@ -1440,7 +1440,7 @@ const Summary = (props) => {
                                 : <></>	
                                 }
 
-                                {
+                                {test_data?
                                     test_data.test_report_analyzed == analyzed_yes ?
                                         <>
                                             <div class="closed containertimeline right">
@@ -1451,9 +1451,10 @@ const Summary = (props) => {
                                             </div>
                                         </>
                                         :<></>
+                                :<></>
                                 }
 									
-                                {
+                                {test_data?
                                     test_data.testreport_is_fwz == sla_forward_to_zone_yes ?
                                         <>
                                             <div class="containertimeline right">
@@ -1474,6 +1475,7 @@ const Summary = (props) => {
                                             }
                                         </>
                                     :<></>
+                                :<></>
                                 }
 
                                 {

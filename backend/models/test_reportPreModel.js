@@ -368,13 +368,11 @@ const testReportPreSchema = new Schema({
     },
     testreport_createdon: {
         type: Date,
-        default: ""
-        
+        default: new Date(),
     },
     testreport_modifiedon: {
         type: Date,
-        default: ""
-        
+        default: new Date(),
     }
 
 

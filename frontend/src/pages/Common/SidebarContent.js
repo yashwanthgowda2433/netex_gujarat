@@ -228,6 +228,13 @@ const SidebarContent = () => {
                           </Link>
                     </li>
 
+                    <li>
+                          <Link to="/transfer/request" className={'/transfer/request'.includes(url_path) ? "mm-active" : "" }>
+                              <i className="mdi mdi-inbox-full"></i>
+                              Transfer Requests
+                          </Link>
+                    </li>
+
                     <li className={ /tasks/.test(url_path) ? "mm-active" : "" }>
                         <Link onClick={openMenu} to="/#" className={'has-arrow waves-effect'}>
                             <i className="mdi mdi-inbox-full"></i>

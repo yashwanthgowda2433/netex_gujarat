@@ -38,6 +38,7 @@ import L3tl_track_employess from './pages/L3tl/FieldEngineers/TrackEmployees';
 import L3tl_view_employess from './pages/L3tl/FieldEngineers/ViewEmployees';
 import L3tl_task_prereport from "./pages/L3tl/Tasks/PreReport";
 import L3tl_task_postreport from "./pages/L3tl/Tasks/PostReport";
+import L3tl_task_Request from "./pages/L3tl/TransferTasks/Requests";
 
 // L3tl IMPORTS ENDS
 
@@ -119,6 +120,7 @@ function App() {
                               <Route path="/fieldengineers" element={ user ? <L3tl_view_employess/> : <Login/> } />
                               <Route path="/tasks/report/pre" element={ user ? <L3tl_task_prereport/> : <Login/> } />
                               <Route path="/tasks/report/post" element={ user ? <L3tl_task_postreport/> : <Login/> } />
+                              <Route path="/transfer/request" element={ user ? <L3tl_task_Request/> : <Login/> } />
 
 
                           </Routes>

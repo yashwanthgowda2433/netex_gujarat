@@ -27,11 +27,11 @@ import Footer from "../../Common/Footer";
 import Sidebar from "../../Common/Sidebar";
 import { Card, CardBody, CardTitle, Col, Row, Progress,DropdownMenu,
     DropdownItem,
-    DropdownToggle,ButtonDropdown } from "reactstrap";
+    DropdownToggle,ButtonDropdown, Modal } from "reactstrap";
 import { Link, withRouter, useLocation } from "react-router-dom"
 import { isEmpty, map, size } from "lodash"
 
-import { useTable, useSortBy, usePagination } from 'react-table';
+import { useTable, useSortBy, usePagination, useRowSelect } from 'react-table';
 
 //Context
 import { useAuthContext } from "../../../hooks/useAuthContext";
@@ -65,14 +65,38 @@ const View = () => {
     const [search_task, set_search_task] = useState("");
     const [addedby_type, set_addedby_type] = useState("");
 
+    const [tasks_id, setTasksId] = useState([]);
+    const [employees_id, setEmployees_id] = useState([]);
+
+    const [l3_engineers, set_l3_engineers] = useState([]);
+    const [selectedEngineer, setSelectedEngineer] = useState("");
+    const [reason, setReason] = useState("");
     // const data = propsData.state;
    
+    // modal
+    const [modal_backdrop, setmodal_backdrop] = useState(false)
+    function tog_backdrop() {
+        setmodal_backdrop(!modal_backdrop)
+        removeBodyCss()
+    }
+    // modal
+    const [modal_nobackdrop, setmodal_nobackdrop] = useState(false)
+    function tog_nobackdrop() {
+        setmodal_nobackdrop(!modal_nobackdrop)
+        removeBodyCss()
+    }
+    function removeBodyCss() {
+        document.body.classList.add("no_padding")
+    }
+    // modal
 
     useEffect(() => {
        
         if(user)
         {
             getTasks(pageStart);
+            fetchL3tlEngineers();
+
         }
     },[user]);
 
@@ -140,6 +164,80 @@ const View = () => {
     }
     // GET TASKS FUNCTION END
 
+    // L3 Engineers APi
+    const fetchL3tlEngineers = async () => {
+        // setError("")
+        // setSuccess("")
+        const response = await fetch('/api/user/l3tl/getL3tlEngineers', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+            body: JSON.stringify({search_user:search_task})
+        })
+        if(response.ok){
+           const json = await response.json()
+           console.log(json)
+            if(json.status == "Success")
+            {
+            
+                set_l3_engineers(json.data);
+            }
+            if(json.status == "Error")
+            {
+                // setError("please try aftersometime!");
+            }
+        }else{
+            // setError("please try aftersometime!");
+        }
+
+
+    }
+    // L3 Engineers Api end
+
+    // DirectTransfer for FV
+    const directTransfer = async ()=> {
+        const task_ids = [];
+        const emp_ids = [];
+        var task_inputs = document.querySelectorAll("input[name='deleteRow']:checked").forEach((input)=>{task_ids.push(input.value); emp_ids.push(input.getAttribute('data-id'))});
+        console.log(task_ids);
+        if(task_ids.length>0)
+        {
+            setTasksId(task_ids);
+            setEmployees_id(emp_ids)
+            tog_backdrop();
+        }else{
+            tog_nobackdrop();
+        }
+    }
+
+    // Submit Approval Api
+    const SubmitApprove = async () => {
+        const employee_id = selectedEngineer;
+        const task_ids = tasks_id;
+        const task_emp_ids = employees_id;
+        const fv_reason = reason;
+        const response = await fetch('/api/tasks/l3tl/transfer', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+            body: JSON.stringify({employee_id:employee_id, task_ids:task_ids, task_emp_ids:task_emp_ids, fv_reason:fv_reason})
+        })
+        if(response.ok){
+            const json = await response.json()
+            console.log(json)
+            if(json.status == "Success")
+            {
+                alert("Successfully Submitted");
+                window.location.reload();
+            }
+            if(json.status == "Error")
+            {
+                alert("Failed to Submit");
+            }
+        }else{
+            alert("Failed to Submit");
+
+        }
+    }
+    // End Submit Approval Api
     // date Converison
     const convertdate = (olddate) => {
         var created_date = new Date(olddate);
@@ -292,14 +390,25 @@ const View = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Select',
-                accessor: 
-                a => (
+                id: "selection",
+                // The header can use the table's getToggleAllRowsSelectedProps method
+                // to render a checkbox
+                Header: ({ getToggleAllRowsSelectedProps }) => (
                     <div>
-                        <input type="checkbox" className="delete-checkbox" value={a._id} id={"chk"+a._id}/>
-					    <input type="hidden" className={"close-status"+a._id} value={a.task_status }/>  
+                        <input type="checkbox" {...getToggleAllRowsSelectedProps()} />
                     </div>
                 ),
+                accessor: "_id",
+                Cell: ({ row }) => (
+                    <div>
+                        <input type="checkbox" name="deleteRow" data-id={row.values.employee_id} value={row.values.selection} {...row.getToggleRowSelectedProps()} />
+                    </div>
+                ),
+            },
+            {
+                id: 'employee_id',
+                Header:'employee_id',
+                accessor: 'task_employee_id',
             },
             {
                 Header: 'Employee Name',
@@ -370,7 +479,9 @@ const View = () => {
         canNextPage,
         canPreviousPage,
         prepareRow,
-        state: { pageIndex, pageSize },
+        state: { pageIndex, pageSize, selectedRowPaths },
+        selectedFlatRows,
+        toggleAllRowsSelected
     } = useTable(
         {
             columns,
@@ -380,10 +491,12 @@ const View = () => {
                 sortBy: [{ id: 'id', desc: false }],
                 pageIndex: 0, // Initial page index
                 pageSize: 100, // Initial page size (number of rows per page)
+                hiddenColumns:['employee_id']
             },
         },
         useSortBy,
-        usePagination
+        usePagination,
+        useRowSelect
     );
     
     const loadChange = async (val)=>{
@@ -456,7 +569,7 @@ const View = () => {
                                                                <i className="bx bx-dots-vertical" style={{color:"#77787b"}}></i>
                                                             </DropdownToggle>
                                                             <DropdownMenu style={{marginLeft:"-120px",marginTop:"22px"}}>
-                                                                <DropdownItem  className="font-size-14">Direct Transfer</DropdownItem> 
+                                                                <DropdownItem onClick={directTransfer} data-toggle="modal" className="font-size-14">Direct Transfer</DropdownItem> 
                                                                 <DropdownItem  className="font-size-14">Excel Download</DropdownItem> 
                                                             </DropdownMenu>
                                                         </ButtonDropdown>
@@ -633,6 +746,78 @@ const View = () => {
                     <Footer />
                 </div>
             </div>
+
+             {/* Modals */}
+             <Modal
+                isOpen={modal_backdrop}
+                toggle={() => {
+                    tog_backdrop()
+                }}
+                scrollable={true}
+                id="staticBackdrop"
+                >
+                    <div className="modal-header">
+                        <h5 className="modal-title" id="staticBackdropLabel">Approve Task</h5>
+                        <button type="button" className="btn-close"
+                            onClick={() => {
+                              setmodal_backdrop(false)
+                            }} aria-label="Close">
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <div className='form-control' style={{border:"none"}}>
+                                <label>Employee</label>
+                                <select className="form-select" onChange={(event)=>{setSelectedEngineer(event.target.value)}}>
+                                    <option value="">Select Employee</option>
+                                    {
+                                        l3_engineers.map((item, index)=> (
+                                            <option value={item._id}>{item.user_name}({item.user_userid})</option>
+                                        ))
+                                    }
+                                </select>
+                        </div>
+                        <div className='form-control' style={{border:"none"}}>
+                                <label>Reason</label>
+                                <input type="text" name="reason" onBlur={(event)=>{setReason(event.target.value)}} className="form-control"/>
+                        </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" onClick={SubmitApprove} className="btn btn-primary">Approve</button>
+
+                        <button type="button" className="btn btn-danger" onClick={() => {
+                            setmodal_backdrop(false)
+                          }}>Close</button>
+                    </div>
+            </Modal>
+            {/* End Modals */}
+
+            {/* No Modals */}
+            <Modal
+                isOpen={modal_nobackdrop}
+                toggle={() => {
+                    tog_nobackdrop()
+                }}
+                scrollable={true}
+                id="staticBackdrop"
+                >
+                    <div className="modal-header">
+                        {/* <h5 className="modal-title" id="staticBackdropLabel">Field Engineers</h5> */}
+                        <button type="button" className="btn-close"
+                            onClick={() => {
+                              setmodal_nobackdrop(false)
+                            }} aria-label="Close">
+                        </button>
+                    </div>
+                    <div className="modal-body" style={{textAlign:"center"}}>
+                        <p>Please select task to Transfer.</p>
+                    </div>
+                    <div className="modal-footer" style={{justifyContent:"center"}}>
+                        <button type="button" className="btn btn-primary" onClick={() => {
+                            setmodal_nobackdrop(false)
+                          }}>Close</button>
+                    </div>
+            </Modal>
+            {/* End No Modals */}
         </React.Fragment>
     );
 };

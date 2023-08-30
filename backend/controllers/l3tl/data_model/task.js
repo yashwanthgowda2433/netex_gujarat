@@ -26,6 +26,8 @@ const mongoose = require('mongoose')
 const User = require('../../../models/userModel');
 const Task = require('../../../models/taskModel');
 const test = require('./test');
+const TransferRequests = require('../../../models/transfer_requestsModel')
+const {approved} =  require('../../../global_variables/transfer_variables');
 
 const addTask = async (user, task_data) => {
 
@@ -512,4 +514,133 @@ const l3approveFVTasks = async (user, data) => {
     }
 }
 
-module.exports = { addTask, getTasks, getExecutiveTasks, l3approveFVTasks }
+const getTaskUserId = async (task_id) => {
+    const task_data = await Task.findOne({_id:task_id});
+    console.log(task_data)
+    return task_data
+}
+
+const l3TransferTasks = async (user, data) => {
+    const to_user_id = data.employee_id;
+    const fv_reason = data.fv_reason;
+    const task_ids = data.task_ids;
+    const task_emp_ids = data.task_emp_ids;
+
+
+    var bulk = await task_ids.map((id, index)=>(
+        
+
+        {
+            transfer_user_id: task_emp_ids[index],
+            transfer_task_id:id,
+            transfer_reason:fv_reason,
+            transfer_to:to_user_id,
+            transfer_approvedby:user._id,
+            transfer_approvedon:new Date(),
+            transfer_rejectedby:"",
+            transfer_rejectedon:"",
+            transfer_status:approved,
+            transfer_deleted: deleted_no
+        }
+
+    ));
+    console.log(bulk)
+    if(bulk.length > 0)
+    {
+        var transfer = await TransferRequests.create(bulk);
+        if(transfer)
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+
+}
+
+const getTranferTasks = async (user, filter_data) => {
+    const total_size = (await TransferRequests.find({transfer_deleted:deleted_no})).length;
+
+    var And_Where_Tasks = [];
+    var status = filter_data.status;
+    if(status == "pending")
+    {
+        And_Where_Tasks.push({ $eq: ["$transfer_status", pending] });
+    }
+    if(status == "approved")
+    {
+        And_Where_Tasks.push({ $eq: ["$transfer_status", approved] });
+    }
+    if(status == "hold")
+    {
+        And_Where_Tasks.push({ $eq: ["$transfer_status", hold] });
+    }
+    if(status == "rejected")
+    {
+        And_Where_Tasks.push({ $eq: ["$transfer_status", rejected] });
+    }
+    // from date and to date
+    var from_date = filter_data.date;
+    if(from_date != "")
+    {
+        And_Where_Tasks.push({ $gte: ["$transfer_createdon", new Date(from_date)] });
+    }
+
+    And_Where_Tasks.push({ $eq: ["$transfer_deleted", deleted_no] });
+
+    var query = {};
+    query.$expr = { 
+            $and : And_Where_Tasks,
+    };
+
+    const task_data = await TransferRequests.aggregate([
+        // {$match:{transfer_deleted:deleted_no}},
+        { $match : query,},
+        {$addFields:{emp_id:{$toObjectId:"$transfer_user_id"}}},
+        {
+            $lookup: {
+               from: "users", // collection name in db
+               localField: "emp_id",
+               foreignField: "_id",
+               as: "emp_arr"
+            }
+        },
+        {$addFields:{transfer_emp_id:{$toObjectId:"$transfer_to"}}},
+        {
+            $lookup: {
+               from: "users", // collection name in db
+               localField: "transfer_emp_id",
+               foreignField: "_id",
+               as: "transfer_emp_arr"
+            }
+        },
+        {$addFields:{task_id:{$toObjectId:"$transfer_task_id"}}},
+        {
+            $lookup: {
+               from: "tasks", // collection name in db
+               localField: "task_id",
+               foreignField: "_id",
+               as: "task_arr"
+            }
+        },
+        {$skip:filter_data.pageStart},
+        {$limit:filter_data.pageLimit}
+    ]);
+
+    var gettask = { total_size, task_data };
+    return gettask;
+}
+
+const updateTransferTaskStatus = async (user, data)=>{
+    const task_data = await TransferRequests.updateOne({_id: mongoose.Types.ObjectId(data.transfer_id)},{$set:{transfer_status: data.status}});
+    if(task_data)
+    {
+        return true;
+    }else{
+        return false;
+    }
+
+}
+module.exports = { addTask, getTasks, getExecutiveTasks, l3approveFVTasks, l3TransferTasks, getTranferTasks, updateTransferTaskStatus }
