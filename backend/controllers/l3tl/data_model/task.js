@@ -25,6 +25,8 @@ const { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super
 const mongoose = require('mongoose')
 const User = require('../../../models/userModel');
 const Task = require('../../../models/taskModel');
+const TestReport = require('../../../models/test_reportModel');
+
 const test = require('./test');
 const TransferRequests = require('../../../models/transfer_requestsModel')
 const {approved} =  require('../../../global_variables/transfer_variables');
@@ -634,13 +636,137 @@ const getTranferTasks = async (user, filter_data) => {
 }
 
 const updateTransferTaskStatus = async (user, data)=>{
-    const task_data = await TransferRequests.updateOne({_id: mongoose.Types.ObjectId(data.transfer_id)},{$set:{transfer_status: data.status}});
+    const get_task_data = await TransferRequests.findOne({_id: mongoose.Types.ObjectId(data.transfer_id)});
+
+    if(get_task_data)
+    {
+        const task_data = await TransferRequests.updateOne({_id: mongoose.Types.ObjectId(data.transfer_id)},{$set:{transfer_status: data.status}});
+        if(task_data)
+        {
+            if(data.status == approved){
+                const task_data = await Task.updateOne({_id: mongoose.Types.ObjectId(get_task_data.transfer_task_id)},{$set:{task_employee_id:get_task_data.
+                transfer_to}});
+                if(task_data){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+
+}
+
+const closeWithoutFv = async (user, data)=>{
+    const get_test_data = await TestReport.findOne({testreport_task_id
+        : data.task_id});
+    const get_task_data = await Task.findOne({_id: mongoose.Types.ObjectId(data.task_id)});
+
+    const testreport_l3_sl_issue_technology = data.issue_technology;
+    const testreport_l3_remarks = data.sl_remarks;
+    const testreport_l3_suspected_kl_id = data.suspected_kl_id;
+    const testreport_l3_sl_submitted_on = new Date();
+    const task_id = data.task_id;
+
+    if(get_test_data)
+    {
+        const task_data = await TestReport.updateOne({testreport_task_id
+            : task_id},{$set:{testreport_l3_sl_issue_technology, testreport_l3_remarks, testreport_l3_suspected_kl_id, testreport_l3_sl_submitted_on}});
+        if(task_data)
+        {
+            if(get_task_data){
+                const task_data = await Task.updateOne({_id: mongoose.Types.ObjectId(task_id)},{$set:{task_status:l3_closed, task_is_fieldvisit:fieldvisit_yes}});
+                if(task_data){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+
+}
+
+const forwardtoRF = async (user, data)=>{
+    const get_test_data = await TestReport.findOne({testreport_task_id
+        : data.task_id});
+    const get_task_data = await Task.findOne({_id: mongoose.Types.ObjectId(data.task_id)});
+
+    const testreport_l3_sl_issue_technology = data.issue_technology;
+    const testreport_l3_remarks = data.sl_remarks;
+    const testreport_l3_suspected_kl_id = data.suspected_kl_id;
+    const testreport_l3_sl_submitted_on = new Date();
+    const testreport_zonename = "Central";
+    const testreport_analyzed_status = analyse_no;
+    const task_id = data.task_id;
+
+    if(get_test_data)
+    {
+        const task_data = await TestReport.updateOne({testreport_task_id
+            : task_id},{$set:{testreport_l3_sl_issue_technology, testreport_l3_remarks, testreport_l3_suspected_kl_id, testreport_l3_sl_submitted_on, testreport_zonename, testreport_analyzed_status}});
+        if(task_data)
+        {
+            if(get_task_data){
+                const task_data = await Task.updateOne({_id: mongoose.Types.ObjectId(task_id)},{$set:{task_status:analysis_required_fwdbyl3, task_fwdtoanalyst_on:true, task_fwdtoanalyst_by:user._id, task_forwardtoanalyst:analyse_yes}});
+                if(task_data){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
+
+}
+
+const withDraw = async (user, data) => {
+    const fv_remarks = "";
+    const task_ids = data.task_ids.map((item)=>(mongoose.Types.ObjectId(item)));
+
+    const task_data = await Task.updateMany({_id: { $in : task_ids}},{$set:{task_remarks:fv_remarks, task_withdrawn: withdrawn_yes, task_withdrawn_on:new Date()}});
     if(task_data)
     {
         return true;
     }else{
         return false;
     }
-
 }
-module.exports = { addTask, getTasks, getExecutiveTasks, l3approveFVTasks, l3TransferTasks, getTranferTasks, updateTransferTaskStatus }
+
+const movetoPending = async (user, data) => {
+    const fv_remarks = "";
+    const task_ids = data.task_ids.map((item)=>(mongoose.Types.ObjectId(item)));
+
+    const task_data = await Task.updateMany({_id: { $in : task_ids}},{$set:{task_remarks:fv_remarks, task_withdrawn: withdrawn_no, task_assigned_on:new Date()}});
+    if(task_data)
+    {
+        return true;
+    }else{
+        return false;
+    }
+}
+
+const deleteSelected = async (user, data) => {
+    const fv_remarks = "";
+    const task_ids = data.task_ids.map((item)=>(mongoose.Types.ObjectId(item)));
+    
+    const task_data = await Task.deleteMany({_id: { $in : task_ids}},{$set:{task_deleted:deleted_yes, task_modifiedon:new Date()}});
+    if(task_data)
+    {
+        return true;
+    }else{
+        return false;
+    }
+}
+module.exports = { addTask, getTasks, getExecutiveTasks, l3approveFVTasks, l3TransferTasks, getTranferTasks, updateTransferTaskStatus, closeWithoutFv, forwardtoRF, withDraw, movetoPending, deleteSelected }

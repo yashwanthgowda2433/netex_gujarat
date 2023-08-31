@@ -32,7 +32,7 @@ import {
 import '../../../assets/css/style.css';
 
 import React, { useEffect, useState } from "react"
-import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Progress, Collapse, Form, Button } from "reactstrap"
+import { Row, Card, CardBody, Table, CardTitle, Col, Pagination, PaginationItem, PaginationLink, Modal, Progress, Collapse, Form, Button } from "reactstrap"
 import { isEmpty, map, size } from "lodash"
 
 import { Link, withRouter, useLocation, useNavigate } from "react-router-dom"
@@ -43,9 +43,11 @@ import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js';
 import { useAuthContext } from "../../../hooks/useAuthContext";
 
 const Summary = (props) => {
+
+    const navigate = useNavigate();
+
     const {user} = useAuthContext()
     
-
     var ddate = "";
     var created_date = "";
 
@@ -56,7 +58,33 @@ const Summary = (props) => {
     const analysed_by_l2 = props.data.analysed_by_l2;
     const analysed_by_l3 = props.data.analysed_by_l3;
     const analysed_by_rf = props.data.analysed_by_rf;
-    const [col5, setcol5] = useState(false)
+    const [col5, setcol5] = useState(false);
+    const [slRemarks, setSlRemarks] = useState("");
+    const [slSiteId, setSlSiteId] = useState("");
+    const [slTechnology, setSlTechnology] = useState([]);
+
+    const [tasks_id, setTasksId] = useState([]);
+
+    const [l3_engineers, set_l3_engineers] = useState([]);
+    const [selectedEngineer, setSelectedEngineer] = useState("");
+    const [remarks, setRemarks] = useState("");
+
+    // modal
+    const [modal_backdrop, setmodal_backdrop] = useState(false)
+    function tog_backdrop() {
+        setmodal_backdrop(!modal_backdrop)
+        removeBodyCss()
+    }
+    // modal
+    const [modal_nobackdrop, setmodal_nobackdrop] = useState(false)
+    function tog_nobackdrop() {
+        setmodal_nobackdrop(!modal_nobackdrop)
+        removeBodyCss()
+    }
+    function removeBodyCss() {
+        document.body.classList.add("no_padding")
+    }
+    // modal
 
     const [rows1, setrows1] = useState([])
     const [rows2, setrows2] = useState([])
@@ -86,9 +114,202 @@ const Summary = (props) => {
     
 
     useEffect(() => {
-        
-
+        if(user){
+            fetchL3tlEngineers();
+        }
     },[user])
+
+     // L3 Engineers APi
+     const fetchL3tlEngineers = async () => {
+        // setError("")
+        // setSuccess("")
+        const response = await fetch('/api/user/l3tl/getL3tlEngineers', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+        })
+        if(response.ok){
+           const json = await response.json()
+           console.log(json)
+            if(json.status == "Success")
+            {
+            
+                set_l3_engineers(json.data);
+            }
+            if(json.status == "Error")
+            {
+                // setError("please try aftersometime!");
+            }
+        }else{
+            // setError("please try aftersometime!");
+        }
+
+
+    }
+    // L3 Engineers Api end
+
+    // Approve for FV
+    const approveFv = async ()=> {
+        
+            const task_ids = [task_data._id];
+            //console.log(task_ids);
+            if(task_ids.length>0)
+            {
+                setTasksId(task_ids);
+                tog_backdrop();
+            }else{
+                tog_nobackdrop();
+            }
+        
+    }
+
+    // closeWithoutFv
+    const closeWithoutFv = async () => {
+        var sl_remarks = document.querySelector("textarea[name='sl_remarks']").value;
+        var suspected_kl_id = document.querySelector("input[name='suspected_kl_id']").value;
+        var sl_issue_options = document.querySelector("#stages").selectedOptions;
+        var issue_technology_arr = Array.from(sl_issue_options).map(({value}) => value);
+        // console.log(issue_technology_arr)
+        
+        if(sl_remarks == "")
+        {
+            document.querySelector("#sl_err").style.display="block";
+        }else{
+            document.querySelector("#sl_err").style.display="none";
+        }
+        if(suspected_kl_id == "")
+        {
+            document.querySelector("#siteid_err").style.display="block";
+        }else{
+            document.querySelector("#siteid_err").style.display="none";
+        }
+        if(issue_technology_arr.length == 0)
+        {
+            document.querySelector("#issue_err").style.display="block";
+        }else{
+            document.querySelector("#issue_err").style.display="none";
+        }
+        // console.log(issue_technology_arr.toString())
+        if(sl_remarks != "" && suspected_kl_id != "" && issue_technology_arr.length > 0){
+            const task_ids = task_data._id;
+            //console.log(task_ids);
+            if(task_ids)
+            {
+                try{
+                    const response = await fetch('/api/tasks/l3tl/closeWithoutFv', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+                        body: JSON.stringify({sl_remarks:sl_remarks, suspected_kl_id:suspected_kl_id, issue_technology:issue_technology_arr.toString(), task_id:task_ids})
+                    })
+                    if(response.ok){
+                        const json = await response.json()
+                        console.log(json)
+                        if(json.status == "Success")
+                        {
+                            navigate('/tasks/executiveTasks');
+                        }else{
+                            alert("Failed to Close");
+                        }
+                    }else{
+                        alert("Failed to Close");
+                    }
+                }catch(error)
+                {
+                    alert("Failed to Close");
+                }
+            }else{
+                tog_nobackdrop();
+            }
+        }
+    }
+
+    // Forward to RF
+    const forwardtoRF = async () => {
+        var sl_remarks = document.querySelector("textarea[name='sl_remarks']").value;
+        var suspected_kl_id = document.querySelector("input[name='suspected_kl_id']").value;
+        var sl_issue_options = document.querySelector("#stages").selectedOptions;
+        var issue_technology_arr = Array.from(sl_issue_options).map(({value}) => value);
+        // console.log(issue_technology_arr)
+        
+        if(sl_remarks == "")
+        {
+            document.querySelector("#sl_err").style.display="block";
+        }else{
+            document.querySelector("#sl_err").style.display="none";
+        }
+        if(suspected_kl_id == "")
+        {
+            document.querySelector("#siteid_err").style.display="block";
+        }else{
+            document.querySelector("#siteid_err").style.display="none";
+        }
+        if(issue_technology_arr.length == 0)
+        {
+            document.querySelector("#issue_err").style.display="block";
+        }else{
+            document.querySelector("#issue_err").style.display="none";
+        }
+        // console.log(issue_technology_arr.toString())
+        if(sl_remarks != "" && suspected_kl_id != "" && issue_technology_arr.length > 0){
+            const task_ids = task_data._id;
+            //console.log(task_ids);
+            if(task_ids)
+            {
+                try{
+                    const response = await fetch('/api/tasks/l3tl/forwardtoRF', {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+                        body: JSON.stringify({sl_remarks:sl_remarks, suspected_kl_id:suspected_kl_id, issue_technology:issue_technology_arr.toString(), task_id:task_ids})
+                    })
+                    if(response.ok){
+                        const json = await response.json()
+                        console.log(json)
+                        if(json.status == "Success")
+                        {
+                            navigate('/tasks/executiveTasks');
+                        }else{
+                            alert("Failed to Close");
+                        }
+                    }else{
+                        alert("Failed to Close");
+                    }
+                }catch(error)
+                {
+                    alert("Failed to Close");
+                }
+            }else{
+                tog_nobackdrop();
+            }
+        }
+    }
+
+    // Submit Approval Api
+    const SubmitApprove = async () => {
+        const employee_id = selectedEngineer;
+        const task_ids = tasks_id;
+        const fv_remarks = remarks;
+        const response = await fetch('/api/tasks/l3tl/approveFVTasks', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+            body: JSON.stringify({employee_id:employee_id, task_ids:task_ids, fv_remarks:fv_remarks})
+        })
+        if(response.ok){
+            const json = await response.json()
+            console.log(json)
+            if(json.status == "Success")
+            {
+                alert("Successfully Submitted");
+                window.location.reload();
+            }
+            if(json.status == "Error")
+            {
+                alert("Failed to Submit");
+            }
+        }else{
+            alert("Failed to Submit");
+
+        }
+    }
+    // End Submit Approval Api  
 
     
     // date Converison
@@ -958,12 +1179,36 @@ const Summary = (props) => {
                         
                         </div>
 
+                        <div class="card mt-5">
+				            <div class="panel">
+					            <div class="panel-body row">
+					                <div class="header">
+						                <h4>Report images </h4>
+						            </div>
+									{/* <?php
+                                    if(!empty($test_report_images1))
+                                    {
+								        $images = explode(",",$test_report_images1);
+                                        for ($xi = 0; $xi <= count($images)-1; $xi++) {
+							            ?>
+                                            <div class="col-sm-3 col-sm-3 col-md-3">
+                                                <div class="thumbnail-box">
+					              
+					                                <img src=<?php echo stripslashes(str_replace(array('[',']') , ''  ,$images[$xi])) ?> alt="" style="width:250px;height:300px"/>
+                                                </div>
+                                            </div>
+                                        <?php
+								        }    
+                                
+                                    }
+                                    ?> */}
+					            </div>
+				            </div>
+			            </div>
+                        
                         {test_data?
-                            // test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no 
-                            test_data.testreport_analyzed_status == null?
+                            test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no && task_data.task_is_rf_fieldvisit == fieldvisit_no && test_data.testreport_l3_remarks == "" && (task_data.task_status == completed || task_data.task_status == closed) ?
                                 <>
-                                   
-                                    
                                     <button onClick={() => { setcol5(!col5) }} className="btn bg-pink waves-effect m-b-15 mt-5" type="button" style={{ cursor: "pointer", color:"#ffffff" }} >Attach Analysed Files</button>
                                     <Collapse isOpen={col5}>
                                         <CardBody>
@@ -1099,13 +1344,165 @@ const Summary = (props) => {
 				                        <div class="text-center">
 				                            <p id="nb"></p>
 				                            <input type="hidden" name="rfempid" id="rfempid"/>
-				                            <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/>
-				                            <input  data-type="fwdtofiled" class="btn btn-info" style={{marginLeft:"10px"}}  type="submit"  value="Assign to Field"/>
+				                            <input  data-type="submit" class="btn btn-success" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/>
+				                            <input  data-type="fwdtofiled" class="btn btn-info" style={{marginLeft:"10px"}}  type="submit"  value="Forward to RF"/>
                                             {/* <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/> */}
 				                            {/* <input data-type="sl_submit" class="btn btn-success" type="submit" value="Submit"/> */}
-					                        <input data-type="sl_fwz" class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Forward to Team"/>
+					                        {/* <input data-type="sl_fwz" class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Forward to Team"/> */}
 					                        {/* <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_rf"/> */}
-					                        <input class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Internal Transfer" data-type="sl_fwz_zone"/>
+					                        {/* <input class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Internal Transfer" data-type="sl_fwz_zone"/> */}
+				                            {/* <!--<input  data-type="submits" class="btn btn-info" value="Forward to Field Visit" onclick="slSubmit(this.value)" name="sl_submission_field"/> */}
+				                            {/* <input data-type="sl_fwz_zone" class="btn btn-success" type="submit" value="Forward to Zone"/>--> */}
+				                        </div>
+			                        </form>
+                                </>
+                            :
+
+                            test_data.testreport_analyzed_status == analyzed_no && test_data.testreport_is_fwz == sla_forward_to_zone_no && task_data.task_is_rf_fieldvisit == fieldvisit_no && test_data.testreport_l3_remarks == "" && task_data.task_status != pending ?
+                                <>
+                                    <button onClick={() => { setcol5(!col5) }} className="btn bg-pink waves-effect m-b-15 mt-5" type="button" style={{ cursor: "pointer", color:"#ffffff" }} >Attach Analysed Files</button>
+                                    <Collapse isOpen={col5}>
+                                        <CardBody>
+                                        <Button onClick={() => { handleAddRowNested1() }} color="success" className="btn btn-success mt-3 mt-lg-0" style={{float:"right"}}>Add</Button>
+                                            <Form className="repeater" encType="multipart/form-data">
+                                            
+                                                <div data-repeater-list="group-a">
+                                                    <div data-repeater-item className="row" style={{width:"100%"}}>
+                                                        <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                          <div className="mb-3 col-lg-12">
+                                                            <label htmlFor="files" style={{fontWeight:"bold"}}>Files : </label>
+                                                            <input type="file" className="form-control" id="files" />
+                                                          </div>
+                                                        </Col>
+                                                        <Col lg={2} className="align-self-center">
+                                                            <div className="d-grid">
+                                                                {/* <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" /> */}
+                                                            </div>
+                                                        </Col>
+                                                    </div>
+
+                                                </div>
+                                                {rows2.map((item2, idx) => (
+                                                    <React.Fragment key={idx}>
+                                                        <div data-repeater-list="group-a" id={"addr" + idx} >
+                                                            <div data-repeater-item className="row mb-3"  style={{width:"100%"}}>
+                                                                
+                                                                <Col lg={6} className="align-self-center" style={{margin:"auto"}}>
+                                                                    <div className="pl-2 ml-5 col-lg-12">
+                                                                        
+                                                                        <input type="file" className="form-control" id="files" />
+                                                                    </div>
+                                                                </Col>
+                                                                <Col lg={2} className="align-self-center d-grid">
+                                                                    <input data-repeater-delete type="button" className="btn btn-danger" value="Delete" onClick={e => { handleRemoveRow(e , idx)}} />
+                                                                </Col>
+                                                            </div>
+
+                                                        </div>
+                                                    </React.Fragment>
+                                                ))}
+                                                <div class="col-md-12 mt-3 text-center">
+						                            <button type="submit"  id="upload" name="Import" class="btn btn-lg btn-info m-t-15 waves-effect">Upload</button>
+					                            </div>
+                                            </Form>
+                                        </CardBody>
+                                    </Collapse>
+			                       
+			                        <form name="sl_form" id="sl_form" method="get" class="form-horizontal" action="<?= base_url().'tasks/report/'.$test_report_id.'/testanalyzed' ?>">
+                                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Second&nbsp;level&nbsp;remarks&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                        <div class="form-group">
+						                        <div class="form-line">
+                                                    <textarea name="sl_remarks" className='form-control' cols="0" rows="2" id="sl_remark"></textarea>
+
+						                            <input name="sl_stage" type="hidden"/>
+						                            <input name="sl_zone" type="hidden"/>
+						                            <input name="sl_submission_type" type="hidden"/>
+						                        </div>
+					                        </div>
+				                                </div>
+                                                <p id="sl_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter second level remark</p>
+                                            </Col>
+                                        </Row>
+                                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Suspected&nbsp;Site&nbsp;ID&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <div class="form-line">
+							                                <input type="text" name="suspected_kl_id" class="form-control" id="site_id"/>
+                                                            <p id="siteid_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter suspected site id</p>
+						                                </div>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
+				                        <Row className="mt-5">
+                                            <Col lg={2} style={{margin:"auto", width:"max-content"}}>
+				                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5 form-control-label">
+					                                <label for="email_address_2" style={{fontWeight:600}}>Issue&nbsp;Technology&nbsp;:</label>
+				                                </div>
+                                            </Col>
+                                            <Col lg={10}>
+				                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-6">
+					                                <div class="form-group">
+						                                <select name="sl_issue_technology[]" id="stages" class="selectpicker form-control network_type" placeholder="Network type"  multiple aria-label="size 3 select example">
+											                <option value="2G">2G</option>
+											                <option value="3G">3G</option>
+											                <option value="4G">4G</option>
+											                <option value="VoLTE">VoLTE</option>
+											
+										                </select>
+                                                        <p id="issue_err" style={{color:"red",display:"none",textAlign:"center"}}>Please enter issue category</p>
+					                                </div>
+				                                </div>
+                                            </Col>
+                                        </Row>
+				                        
+				              
+                                        <Card className='mt-5'>
+                                                <CardTitle>
+											            <h3>KPI DashBoard</h3>
+											            <ul class="header-dropdown m-r--5">
+												            <button type="button" id="kpi-analyse" class="btn btn-info waves-effect" style={{float:"right"}}>
+													            {/* <i class="material-icons fa-cog">find_replace</i> */}
+													            <span>Analyse</span>
+												            </button>
+											            </ul>
+										        </CardTitle>
+                                            <CardBody>
+									            
+											            <div class="table-responsive">
+												            <table class="table table-bordered table-striped table-hover dataTable" id="example">
+												            </table>
+											            </div>
+                                                    
+                                            </CardBody>
+                                        </Card>
+
+				                        <div class="text-center">
+				                            <p id="nb"></p>
+				                            <input type="hidden" name="rfempid" id="rfempid"/>
+				                            <input type="button" data-type="submit" class="btn btn-success" onClick={approveFv} value="Assign to Field" name="sl_submission"/>
+                                            <input  data-type="fwdtofiled" class="btn btn-info" onClick={closeWithoutFv} style={{marginLeft:"10px"}}  type="button"  value="Close"/>
+				                            <input  data-type="fwdtofiled" class="btn btn-info" onClick={forwardtoRF} style={{marginLeft:"10px"}}  type="button"  value="Forward to RF"/>
+                                            {/* <input  data-type="submit" class="btn btn-info" onclick="slSubmit(this.value)" value="Submit" name="sl_submission"/> */}
+				                            {/* <input data-type="sl_submit" class="btn btn-success" type="submit" value="Submit"/> */}
+					                        {/* <input data-type="sl_fwz" class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Forward to Team"/> */}
+					                        {/* <input class="btn btn-success" type="submit" value="Internal Transfer" data-type="sl_rf"/> */}
+					                        {/* <input class="btn btn-success" type="submit" style={{marginLeft:"10px"}} value="Internal Transfer" data-type="sl_fwz_zone"/> */}
 				                            {/* <!--<input  data-type="submits" class="btn btn-info" value="Forward to Field Visit" onclick="slSubmit(this.value)" name="sl_submission_field"/> */}
 				                            {/* <input data-type="sl_fwz_zone" class="btn btn-success" type="submit" value="Forward to Zone"/>--> */}
 				                        </div>
@@ -1178,37 +1575,9 @@ const Summary = (props) => {
                                 :
                                     <></>
                         :<></>}
-
                         <div class="card mt-5">
 				            <div class="panel">
-					            <div class="panel-body">
-					                <div class="header">
-						                <h4>Report images </h4>
-						            </div>
-									{/* <?php
-                                    if(!empty($test_report_images1))
-                                    {
-								        $images = explode(",",$test_report_images1);
-                                        for ($xi = 0; $xi <= count($images)-1; $xi++) {
-							            ?>
-                                            <div class="col-sm-3 col-sm-3 col-md-3">
-                                                <div class="thumbnail-box">
-					              
-					                                <img src=<?php echo stripslashes(str_replace(array('[',']') , ''  ,$images[$xi])) ?> alt="" style="width:250px;height:300px"/>
-                                                </div>
-                                            </div>
-                                        <?php
-								        }    
-                                
-                                    }
-                                    ?> */}
-					            </div>
-				            </div>
-			            </div>
-
-                        <div class="card mt-5">
-				            <div class="panel">
-					            <div class="panel-body">
+					            <div class="panel-body row">
 						            <div class="col-lg-6 col-sm-6 col-md-6 timelinebox">
 							            <div class="timeline">
 								            <div class="received containertimeline right">
@@ -1223,142 +1592,161 @@ const Summary = (props) => {
 									  <span class="label label-info">Assigned</span></h5>
 									</div>
 								</div>
+                                {task_data.task_status == approve_for_fieldvisit ?
+                                    <>
+                                        <div class="received containertimeline right">
+												<div class="timeline-content">
+													<h5>{convertdate(task_data.task_fwdtofe_on)}<span class="label label-warning">Forward to field</span></h5>
+                                                </div>
+                                        </div>
+                                    </>
+                                :<></>
+                                }
 								{ 
                                 task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
-								
-									    task_data.task_withdrawn == withdrawn_yes ?
+
+                                    task_data.task_status != pending ?
+                                        <>
 									        <div class="containertimeline right">
 										        <div class="timeline-content">
-											        <h5>{convertdate(task_data.task_withdrawn_on)}
-											        <span class="label label-info">Withdrawn</span></h5>
+											        <h5>{convertdate(task_data.task_end_datetime)}
+											        <span class="label label-info">Started</span></h5>
 										        </div>
-									        </div>
-									    :<></>
-                                  : <>{
-                                
-									task_data.task_assigned_on && task_data.task_assigned_on != ''?
-                                        
-									    <div class="containertimeline right">
-										        <div class="timeline-content">
-											        <h5>{convertdate(task_data.task_assigned_on)}
-											        <span class="label label-info">Reassigned</span></h5>
-										        </div>
-									    </div>
-									:<></>	
-                                    }
-									{/* if(is_array($attempts) && !empty($attempts)){
-										foreach($attempts as $attempt){ 
-										$datetime1 = new DateTime($attempt['call_starttime']);
-										$datetime2 = new DateTime($attempt['call_endtime']);
-										$interval = $datetime1->diff($datetime2);
-										?>														
-										<div class="containertimeline right">															
-											<div class="timeline-content">
-												<h5><?php echo date("h:i:s a F d Y", strtotime($attempt['call_datetime']));?>																
-												<span class="label label-info"><?= $attempt['call_name'] ?>(<?= $interval->format('%H:%I:%S') ?>)</span></h5>
-											</div>
-										</div>
-										<?php														
-										$i++;													
-										}
-									}?> */}
-									<div class="containertimeline right">
-										<div class="timeline-content">
-											<h5>{convertdate(task_data.task_end_datetime)}
-											<span class="label label-info">Started</span></h5>
-										</div>
-									</div>
-									{ 
-                                        task_data.task_status == cancelled ?
-									        <div class="received containertimeline right">
-										        <div class="timeline-content">
-											        <h5>{convertdate(task_data.task_cancelled_on)}
-											       <span class="label label-warning">Canceled</span></h5>
-										        </div>
-									        </div>
-									    :
-                                            task_data.task_status == closed ?
-									            <div class="closed containertimeline right">
-										            <div class="timeline-content">
-											            <h5>{convertdate(test_data?test_data.testreport_createdon:"")}
-											            <span class="label label-success">Closed without Visit</span></h5>
-										            </div>
-									            </div>
-									        :
-									            <div class="closed containertimeline right">
-										            <div class="timeline-content">
-											            <h5>{convertdate(test_data?test_data.testreport_createdon:"")}
-											            <span class="label label-success">Visit Completed</span></h5>
-										            </div>
-									            </div>
-                                     }
-								    </>
-                                }
+                                            </div>
+                                        </>
+                                        :
+									
+									        task_data.task_status == cancelled ?
+									            <>
+                                                    <div class="received containertimeline right">
+										                <div class="timeline-content">
+											                <h5>{convertdate(task_data.task_cancelled_on)}
+											                <span class="label label-warning">Canceled</span></h5>
+										                </div>
+									                </div>
+                                                </>
+                                            : 
+                                                task_data.task_status == closed ?
+                                                <>
+									                <div class="closed containertimeline right">
+										                <div class="timeline-content">
+										                    <h5>{convertdate(test_data.test_visit_upload)}
+											                <span class="label label-success">Closed without Visit</span></h5>
+										                </div>
+									                </div>
+                                                </>
+                                            :
 								
-                                { test_data?
-                                    test_data.testreport_analyzed_status == analyzed_yes ?
-								        <div class="closed containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_sl_submitted_on)}
-										        <span class="label label-success">RF Analysis Completed</span></h5>
-									        </div>
-								        </div>
-								    :<></>
-                                 :<></>
+									            task_data.task_status == pending ?
+                                                    <>
+                                                        <div class="closed containertimeline right">
+                                                            <div class="timeline-content">
+                                                                <h5>{convertdate(task_data.task_assigned_on)}
+                                                                <span class="label label-success">Visit Pending</span></h5>
+                                                            </div>
+                                                        </div>
+                                                    </>
+									            :
+                                                    <>
+                                                        <div class="closed containertimeline right">
+										                    <div class="timeline-content">
+											                    <h5>{convertdate(test_data.test_visit_upload)}
+											                    <span class="label label-success">Visit Completed</span></h5>
+										                    </div>
+									                    </div>
+                                                    </>
+                                :<></>
                                 }
-								{  task_data.testreport_id && task_data.testreport_is_fwz == sla_forward_to_zone_yes ?
-                                    <>
-								        <div class="containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_sl_submitted_on)}
-										        <span class="label label-info">Forward to Team</span></h5>
-									        </div>
-								        </div>
-                                    
-								    {  test_data.testreport_tl_submitted_on && test_data.testreport_tl_submitted_on != '' ? 
-								        <div class="closed containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										        <span class="label label-success">Revert from Team</span></h5>
-									        </div>
-								        </div>
-                                    :<></>
-                                    }</>
-                                    :<></>
+                                { 
+                                task_data.task_is_rf_fieldvisit == fieldvisit_yes ?
+
+                                        task_data.task_status == analysis_required || task_data.task_status == analysis_required_fwdbyl3 ?
+                                            <>
+                                                <div class="received containertimeline right">
+                                                    <div class="timeline-content">
+                                                        <h5>{convertdate(task_data.task_fwdtoanalyst_on)}
+                                                        <span class="label label-warning">Forward to RF</span></h5>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        :<></>
+
+                                : <></>	
                                 }
-								{
-                                    task_data.task_status == closedbyl2_executive ?
-								        <div class="closed containertimeline right">
-									        <div class="timeline-content">
-										        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										        <span class="label label-success">Directly Closed By L2 Executive</span></h5>
-									        </div>
-								        </div>
-                                    :
-                                        task_data.task_status == resolved_and_closed ?
-								            <div class="closed containertimeline right">
+
+                                {test_data?
+                                    test_data.test_report_analyzed == analyzed_yes ?
+                                        <>
+                                            <div class="closed containertimeline right">
+                                                <div class="timeline-content">
+                                                    <h5>{convertdate(test_data.testreport_sl_submitted_on)}
+                                                    <span class="label label-success">RF Analysis Completed</span></h5>
+                                                </div>
+                                            </div>
+                                        </>
+                                        :<></>
+                                :<></>
+                                }
+									
+                                {test_data?
+                                    test_data.testreport_is_fwz == sla_forward_to_zone_yes ?
+                                        <>
+                                            <div class="containertimeline right">
 									            <div class="timeline-content">
-										            <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										            <span class="label label-success">Resolved and Closed</span></h5>
+										            <h5>{convertdate(test_data.testreport_sl_submitted_on)}
+										            <span class="label label-info">Forward to Team</span></h5>
 									            </div>
 								            </div>
-								        :
+								            {
+                                               test_data.testreport_tl_submitted_on && test_data.testreport_tl_submitted_on != '' ?
+								                    <div class="closed containertimeline right">
+									                    <div class="timeline-content">
+										                    <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+										                    <span class="label label-success">Revert from Team</span></h5>
+									                    </div>
+								                    </div>
+                                                :<></>
+                                            }
+                                        </>
+                                    :<></>
+                                :<></>
+                                }
+
+                                {
+                                    task_data.task_status == closedbyl2_executive ?
+                                        <div class="closed containertimeline right">
+                                            <div class="timeline-content">
+                                                <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+                                                <span class="label label-success">Directly Closed By L2 Executive</span></h5>
+                                            </div>
+                                        </div>
+                                    :
+
+                                        task_data.task_status == resolved_and_closed ?
+                                            <div class="closed containertimeline right">
+                                                <div class="timeline-content">
+                                                    <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+                                                    <span class="label label-success">Resolved and Closed</span></h5>
+                                                </div>
+                                            </div>
+                                        :
                                             task_data.task_status == not_resolved_and_closed ?
-								                <div class="closed containertimeline right">
-									                <div class="timeline-content">
-										                <h5>{convertdate(test_data.testreport_tl_submitted_on)}
-										                <span class="label label-success">Not Resolved and Closed</span></h5>
-									                </div>
-								                </div>
+                                                <div class="closed containertimeline right">
+                                                    <div class="timeline-content">
+                                                        <h5>{convertdate(test_data.testreport_tl_submitted_on)}
+                                                        <span class="label label-success">Not Resolved and Closed</span></h5>
+                                                    </div>
+                                                </div>
                                             :<></>
                                 }
+								
 							</div>
 						</div>
 						{task_data.task_is_fieldvisit == fieldvisit_yes ?
                             <>
 						        <div class="col-lg-3 col-sm-3 col-md-3">
 							        <div id="mapimg">
-								        <img src="https://vilkarnataka.telecomone.in/assets/images/map.png" id="mapmodal" class="mapbutton"/>
+								        <img src="https://vilkarnataka.telecomone.in/assets/images/map.png" id="mapmodal" class="mapbutton" style={{width:"100%"}}/>
 							        </div>
 						        </div>
 						        <div class="col-lg-3 col-sm-3 col-md-3">
@@ -1374,7 +1762,80 @@ const Summary = (props) => {
 					</div>
 				</div>
 			</div>
+             {/* Modals */}
+             <Modal
+                isOpen={modal_backdrop}
+                toggle={() => {
+                    tog_backdrop()
+                }}
+                scrollable={true}
+                id="staticBackdrop"
+                >
+                    <div className="modal-header">
+                        <h5 className="modal-title" id="staticBackdropLabel">Approve Task</h5>
+                        <button type="button" className="btn-close"
+                            onClick={() => {
+                              setmodal_backdrop(false)
+                            }} aria-label="Close">
+                        </button>
+                    </div>
+                    <div className="modal-body">
+                        <div className='form-control' style={{border:"none"}}>
+                                <label>Employee</label>
+                                <select className="form-select" onChange={(event)=>{setSelectedEngineer(event.target.value)}}>
+                                    <option value="">Select Employee</option>
+                                    {
+                                        l3_engineers.map((item, index)=> (
+                                            <option value={item._id}>{item.user_name}({item.user_userid})</option>
+                                        ))
+                                    }
+                                </select>
+                        </div>
+                        <div className='form-control' style={{border:"none"}}>
+                                <label>Remarks</label>
+                                <input type="text" name="remarks" onBlur={(event)=>{setRemarks(event.target.value)}} className="form-control"/>
+                        </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" onClick={SubmitApprove} className="btn btn-primary">Approve</button>
+
+                        <button type="button" className="btn btn-danger" onClick={() => {
+                            setmodal_backdrop(false)
+                          }}>Close</button>
+                    </div>
+            </Modal>
+            {/* End Modals */}
+
+            {/* No Modals */}
+            <Modal
+                isOpen={modal_nobackdrop}
+                toggle={() => {
+                    tog_nobackdrop()
+                }}
+                scrollable={true}
+                id="staticBackdrop"
+                >
+                    <div className="modal-header">
+                        {/* <h5 className="modal-title" id="staticBackdropLabel">Field Engineers</h5> */}
+                        <button type="button" className="btn-close"
+                            onClick={() => {
+                              setmodal_nobackdrop(false)
+                            }} aria-label="Close">
+                        </button>
+                    </div>
+                    <div className="modal-body" style={{textAlign:"center"}}>
+                        <p>Please select task to approve.</p>
+                    </div>
+                    <div className="modal-footer" style={{justifyContent:"center"}}>
+                        <button type="button" className="btn btn-primary" onClick={() => {
+                            setmodal_nobackdrop(false)
+                          }}>Close</button>
+                    </div>
+            </Modal>
+            {/* End No Modals */}
         </Col>
+
+        
     )
 }
 

@@ -44,14 +44,14 @@ const TrackEmployees = (props) => {
        
         if(user)
         {
-            fetchOptiEngineers();
+            fetchL3tlEngineers();
         }
     },[user]);
 
-    const fetchOptiEngineers = async () => {
+    const fetchL3tlEngineers = async () => {
         setError("")
         setSuccess("")
-        const response = await fetch('/api/user/analyst/getOptiEngineers', {
+        const response = await fetch('/api/user/l3tl/getL3tlEngineers', {
             method: "POST",
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
             body: JSON.stringify({search_user:search_task})
@@ -143,7 +143,7 @@ const TrackEmployees = (props) => {
                                                                 </Col>
 
                                                                 <Col lg={2}>
-                                                                    <button type='button' onClick={fetchOptiEngineers} className='btn btn-primary'>Search</button>
+                                                                    <button type='button' onClick={fetchL3tlEngineers} className='btn btn-primary'>Search</button>
                                                                 </Col>
                                                               </Row>
                                                             </CardBody>

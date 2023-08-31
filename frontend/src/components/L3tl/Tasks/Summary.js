@@ -108,82 +108,164 @@ const Summary = (props) => {
         return time;
     }
 
-    const getTaskStatus = (status) => {
+    const getTaskStatus = (a) => {
 
         var message = "";
 
-        if (status == pending) {
-            message = 'Visit Pending';
-
-        } else if (status == progress) {
-            message = 'Progress';
-
-        } else if (status == cancelled) {
-            message = 'Cancelled';
-
-        } else if (status == completed) {
-            message = 'Completed';
-
-        } else if (status == pending && task_data.task_is_rf_fieldvisit == fieldvisit_yes) {
-            message = 'Optimisation Pending';
-
-        } else if (status == progress && task_data.task_is_rf_fieldvisit == fieldvisit_yes) {
-            message = 'Optimisation Inprogress';
-
-        } else if (status == cancelled) {
-            message = 'Cancelled';
-
-        } else if (status == completed && task_data.task_is_rf_fieldvisit == fieldvisit_yes) {
-            message = 'Optimisation Completed';
-
-        } else if (status == closed) {
-            message = 'Closed without field visit';
-
-        } else if (status == closedbyl2_executive) {
-            message = 'Closed';
-            ddate = test_data.testreport_createdon;
-
-        } else if (status == fwz) {
-            //message = 'Fwd To Team';
-            message = "Forward to " + sla_fwz_options[test_data.testreport_sl_stage];
-            ddate = task_data.task_fwdtoteam_on;
-
-        } else if (status == approve_for_fieldvisit) {
-            //message = 'Transfer Requested';
-            message = 'Forward to field visit';
-            ddate = task_data.task_fwdtofe_on;
-
-        } else if (status == addedbyl2_executive) {
-            message = 'added by l2executive';
-            ddate = created_date;
-
-        } else if (status == analysis_required) {
-            message = 'Forward to analysts';
-
-
-        } else if (status == analysed) {
-            message = 'analysed';
-
-        } else if (status == not_resolved_and_closed) {
-            message = 'not resolved and closed';
-
-        } else if (status == resolved_and_closed) {
-            message = 'resolved and closed';
-
-        } else if (status == withdraw) {
-            message = 'withdrawn';
-
-        } else if (status == optimisationprogress) {
-            message = 'Optimisation  in Progress';
-
-        } else if (status == optimised) {
-            message = 'Reverted from Team';
-
-        } else if (status == fwz_to_zone) {
-            message = 'Foward to zone';
-            ddate = task_data.task_fwdtozone_on;
-
+        // Pending
+        if(a.task_status == pending && a.task_is_rf_fieldvisit == fieldvisit_no)
+        {
+            if(a.task_withdrawn == withdrawn_yes)
+            {       
+                message = "Withdrawn";
+            }else{
+                message = "Visit Pending";
+            }
         }
+        //analysis_required_fwdbyl3
+        else if(a.task_status == analysis_required_fwdbyl3)
+        {
+            message = "FWD to RF";
+        }
+        // 
+        else if(a.task_status == preoptipending && a.task_is_postopti == fieldvisit_yes)
+        {
+            if(a.task_withdrawn == withdrawn_yes)
+            {       
+                message = "Withdrawn";
+            }else{
+                message = "Post-Optimisation Pending";
+            }
+        }
+        // Pre-Optimisation Inprogress
+        else if(a.task_status == progress && a.task_is_rf_fieldvisit == fieldvisit_yes && a.task_is_postopti == fieldvisit_no)
+        {
+            message = "Pre-Optimisation Inprogress";
+        }
+
+        // Pre-Optimisation Pending
+        else if((a.task_status == preoptipending || a.task_status == pending) && a.task_is_rf_fieldvisit==fieldvisit_yes && a.task_is_postopti==fieldvisit_no)
+        {
+            if(a.task_withdrawn == withdrawn_yes)
+            {       
+                message = "Withdrawn";
+            }else{
+                message = "Pre-Optimisation Pending";
+            }
+        }
+
+        //Post-Optimisation Inprogress
+        else if(a.task_status == progress && a.task_is_postopti==fieldvisit_yes)
+        {
+            message = "Post-Optimisation Inprogress";
+        }
+        //Pre-Optimisation Completed
+        else if(a.task_status == preopti)
+        {
+            message = "Pre-Optimisation Completed";
+        }
+        //Postoptimization
+        else if(a.task_status == postopti)
+        {
+            message = "Postoptimization";
+        }
+        //Cancelled
+        else if(a.task_status == cancelled)
+        {
+            message = "Cancelled";
+        }
+        //Progress
+        else if(a.task_status == progress)
+        {
+            message = "Inprogress";
+        }
+
+        //Completed
+        else if(a.task_status == completed)
+        {
+            message = "Completed";
+        }
+        
+        //Closed without field visit
+        else if(a.task_status == closed)
+        {
+            message = "Closed without field visit";
+        }
+
+        //closedbyl2_executive
+        else if(a.task_status == closedbyl2_executive)
+        {
+            message = "Closed";
+        }
+
+        //Forward to ......
+        else if(a.task_status == fwz)
+        {
+            message = "Forward to {sla_fwz_options[a.task_fwd_dept_id]}";
+        }
+        //Forward to field visit
+        else if(a.task_status == approve_for_fieldvisit)
+        {
+            message = "Forward to field visit";
+        }
+        //added by l2executive
+        else if(a.task_status == addedbyl2_executive)
+        {
+            message = "added by l2executive";
+        }
+        //FWD to RF
+        else if(a.task_status == analysis_required || a.task_status == analysis_required_fwdbyl3)
+        {
+            message = "FWD to RF";
+        }
+        //reverted from RF
+        else if(a.task_status == analysed)
+        {
+            message = "reverted from RF";
+        }
+        //Not resolved and closed
+        else if(a.task_status == not_resolved_and_closed)
+        {
+            message = "Not resolved and closed";
+        }
+        //Resolved and closed
+        else if(a.task_status == resolved_and_closed)
+        {
+            message = "Resolved and closed";
+        }
+        //Optimisation  in Progress
+        else if(a.task_status == optimisationprogress)
+        {
+            message = "Optimisation  in Progress";
+        }
+        //Reverted from
+        else if(a.task_status == optimised)
+        {
+            message = "Reverted from "+sla_fwz_options[a.task_fwd_dept_id];
+        }
+        //Withdrawn
+        else if(a.task_status == withdraw)
+        {
+            message = "Withdrawn";
+        }
+        //l3_closed
+        else if(a.task_status == l3_closed)
+        {
+            message = "Reverted from L3";
+        }
+        
+        //Foward to zone
+        else if(a.task_status == fwz_to_zone)
+        {
+            message = "Foward to zone";
+        }
+
+        else if(a.task_is_rf_fieldvisit == fieldvisit_yes && (a.task_status == pending || a.task_status == progress || a.task_status == completed || a.task_status == preopti || a.task_status == postopti))
+        {
+            message = "FWD to RF";
+        }
+        
+        
         return message
     }
 
@@ -566,7 +648,7 @@ const Summary = (props) => {
                                             }
                                             <tr>
                                                 <td><strong>STATUS</strong></td>
-                                                <td><b>{getTaskStatus(task_data.task_status)}</b></td>
+                                                <td><b>{getTaskStatus(task_data)}</b></td>
                                             </tr>
                                             {
                                               test_data?

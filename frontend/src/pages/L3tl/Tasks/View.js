@@ -15,6 +15,8 @@ import { rth_yes, rth_no, assigned_yes, assigned_no, reassigned_yes, reassigned_
     directL2Close_option,resolvedClosed_option,notResolvedClosed_option,
     } from '../../../global_variables/task_variables';
 
+import {sla_fwz_options} from '../../../global_variables/test_report_variables'
+
 // import user table variables
 import { active, in_active, confirmed_yes, confirmed_no, opti_yes, opti_no, super_admin,
     admin, analyst, field_engineer, zone_user, dept_user, executive, mis, l3tl, l2tl, outcall, client,
@@ -209,6 +211,93 @@ const View = () => {
         }
     }
 
+    // withdraw
+    const withDraw = async () => {
+        try{
+            const task_ids = tasks_id;
+            const task_emp_ids = employees_id;
+            const response = await fetch('/api/tasks/l3tl/withDraw', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+                body: JSON.stringify({task_ids:task_ids, task_emp_ids:task_emp_ids})
+            })
+            if(response.ok){
+                const json = await response.json()
+                console.log(json)
+                if(json.status == "Success")
+                {
+                    alert("Successfully Submitted");
+                    window.location.reload();
+                }else{
+                    alert("Failed to Submit");
+                }
+            }else{
+                alert("Failed to Submit");
+            }
+        }catch(error)
+        {
+            alert("Failed to Submit");
+        }
+    }
+
+    // movetoPending
+    const movetoPending = async () => {
+        try{
+            const task_ids = tasks_id;
+            const task_emp_ids = employees_id;
+            const response = await fetch('/api/tasks/l3tl/movetoPending', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+                body: JSON.stringify({task_ids:task_ids, task_emp_ids:task_emp_ids})
+            })
+            if(response.ok){
+                const json = await response.json()
+                console.log(json)
+                if(json.status == "Success")
+                {
+                    alert("Successfully Submitted");
+                    window.location.reload();
+                }else{
+                    alert("Failed to Submit");
+                }
+            }else{
+                alert("Failed to Submit");
+            }
+        }catch(error)
+        {
+            alert("Failed to Submit");
+        }
+    }
+
+    //
+    const deleteSelected = async () => {
+        try{
+            const task_ids = tasks_id;
+            const task_emp_ids = employees_id;
+            const response = await fetch('/api/tasks/l3tl/deleteSelected', {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${user.token}` },
+                body: JSON.stringify({task_ids:task_ids, task_emp_ids:task_emp_ids})
+            })
+            if(response.ok){
+                const json = await response.json()
+                console.log(json)
+                if(json.status == "Success")
+                {
+                    alert("Successfully Submitted");
+                    window.location.reload();
+                }else{
+                    alert("Failed to Submit");
+                }
+            }else{
+                alert("Failed to Submit");
+            }
+        }catch(error)
+        {
+            alert("Failed to Submit");
+        }
+    }
+
     // Submit Approval Api
     const SubmitApprove = async () => {
         const employee_id = selectedEngineer;
@@ -261,8 +350,23 @@ const View = () => {
         console.log(task_status)
         var message = "";
 
-        // Post-Optimisation Pending
-        if(a.task_status == preoptipending && a.task_is_postopti == fieldvisit_yes)
+        // Pending
+        if(a.task_status == pending && a.task_is_rf_fieldvisit == fieldvisit_no)
+        {
+            if(a.task_withdrawn == withdrawn_yes)
+            {       
+                message = <span className='btn btn-info' style={styles.status}>Withdrawn</span>;
+            }else{
+                message = <span className='btn btn-danger' style={styles.status}>Visit Pending</span>;
+            }
+        }
+        //analysis_required_fwdbyl3
+        else if(a.task_status == analysis_required_fwdbyl3)
+        {
+            message = <span className='btn btn-danger' style={styles.status}>FWD to RF</span>;
+        }
+        // 
+        else if(a.task_status == preoptipending && a.task_is_postopti == fieldvisit_yes)
         {
             if(a.task_withdrawn == withdrawn_yes)
             {       
@@ -276,6 +380,7 @@ const View = () => {
         {
             message = <span className='btn btn-warning' style={styles.status}>Pre-Optimisation Inprogress</span>;
         }
+
         // Pre-Optimisation Pending
         else if((a.task_status == preoptipending || a.task_status == pending) && a.task_is_rf_fieldvisit==fieldvisit_yes && a.task_is_postopti==fieldvisit_no)
         {
@@ -286,6 +391,7 @@ const View = () => {
                 message = <span className='btn btn-danger' style={styles.status}>Pre-Optimisation Pending</span>;
             }
         }
+
         //Post-Optimisation Inprogress
         else if(a.task_status == progress && a.task_is_postopti==fieldvisit_yes)
         {
@@ -306,20 +412,34 @@ const View = () => {
         {
             message = <span className='btn btn-danger' style={styles.status}>Cancelled</span>;
         }
+        //Progress
+        else if(a.task_status == progress)
+        {
+            message = <span className='btn btn-warning' style={styles.status}>Inprogress</span>;
+        }
+
         //Completed
         else if(a.task_status == completed)
         {
             message = <span className='btn btn-success' style={styles.status}>Completed</span>;
         }
+        
         //Closed without field visit
         else if(a.task_status == closed)
         {
             message = <span className='btn btn-warning' style={styles.status}>Closed without field visit</span>;
         }
+
+        //closedbyl2_executive
+        else if(a.task_status == closedbyl2_executive)
+        {
+            message = <span className='btn btn-info' style={styles.status}>Closed</span>;
+        }
+
         //Forward to ......
         else if(a.task_status == fwz)
         {
-            // message = <span className='btn btn-primary' style={styles.status}>Forward to {sla_fwz_options[a.task_fwd_dept_id]}</span>;
+            message = <span className='btn btn-primary' style={styles.status}>Forward to {sla_fwz_options[a.task_fwd_dept_id]}</span>;
         }
         //Forward to field visit
         else if(a.task_status == approve_for_fieldvisit)
@@ -341,11 +461,6 @@ const View = () => {
         {
             message = <span className='btn btn-primary' style={styles.status}>reverted from RF</span>;
         }
-        //Withdrawn
-        else if(a.task_status == withdraw)
-        {
-            message = <span className='btn btn-primary' style={styles.status}>Withdrawn</span>;
-        }
         //Not resolved and closed
         else if(a.task_status == not_resolved_and_closed)
         {
@@ -366,20 +481,28 @@ const View = () => {
         {
             // message = <span className='btn btn-warning' style={styles.status}>Reverted from {sla_fwz_options[a.task_fwd_dept_id]}</span>;
         }
+        //Withdrawn
+        else if(a.task_status == withdraw)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>Withdrawn</span>;
+        }
+        //l3_closed
+        else if(a.task_status == l3_closed)
+        {
+            message = <span className='btn btn-primary' style={styles.status}>Reverted from L3</span>;
+        }
+        
         //Foward to zone
         else if(a.task_status == fwz_to_zone)
         {
             message = <span className='btn btn-warning' style={styles.status}>Foward to zone</span>;
         }
+
+        else if(a.task_is_rf_fieldvisit == fieldvisit_yes && (a.task_status == pending || a.task_status == progress || a.task_status == completed || a.task_status == preopti || a.task_status == postopti))
+        {
+            message = <span className='btn btn-primary' style={styles.status}>FWD to RF</span>;
+        }
         
-        else if(a.task_status == progress)
-        {
-            message = <span className='btn btn-warning' style={styles.status}>Inprogress</span>;
-        }
-        else if(a.task_status == pending)
-        {
-            message = <span className='btn btn-danger' style={styles.status}>Pending</span>;
-        }
                     
         return message;
 
@@ -570,6 +693,9 @@ const View = () => {
                                                             </DropdownToggle>
                                                             <DropdownMenu style={{marginLeft:"-120px",marginTop:"22px"}}>
                                                                 <DropdownItem onClick={directTransfer} data-toggle="modal" className="font-size-14">Direct Transfer</DropdownItem> 
+                                                                <DropdownItem onClick={withDraw} data-toggle="modal" className="font-size-14">withdraw Selected</DropdownItem> 
+                                                                <DropdownItem onClick={movetoPending} data-toggle="modal" className="font-size-14">Move to Pending Selected</DropdownItem> 
+                                                                <DropdownItem onClick={deleteSelected} data-toggle="modal" className="font-size-14">Delete Selected</DropdownItem> 
                                                                 <DropdownItem  className="font-size-14">Excel Download</DropdownItem> 
                                                             </DropdownMenu>
                                                         </ButtonDropdown>

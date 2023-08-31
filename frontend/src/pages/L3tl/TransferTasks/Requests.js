@@ -213,7 +213,7 @@ const Requests = () => {
                             </select> 
                         :<></>
                         }
-                        <Link className='btn btn-primary' to="/tasks/report" state={a.task_arr[0]} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link>
+                        {/* <Link className='btn btn-primary' to="/tasks/report" state={a.task_arr[0]} style={styles.linkbtn} title="View Report"><i className='bx bx-book fs-16'></i></Link> */}
                     </>
                 ),
             },

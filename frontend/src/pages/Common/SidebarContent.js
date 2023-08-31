@@ -246,7 +246,7 @@ const SidebarContent = () => {
                                 <Link to="/tasks/view" className={'/tasks/view'.includes(url_path) || '/tasks/report'.includes(url_path) ? "mm-active" : "" }>View Task Summary</Link>
                             </li>
                             <li>
-                                <Link to="/tasks/executiveTasks" className={'/tasks/executiveTasks'.includes(url_path) || '/tasks/l3tlreport'.includes(url_path) ? "mm-active" : "" }>View Open Complaint Summary</Link>
+                                <Link to="/tasks/executiveTasks" className={'/tasks/executiveTasks'.includes(url_path) || '/tasks/executivereport'.includes(url_path) ? "mm-active" : "" }>View Open Complaint Summary</Link>
                             </li>
                         </ul>
                     </li>  
